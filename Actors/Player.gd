@@ -58,7 +58,7 @@ func falling(delta):
 	# Change states
 	if is_on_floor():
 		state = states.Grounded
-	elif ((velocity.y > 0 and velocity.x == 0) or velocity.x != 0) and is_on_wall_only():
+	elif is_on_wall_only():
 		state = states.Climb
 
 
