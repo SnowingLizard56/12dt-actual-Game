@@ -16,6 +16,8 @@ var direction: set=update_dir
 var last_dir = 1
 var stamina = 0
 var climb_dir = 0
+var old_collision_mask = get_collision_mask()
+var ready_to_switch_collision = false
 
 enum states {Grounded, Climb, Falling}
 var state = states.Falling: set=set_state
@@ -71,6 +73,10 @@ func grounded(delta):
 	# Change velocity
 	velocity.x = direction * SPEED
 	
+	if ready_to_switch_collision:
+		collision_mask = old_collision_mask
+		ready_to_switch_collision = false
+	
 	if !is_on_floor():
 		velocity.x = last_dir * SPEED 
 		state = states.Falling
@@ -115,3 +121,8 @@ func climb(delta):
 			if vdirection > 0 and direction:
 				velocity.y *= 0.5
 
+func window_over(window):
+	collision_mask = window.duplicate_node.tile_set.get_physics_layer_collision_layer(0)
+
+func window_being_over_is_over(window):
+	ready_to_switch_collision = true
