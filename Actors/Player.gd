@@ -1,6 +1,5 @@
 extends CharacterBody2D
 
-
 const SPEED = 150.0
 const JUMP_SPEED_HORIZONTAL = 200
 const AIR_MOVE_SPEED = 250.0
@@ -11,19 +10,26 @@ const MAX_STAMINA = 100.0
 const AIR_FRICTION = 25.0
 const WALL_JUMP_VELOCITY = Vector2(200.0, -280.0)
 const WALL_DROP_SPEED = 60.0
+const GRAVITY = 980
+const CEILING_BOUNCE_SPEED = 2
 
 var direction: set=update_dir
 var last_dir = 1
 var stamina = 0
 var climb_dir = 0
-var old_collision_mask = get_collision_mask()
-var ready_to_switch_collision = false
+var overlapping_windows = []
+var overlapping_inner = false
 
 enum states {Grounded, Climb, Falling}
 var state = states.Falling: set=set_state
-# Get the gravity from the project settings to be synced with RigidBody nodes.
-var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
+var global:globalScript
+
+func _ready():
+	global = get_node("/root/Global")
+	global.player = self
+
+# variable set functions
 func update_dir(d):
 	if d != 0:
 		last_dir = d
@@ -32,12 +38,14 @@ func update_dir(d):
 func set_state(n):
 	if n == states.Grounded:
 		stamina = MAX_STAMINA
+		velocity.y = 0
 	elif n == states.Climb:
-		if test_move(transform, Vector2(4, 0)):
+		if physics_check_all_playerboxes("test_move", [transform, Vector2(4, 0)]):
 			climb_dir = 1
 		else:
 			climb_dir = -1
 	state = n
+
 
 func _physics_process(delta):
 	direction = Input.get_axis("Left", "Right")
@@ -47,38 +55,61 @@ func _physics_process(delta):
 		falling(delta)
 	elif state == states.Climb:
 		climb(delta)
-	
-	move_and_slide()
+	# eveybody else :)
+	for player_stand_in in global.playerboxes:
+		player_stand_in.position = position
+		player_stand_in.velocity = velocity
+		player_stand_in.move_and_slide()
+	# check for really goofy collision
+	if len(overlapping_windows) == 1:
+		if overlapping_inner:
+			# entirely within window
+			pass
+		else:
+			# area 2! between inner and outer borders
+			pass
+		position = overlapping_windows[0].player_box.position
+	elif len(overlapping_windows) == 0:
+		# entirely outside of window
+		move_and_slide()
+	else:
+		# or in both windows at once.
+		# if playerbox 0 is moving slower than playerbox 1, 
+		# then it has collided with something. set to that position.
+		if overlapping_windows[0].player_box.velocity.length()\
+			<= overlapping_windows[1].player_box.velocity.length():
+			position = overlapping_windows[0].player_box.position
+		else:
+			#otherwise, set to the other one.
+			position = overlapping_windows[1].player_box.position
+			
 
-
+# Physics States
 func falling(delta):
 	# Gravity
-	velocity.y = move_toward(velocity.y, gravity, gravity * delta)
+	velocity.y = move_toward(velocity.y, GRAVITY, GRAVITY * delta)
 	# Friction
 	velocity.x = move_toward(velocity.x, 0, AIR_FRICTION * delta)
 	
+	if check_on_ceiling():
+		velocity.y = CEILING_BOUNCE_SPEED
 	# Change states
-	if is_on_floor():
+	if check_on_floor():
 		state = states.Grounded
-	elif is_on_wall_only():
+	elif check_on_wall():
 		state = states.Climb
 
 
 func grounded(delta):
 	# Handle Jump.
-	if Input.is_action_just_pressed("Jump") and (is_on_floor() or !$CoyoteTime.is_stopped()):
+	if Input.is_action_just_pressed("Jump") and (check_on_floor() or !$CoyoteTime.is_stopped()):
 		velocity.y = JUMP_SPEED
 		state = states.Falling
 	
 	# Change velocity
 	velocity.x = direction * SPEED
 	
-	if ready_to_switch_collision:
-		collision_mask = old_collision_mask
-		ready_to_switch_collision = false
-	
-	if !is_on_floor():
-		velocity.x = last_dir * SPEED 
+	if !check_on_floor():
 		state = states.Falling
 		$CoyoteTime.start()
 
@@ -110,7 +141,7 @@ func climb(delta):
 			velocity.x = -climb_dir * WALL_DROP_SPEED
 	
 	# Leaving state
-	elif !is_on_wall():
+	elif !check_on_wall():
 		state = states.Falling
 		if direction == 0 and vdirection < 0:
 			velocity.x = CLIMB_FINISH_SPEED * climb_dir
@@ -121,8 +152,36 @@ func climb(delta):
 			if vdirection > 0 and direction:
 				velocity.y *= 0.5
 
-func window_over(window):
-	collision_mask = window.duplicate_node.tile_set.get_physics_layer_collision_layer(0)
 
-func window_being_over_is_over(window):
-	ready_to_switch_collision = true
+# Physics functions
+func check_on_floor():
+	return physics_check_all_playerboxes("is_on_floor", [])
+
+
+func check_on_wall():
+	return physics_check_all_playerboxes("is_on_wall", [])
+
+
+func check_on_ceiling():
+	return physics_check_all_playerboxes("is_on_ceiling", [])
+
+
+func physics_check_all_playerboxes(stringName, args):
+	if len(overlapping_windows) == 0:
+		for w in global.playerboxes:
+			if w.callv(stringName, args):
+				return true
+	else:
+		for w in overlapping_windows:
+			if w.player_box.callv(stringName, args):
+				return true
+	return false
+
+
+# Change Overlapping Windows
+func on_window_entered(window):
+	overlapping_windows.append(window)
+
+
+func on_window_exited(window):
+	overlapping_windows.erase(window)

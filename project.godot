@@ -14,6 +14,10 @@ config/name="12DT Game (Epic Name That Is a NAME right there. hlle yeah)"
 config/features=PackedStringArray("4.1", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Global="*res://global.gd"
+
 [display]
 
 window/size/viewport_width=640
