@@ -1,16 +1,11 @@
-extends Node
-
 # https://gist.github.com/afk-mario/15b5855ccce145516d1b458acfe29a28
+class_name StaticbodyController extends RefCounted
 
 const CELL_SIZE = Vector2(8,8)
 
-func _ready():
-	do_the_thing($TileMap, self)
-	circumcise_the_static_body(get_child(-1), Rect2(-207, -245, 300, 245))
-
 # please for the love of god rename this function later
 # this is VERY O(n^2) so. figure that out future me
-func do_the_thing(tilemap:TileMap, static_body_parent:Node):
+static func generate_static_body_polygons(tilemap:TileMap, static_body_parent:Node):
 	# Static body will hold all the collision polygons!
 	var collision_holder = StaticBody2D.new()
 	static_body_parent.add_child(collision_holder)
@@ -72,11 +67,12 @@ func do_the_thing(tilemap:TileMap, static_body_parent:Node):
 		var poly_node = CollisionPolygon2D.new()
 		poly_node.polygon = poly
 		collision_holder.add_child(poly_node)
-	return polygons
-		
+	collision_holder.set_meta("stored_polygons", polygons)
+	return collision_holder
+
 
 # i makea all da points on da tile from da one point on da tile
-func get_points(pos):
+static func get_points(pos):
 	#01
 	#23
 	return [
@@ -85,15 +81,15 @@ func get_points(pos):
 		Vector2((pos.x + 1) * CELL_SIZE.x, pos.y * CELL_SIZE.y), #1
 		Vector2((pos.x + 1) * CELL_SIZE.x, (pos.y + 1) * CELL_SIZE.y) #3
 	]
-	
+
 # i makea da polygon from the places on da tile 
 # (directly following from prev function)
-func get_tile_polygon(points):
+static func get_tile_polygon(points):
 	return [points[0], points[1], points[1], points[2], points[2], points[3], points[3], points[0]]
 
 
 # and probably rename this one too thAT name isnt appropriate
-func circumcise_the_static_body(body:StaticBody2D, rect:Rect2):
+static func circumcise_the_static_body(body:StaticBody2D, rect:Rect2):
 	#01
 	#32
 	var rect_polygon = [
@@ -105,14 +101,22 @@ func circumcise_the_static_body(body:StaticBody2D, rect:Rect2):
 		
 	# split and free the old ones
 	var new_polygons = []
+	for i in body.get_meta("stored_polygons"):
+		new_polygons.append_array(Geometry2D.clip_polygons(i, rect_polygon))
+	# Store and skip
+	if body.get_meta("displayed_polygons", []) == new_polygons:
+		return new_polygons
+	else:
+		body.set_meta("displayed_polygons", new_polygons)
+	# poof
 	for i in body.get_children():
-		new_polygons.append_array(Geometry2D.clip_polygons(i.polygon, rect_polygon))
 		i.queue_free()
 		
 	# make and apply the new ones
 	for i in new_polygons:
+		if Geometry2D.is_polygon_clockwise(i):
+			push_warning("Polygon Split Error")
 		var k = CollisionPolygon2D.new()
 		body.add_child(k)
 		k.polygon = i
 	return new_polygons
-		
