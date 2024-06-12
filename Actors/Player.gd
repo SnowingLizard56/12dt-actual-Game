@@ -5,7 +5,7 @@ const JUMP_SPEED_HORIZONTAL = 200
 const AIR_MOVE_SPEED = 250.0
 const CLIMB_SPEED = 120.0
 const JUMP_SPEED = -300.0
-const CLIMB_FINISH_SPEED = 100.0
+const CLIMB_FINISH_SPEED = 50.0
 const MAX_STAMINA = 100.0
 const AIR_FRICTION = 25.0
 const WALL_JUMP_VELOCITY = Vector2(200.0, -280.0)
@@ -22,12 +22,6 @@ var overlapping_inner = false
 
 enum states {Grounded, Climb, Falling}
 var state = states.Falling: set=set_state
-
-var global:globalScript
-
-func _ready():
-	global = get_node("/root/Global")
-	global.player = self
 
 # variable set functions
 func update_dir(d):
@@ -70,11 +64,11 @@ func falling(delta):
 	# Change states
 	if is_on_floor():
 		state = states.Grounded
-	elif is_on_wall():
+	elif test_move(transform, Vector2.RIGHT*last_dir):
 		state = states.Climb
 
 
-func grounded(_delta):
+func grounded(delta):
 	# Handle Jump.
 	if Input.is_action_just_pressed("Jump") and (is_on_floor() or !$CoyoteTimer.is_stopped()):
 		velocity.y = JUMP_SPEED
@@ -86,6 +80,9 @@ func grounded(_delta):
 	if !is_on_floor():
 		state = states.Falling
 		$CoyoteTimer.start()
+	elif test_move(transform, Vector2.RIGHT * direction) and Input.is_action_pressed("Up"):
+		state = states.Climb
+		velocity += Vector2.UP * 4
 
 
 func climb(delta):
@@ -115,7 +112,7 @@ func climb(delta):
 			velocity.x = -climb_dir * WALL_DROP_SPEED
 	
 	# Leaving state
-	elif !is_on_wall():
+	elif !test_move(transform, Vector2.RIGHT * climb_dir):
 		state = states.Falling
 		if direction == 0 and vdirection < 0:
 			velocity.x = CLIMB_FINISH_SPEED * climb_dir
@@ -125,6 +122,8 @@ func climb(delta):
 				stamina -= 40
 			if vdirection > 0 and direction:
 				velocity.y *= 0.5
+	elif is_on_floor():
+		state = states.Grounded
 
 # Change Overlapping Windows
 func on_window_entered(window):

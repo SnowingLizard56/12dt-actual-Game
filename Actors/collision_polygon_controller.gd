@@ -5,13 +5,13 @@ const CELL_SIZE = Vector2(8,8)
 
 # please for the love of god rename this function later
 # this is VERY O(n^2) so. figure that out future me
-static func generate_static_body_polygons(tilemap:TileMap, static_body_parent:Node):
+static func generate_static_body_polygons(tilemap:TileMap, layer:int, static_body_parent:Node):
 	# Static body will hold all the collision polygons!
 	var collision_holder = StaticBody2D.new()
 	static_body_parent.add_child(collision_holder)
 	
 	var polygons = []
-	var used_cells = tilemap.get_used_cells(0)
+	var used_cells = tilemap.get_used_cells(layer)
 	
 	# Make edges
 	for cell in used_cells:
@@ -49,7 +49,7 @@ static func generate_static_body_polygons(tilemap:TileMap, static_body_parent:No
 				deathrow_polygons.append(polygon_1)
 				deathrow_index[i] = true
 				break
-		# Outside of the squared!
+		# Outside of the squared!d
 		# thank goodness i was getting worried
 		
 		if len(deathrow_polygons) == 0:
@@ -68,6 +68,7 @@ static func generate_static_body_polygons(tilemap:TileMap, static_body_parent:No
 		poly_node.polygon = poly
 		collision_holder.add_child(poly_node)
 	collision_holder.set_meta("stored_polygons", polygons)
+	collision_holder.collision_mask = 0
 	return collision_holder
 
 
