@@ -1,4 +1,4 @@
-extends CharacterBody2D
+class_name Player extends CharacterBody2D
 
 const SPEED = 150.0
 const JUMP_SPEED_HORIZONTAL = 200
@@ -19,6 +19,8 @@ var stamina = 0
 var climb_dir = 0
 var overlapping_windows = []
 var overlapping_inner = false
+
+@onready var spawn_position: Vector2 = position
 
 enum states {Grounded, Climb, Falling}
 var state = states.Falling: set=set_state
@@ -68,7 +70,7 @@ func falling(delta):
 		state = states.Climb
 
 
-func grounded(delta):
+func grounded(_delta):
 	# Handle Jump.
 	if Input.is_action_just_pressed("Jump") and (is_on_floor() or !$CoyoteTimer.is_stopped()):
 		velocity.y = JUMP_SPEED
@@ -132,3 +134,9 @@ func on_window_entered(window):
 
 func on_window_exited(window):
 	overlapping_windows.erase(window)
+
+
+func death():
+	position = spawn_position
+	velocity = Vector2.ZERO
+	state = states.Falling

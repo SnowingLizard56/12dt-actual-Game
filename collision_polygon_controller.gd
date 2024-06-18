@@ -5,11 +5,13 @@ const CELL_SIZE = Vector2(8,8)
 
 # please for the love of god rename this function later
 # this is VERY O(n^2) so. figure that out future me
-static func generate_static_body_polygons(tilemap:TileMap, layer:int, static_body_parent:Node):
+static func generate_static_body_polygons(tilemap:TileMap, layer:int, static_body_parent:Node = null):
 	# Static body will hold all the collision polygons!
-	var collision_holder = StaticBody2D.new()
-	static_body_parent.add_child(collision_holder)
-	
+	var collision_holder
+	if static_body_parent:
+		collision_holder = StaticBody2D.new()
+		static_body_parent.add_child(collision_holder)
+		
 	var polygons = []
 	var used_cells = tilemap.get_used_cells(layer)
 	
@@ -63,13 +65,14 @@ static func generate_static_body_polygons(tilemap:TileMap, layer:int, static_bod
 		for poly in deathrow_polygons:
 			polygons.erase(poly)
 	# outside of ALL the loops thank god
-	for poly in polygons:
-		var poly_node = CollisionPolygon2D.new()
-		poly_node.polygon = poly
-		collision_holder.add_child(poly_node)
-	collision_holder.set_meta("stored_polygons", polygons)
-	collision_holder.collision_mask = 0
-	return collision_holder
+	if static_body_parent:
+		for poly in polygons:
+			var poly_node = CollisionPolygon2D.new()
+			poly_node.polygon = poly
+			collision_holder.add_child(poly_node)
+		collision_holder.set_meta("stored_polygons", polygons)
+		collision_holder.collision_mask = 0
+	return polygons
 
 
 # i makea all da points on da tile from da one point on da tile
@@ -90,7 +93,7 @@ static func get_tile_polygon(points):
 
 
 # and probably rename this one too thAT name isnt appropriate
-static func circumcise_the_static_body(body:StaticBody2D, rect:Rect2):
+static func clip_polygons_with_rect(polygons:Array, rect:Rect2, output_parent:Node, displayed_polygons:Array=[]):
 	#01
 	#32
 	var rect_polygon = [
@@ -102,15 +105,13 @@ static func circumcise_the_static_body(body:StaticBody2D, rect:Rect2):
 		
 	# split and free the old ones
 	var new_polygons = []
-	for i in body.get_meta("stored_polygons"):
+	for i in polygons:
 		new_polygons.append_array(Geometry2D.clip_polygons(i, rect_polygon))
 	# Store and skip
-	if body.get_meta("displayed_polygons", []) == new_polygons:
+	if displayed_polygons == new_polygons:
 		return new_polygons
-	else:
-		body.set_meta("displayed_polygons", new_polygons)
 	# poof
-	for i in body.get_children():
+	for i in output_parent.get_children():
 		i.queue_free()
 		
 	# make and apply the new ones
@@ -118,6 +119,6 @@ static func circumcise_the_static_body(body:StaticBody2D, rect:Rect2):
 		if Geometry2D.is_polygon_clockwise(i):
 			push_warning("Polygon Split Error")
 		var k = CollisionPolygon2D.new()
-		body.add_child(k)
+		output_parent.add_child(k)
 		k.polygon = i
 	return new_polygons
