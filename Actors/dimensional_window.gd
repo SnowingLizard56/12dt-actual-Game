@@ -13,6 +13,7 @@ var prev_position:Vector2
 
 var prev_tl_pos = Vector2i.ZERO
 var prev_tiles = []
+var layer:int
 
 # Loading
 func _ready():
@@ -52,15 +53,25 @@ func _process(delta):
 		# Lock to grid
 		position = round(position / 8) * 8
 		$WindowFrame/Viewport/SubCamera.position = $WindowFrame.global_position
+		# get rect and adjust for errors
+		var rect = get_rect()
+		rect.size.y += 0.0001
+		# iterate over terrain and entities
 		for body in get_node("/root/Main/StaticsHolder").get_children():
 			if body.name != name:
-				var rect = get_rect()
-				rect.size.y += 0.0001
-				StaticbodyController.clip_polygons_with_rect(body.get_meta('stored_polygons'), rect, body, body.get_meta('displayed_polygons', []))
+				StaticbodyController.clip_polygons_with_rect(body.get_meta('stored_polygons'), rect, body.get_meta('displayed_polygons', []), body)
+		for entity in get_tree().get_nodes_in_group("Clip_Entity"):
+			#if exists on this layer; skip
+			if entity.exists[layer]:
+				print(entity)
+				continue
+			entity.clip_polygon(rect)
+			
 	if Input.is_action_just_released("Click"):
 		dragging = false
 
 
+# WIP
 func prevent_overlap(_delta:float):
 	var velocity = position - prev_position
 	#reset charbody position

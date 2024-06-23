@@ -92,8 +92,7 @@ static func get_tile_polygon(points):
 	return [points[0], points[1], points[1], points[2], points[2], points[3], points[3], points[0]]
 
 
-# and probably rename this one too thAT name isnt appropriate
-static func clip_polygons_with_rect(polygons:Array, rect:Rect2, output_parent:Node, displayed_polygons:Array=[]):
+static func clip_polygons_with_rect(polygons:Array, rect:Rect2, displayed_polygons:Array=[], output_parent:Node=null):
 	#01
 	#32
 	var rect_polygon = [
@@ -111,14 +110,16 @@ static func clip_polygons_with_rect(polygons:Array, rect:Rect2, output_parent:No
 	if displayed_polygons == new_polygons:
 		return new_polygons
 	# poof
-	for i in output_parent.get_children():
-		i.queue_free()
-		
-	# make and apply the new ones
-	for i in new_polygons:
-		if Geometry2D.is_polygon_clockwise(i):
-			push_warning("Polygon Split Error")
-		var k = CollisionPolygon2D.new()
-		output_parent.add_child(k)
-		k.polygon = i
+	if output_parent:
+		for i in output_parent.get_children():
+			if i is CollisionPolygon2D:
+				i.queue_free()
+			
+		# make and apply the new ones
+		for i in new_polygons:
+			if Geometry2D.is_polygon_clockwise(i):
+				push_warning("Polygon Split Error")
+			var k = CollisionPolygon2D.new()
+			output_parent.add_child(k)
+			k.polygon = i
 	return new_polygons

@@ -19,6 +19,7 @@ var stamina = 0
 var climb_dir = 0
 var overlapping_windows = []
 var overlapping_inner = false
+var real_position:Vector2
 
 @onready var spawn_position: Vector2 = position
 
@@ -44,6 +45,8 @@ func set_state(n):
 
 
 func _physics_process(delta):
+	if real_position:
+		position = real_position
 	direction = Input.get_axis("Left", "Right")
 	if state == states.Grounded or (Input.is_action_just_pressed("Jump") and !$CoyoteTimer.is_stopped()):
 		grounded(delta)
@@ -52,6 +55,8 @@ func _physics_process(delta):
 	elif state == states.Climb:
 		climb(delta)
 	move_and_slide()
+	real_position = position
+	position = round(position)
 			
 
 # Physics States
@@ -137,6 +142,10 @@ func on_window_exited(window):
 
 
 func death():
-	position = spawn_position
+	real_position = spawn_position
 	velocity = Vector2.ZERO
 	state = states.Falling
+
+func entity_collision(ent):
+	if ent.get_meta("Spike"):
+		death()

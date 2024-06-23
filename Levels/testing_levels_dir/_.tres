@@ -1,0 +1,6 @@
+[gd_resource type="Resource" format=3 uid="uid://laiiecnmewrx"]
+
+[resource]
+metadata/_ = {
+"PlayerSpawn": Vector2(60, 232)
+}
