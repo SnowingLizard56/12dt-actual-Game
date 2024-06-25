@@ -1,4 +1,3 @@
-@tool
 class_name Entity extends Area2D
 
 @export var size = Vector2.ONE
@@ -6,27 +5,36 @@ class_name Entity extends Area2D
 
 @onready var initial_position:Vector2 = position
 
+@export var entity_type:entities
+
 enum entities {
 	Spike
 }
 
+var sprite:Sprite2D
+
+var sprites:Array[Texture2D] = [
+	load("res://Graphics/spike.png")
+]
+
 var stored_polygons = []
 
-func _ready():
-	if Engine.is_editor_hint():
-		add_to_group("Clip_Entity")
-		for i in entities:
-			if has_meta(str(i)):
-				continue
-			set_meta(str(i), false)
-	else:
-		var k = CollisionPolygon2D.new()
-		k.polygon = get_polygon()
-		add_child(k)
-		initial_position = position
-		position = Vector2.ZERO
-		connect("body_entered", player_entered)
-
+func _ready():	
+	add_to_group("Clip_Entity")
+	var k = CollisionPolygon2D.new()
+	k.polygon = get_polygon()
+	add_child(k)
+	initial_position = position
+	position = Vector2.ZERO
+	connect("body_entered", player_entered)
+	sprite = Sprite2D.new()
+	add_child(sprite)
+	sprite.region_enabled = true
+	sprite.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+	sprite.region_rect = Rect2(Vector2.ZERO, size)
+	sprite.texture = sprites[entity_type]
+	sprite.position = initial_position + size/2
+	
 	
 func get_polygon():
 	return [

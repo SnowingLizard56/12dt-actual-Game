@@ -19,14 +19,14 @@ func _ready():
 		build_level("testing_levels_dir", Vector2.ZERO)
 	pass
 
-func _process(delta):
+func _process(_delta):
 	if Engine.is_editor_hint():
 		if save:
 			save_level()
 			save = false
 		
 
-func build_level(level:String, offset:Vector2):
+func build_level(level:String, _offset:Vector2):
 	# navigate to level directory
 	var dir = DirAccess.open("res://Levels/"+level+"/")
 	# extract data dict
@@ -38,12 +38,12 @@ func build_level(level:String, offset:Vector2):
 			continue
 		# make dw and load pattern
 		var dw = dimensional_window_scene.instantiate()
+		window_holder.add_child(dw)
+		dw.layer = i
 		var pattern = ResourceLoader.load(dir.get_current_dir() +"/"+ dir.get_files()[i]) as TileMapPattern
 		
 		# apply pattern to dw
 		dw.load_branch(pattern)
-		
-		window_holder.add_child(dw)
 		# make static bodies
 		var sb = StaticBody2D.new()
 		statics_holder.add_child(sb)

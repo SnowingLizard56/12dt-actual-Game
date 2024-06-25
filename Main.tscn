@@ -8,6 +8,15 @@
 
 [node name="Main" type="Node2D"]
 
+[node name="EntityHolder" type="Node2D" parent="."]
+
+[node name="Entity" type="Area2D" parent="EntityHolder"]
+position = Vector2(136, 252)
+script = ExtResource("3_qemen")
+size = Vector2(40, 4)
+exists = Array[bool]([true, false])
+metadata/Spike = true
+
 [node name="LevelConstructor" type="Node2D" parent="." node_paths=PackedStringArray("player", "statics_holder", "window_holder", "tilemap")]
 script = ExtResource("1_8c45p")
 dimensional_window_scene = ExtResource("4_ff4i8")
@@ -23,16 +32,8 @@ level_name = "testing_levels_dir"
 layout_mode = 3
 anchors_preset = 0
 
-[node name="EntityHolder" type="Node2D" parent="."]
-
-[node name="Entity" type="Area2D" parent="EntityHolder"]
-position = Vector2(136, 252)
-script = ExtResource("3_qemen")
-size = Vector2(8, 4)
-exists = Array[bool]([true, true])
-metadata/Spike = true
-
 [node name="EditorTilemap" type="TileMap" parent="."]
+visible = false
 tile_set = ExtResource("3_b0y4b")
 format = 2
 layer_0/modulate = Color(1, 1, 0, 0.501961)

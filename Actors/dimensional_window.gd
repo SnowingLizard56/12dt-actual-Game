@@ -24,7 +24,11 @@ func load_branch(pattern:TileMapPattern):
 	# Main Layer Tilemap
 	tilemap.clear()
 	tilemap.set_pattern(0, Vector2i.ZERO, pattern)
-	
+	for i in get_tree().get_nodes_in_group("Clip_Entity"):
+		if !i.exists[layer]:
+			continue
+		tilemap.add_child(i.sprite.duplicate(8))
+		i.hide()
 
 # Window Movement And Drag
 func _process(delta):
@@ -63,7 +67,6 @@ func _process(delta):
 		for entity in get_tree().get_nodes_in_group("Clip_Entity"):
 			#if exists on this layer; skip
 			if entity.exists[layer]:
-				print(entity)
 				continue
 			entity.clip_polygon(rect)
 			
