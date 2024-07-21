@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="12DT Game (Epic Name That Is a NAME right there. hlle yeah)"
+run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.1", "Forward Plus")
 config/icon="res://icon.svg"
 

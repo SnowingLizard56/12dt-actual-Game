@@ -57,7 +57,8 @@ func _physics_process(delta):
 	move_and_slide()
 	real_position = position
 	position = round(position)
-			
+	crush_check()
+
 
 # Physics States
 func falling(delta):
@@ -149,3 +150,10 @@ func death():
 func entity_collision(ent):
 	if ent.get_meta("Spike"):
 		death()
+
+func crush_check():
+	for i in [Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT]:
+		if !test_move(transform, i):
+			return false
+	death()
+	return true

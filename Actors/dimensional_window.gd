@@ -19,6 +19,8 @@ var layer:int
 func _ready():
 	prev_position = position
 	$WindowFrame/Viewport/SubCamera.position = $WindowFrame.global_position
+	clip()
+	
 
 func load_branch(pattern:TileMapPattern):
 	# Main Layer Tilemap
@@ -57,7 +59,14 @@ func _process(delta):
 		# Lock to grid
 		position = round(position / 8) * 8
 		$WindowFrame/Viewport/SubCamera.position = $WindowFrame.global_position
-		# get rect and adjust for errors
+		clip()
+			
+	if Input.is_action_just_released("Click"):
+		dragging = false
+
+
+func clip():
+	# get rect and adjust for errors
 		var rect = get_rect()
 		rect.size.y += 0.0001
 		# iterate over terrain and entities
@@ -69,10 +78,6 @@ func _process(delta):
 			if entity.exists[layer]:
 				continue
 			entity.clip_polygon(rect)
-			
-	if Input.is_action_just_released("Click"):
-		dragging = false
-
 
 # WIP
 func prevent_overlap(_delta:float):

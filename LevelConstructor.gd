@@ -14,10 +14,15 @@ extends Node2D
 @export var save = false
 @export var level_name = "default"
 
+@export_category("Save Options")
+@export var window_sizes_override:Array[Vector2] = []
+
 func _ready():
-	if !Engine.is_editor_hint():
+	if Engine.is_editor_hint():
+		tilemap.show()
+	else:
 		build_level("testing_levels_dir", Vector2.ZERO)
-	pass
+		tilemap.hide()
 
 func _process(_delta):
 	if Engine.is_editor_hint():

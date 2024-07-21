@@ -101,7 +101,7 @@ static func clip_polygons_with_rect(polygons:Array, rect:Rect2, displayed_polygo
 		rect.position + rect.size, #2
 		rect.position + Vector2(0, rect.size.y) #3
 		]
-		
+
 	# split and free the old ones
 	var new_polygons = []
 	for i in polygons:
