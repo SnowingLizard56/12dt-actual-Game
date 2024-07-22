@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://c41lerf86ba75"]
+[gd_scene load_steps=7 format=3 uid="uid://c41lerf86ba75"]
 
 [ext_resource type="PackedScene" uid="uid://raujhngxvpl1" path="res://Actors/player.tscn" id="1_2p50b"]
 [ext_resource type="Script" path="res://LevelConstructor.gd" id="1_8c45p"]
 [ext_resource type="TileSet" uid="uid://c0cg70lv5ie4o" path="res://Graphics/TileSet.tres" id="3_b0y4b"]
 [ext_resource type="Script" path="res://Actors/Entities/EntityBase.gd" id="3_qemen"]
+[ext_resource type="PackedScene" uid="uid://pwis3gamyvf" path="res://Actors/EntityBase.tscn" id="4_cr7vn"]
 [ext_resource type="PackedScene" uid="uid://dyyclqnanqmah" path="res://Actors/dimensional_window.tscn" id="4_ff4i8"]
 
 [node name="Main" type="Node2D"]
@@ -24,13 +25,15 @@ size = Vector2(96, 4)
 exists = Array[bool]([false, true])
 metadata/Spike = true
 
-[node name="LevelConstructor" type="Node2D" parent="." node_paths=PackedStringArray("player", "statics_holder", "window_holder", "tilemap")]
+[node name="LevelConstructor" type="Node2D" parent="." node_paths=PackedStringArray("player", "tilemap", "statics_holder", "window_holder", "entity_holder")]
 script = ExtResource("1_8c45p")
 dimensional_window_scene = ExtResource("4_ff4i8")
+entity_scene = ExtResource("4_cr7vn")
 player = NodePath("../Player")
+tilemap = NodePath("../EditorTilemap")
 statics_holder = NodePath("../StaticsHolder")
 window_holder = NodePath("../WindowHolder")
-tilemap = NodePath("../EditorTilemap")
+entity_holder = NodePath("../EntityHolder")
 level_name = "testing_levels_dir"
 
 [node name="StaticsHolder" type="Node2D" parent="."]

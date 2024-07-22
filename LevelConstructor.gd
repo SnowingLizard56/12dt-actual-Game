@@ -1,14 +1,18 @@
 @tool
 extends Node2D
 
-@export_category("Relevant Scenes & Nodes")
+@export_category("Relevant Scenes")
 @export var dimensional_window_scene:PackedScene
-@export var player:Player
+@export var entity_scene:PackedScene
 
-@export_category("Parent Nodes")
+@export_category("Relevant Nodes")
+@export var player:Player
+@export var tilemap:TileMap
+
+@export_category("Holders")
 @export var statics_holder:Node2D
 @export var window_holder:Control
-@export var tilemap:TileMap
+@export var entity_holder:Node2D
 
 @export_category("Save to file")
 @export var save = false
@@ -16,6 +20,10 @@ extends Node2D
 
 @export_category("Save Options")
 @export var window_sizes_override:Array[Vector2] = []
+@export var level_above = ""
+@export var level_below = ""
+@export var level_left = ""
+@export var level_right = ""
 
 func _ready():
 	if Engine.is_editor_hint():
@@ -72,8 +80,15 @@ func build_level(level:String, _offset:Vector2):
 func save_level():
 	# construct data dict
 	var data = Resource.new()
+	var entities = []
+	
+	for i in entity_holder.get_children():
+		entities.append([i.size, i.exists, i.entity_type])
+	
 	data.set_meta("_", {
-		"PlayerSpawn": player.position
+		"PlayerSpawn": player.position,
+		"Entities": entities,
+		"Connections": [level_above, level_below, level_left, level_right]
 	})
 	
 	# create level directory
@@ -87,3 +102,4 @@ func save_level():
 		# store data to file
 		pattern.set_meta("stored_polygons", polygons)
 		ResourceSaver.save(pattern, "res://Levels/" + level_name + "/" + str(i) + ".tres")
+		
