@@ -19,7 +19,7 @@ var sprites:Array[Texture2D] = [
 
 var stored_polygons = []
 
-func _ready():	
+func initialize():	
 	add_to_group("Clip_Entity")
 	var k = CollisionPolygon2D.new()
 	k.polygon = get_polygon()

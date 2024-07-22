@@ -22,12 +22,14 @@ func _ready():
 	clip()
 	
 
-func load_branch(pattern:TileMapPattern):
+func load_branch(pattern:TileMapPattern, level):
 	# Main Layer Tilemap
 	tilemap.clear()
 	tilemap.set_pattern(0, Vector2i.ZERO, pattern)
 	for i in get_tree().get_nodes_in_group("Clip_Entity"):
 		if !i.exists[layer]:
+			continue
+		if not i in level.entities:
 			continue
 		tilemap.add_child(i.sprite.duplicate(8))
 		i.hide()

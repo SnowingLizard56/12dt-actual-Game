@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://c41lerf86ba75"]
+[gd_scene load_steps=9 format=3 uid="uid://c41lerf86ba75"]
 
 [ext_resource type="PackedScene" uid="uid://raujhngxvpl1" path="res://Actors/player.tscn" id="1_2p50b"]
 [ext_resource type="Script" path="res://LevelConstructor.gd" id="1_8c45p"]
@@ -7,12 +7,20 @@
 [ext_resource type="PackedScene" uid="uid://pwis3gamyvf" path="res://Actors/EntityBase.tscn" id="4_cr7vn"]
 [ext_resource type="PackedScene" uid="uid://dyyclqnanqmah" path="res://Actors/dimensional_window.tscn" id="4_ff4i8"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jbt3v"]
+size = Vector2(344, 4)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_p7v3d"]
+size = Vector2(624, 4)
+
 [node name="Main" type="Node2D"]
 
 [node name="EntityHolder" type="Node2D" parent="."]
 
 [node name="Entity" type="Area2D" parent="EntityHolder"]
 position = Vector2(136, 252)
+collision_layer = 4
+collision_mask = 6
 script = ExtResource("3_qemen")
 size = Vector2(40, 4)
 exists = Array[bool]([true, false])
@@ -20,6 +28,8 @@ metadata/Spike = true
 
 [node name="Entity2" type="Area2D" parent="EntityHolder"]
 position = Vector2(352, 212)
+collision_layer = 4
+collision_mask = 6
 script = ExtResource("3_qemen")
 size = Vector2(96, 4)
 exists = Array[bool]([false, true])
@@ -35,6 +45,10 @@ statics_holder = NodePath("../StaticsHolder")
 window_holder = NodePath("../WindowHolder")
 entity_holder = NodePath("../EntityHolder")
 level_name = "testing_levels_dir"
+level_above = "testing_levels_dir"
+level_below = "testing_levels_dir"
+level_left = "testing_levels_dir"
+level_right = "testing_levels_dir"
 
 [node name="StaticsHolder" type="Node2D" parent="."]
 
@@ -58,9 +72,48 @@ layer_1/tile_data = PackedInt32Array(0, 0, 1, 65536, 0, 1, 131072, 0, 1, 196608,
 [node name="Camera2D" type="Camera2D" parent="."]
 anchor_mode = 0
 
+[node name="Exit_Left" type="Area2D" parent="Camera2D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Camera2D/Exit_Left"]
+position = Vector2(-2, 180)
+rotation = 1.5708
+shape = SubResource("RectangleShape2D_jbt3v")
+
+[node name="Exit_Up" type="Area2D" parent="Camera2D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Camera2D/Exit_Up"]
+position = Vector2(320, -2)
+shape = SubResource("RectangleShape2D_p7v3d")
+
+[node name="Exit_Right" type="Area2D" parent="Camera2D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Camera2D/Exit_Right"]
+position = Vector2(642, 180)
+rotation = 1.5708
+shape = SubResource("RectangleShape2D_jbt3v")
+
+[node name="Exit_Down" type="Area2D" parent="Camera2D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Camera2D/Exit_Down"]
+position = Vector2(320, 362)
+shape = SubResource("RectangleShape2D_p7v3d")
+
 [node name="Player" parent="." instance=ExtResource("1_2p50b")]
 z_index = 10
 position = Vector2(60, 232)
+collision_layer = 2147483650
 
 [node name="Background" type="CanvasLayer" parent="."]
 layer = -1
@@ -70,3 +123,8 @@ offset_right = 640.0
 offset_bottom = 360.0
 color = Color(0, 0, 0, 1)
 metadata/_edit_use_anchors_ = true
+
+[connection signal="body_entered" from="Camera2D/Exit_Left" to="LevelConstructor" method="player_exit_left"]
+[connection signal="body_entered" from="Camera2D/Exit_Up" to="LevelConstructor" method="player_exit_up"]
+[connection signal="body_entered" from="Camera2D/Exit_Right" to="LevelConstructor" method="player_exit_right"]
+[connection signal="body_entered" from="Camera2D/Exit_Down" to="LevelConstructor" method="player_exit_down"]

@@ -1,6 +1,8 @@
-[gd_resource type="Resource" format=3 uid="uid://laiiecnmewrx"]
+[gd_resource type="Resource" format=3 uid="uid://c3i6ckt252at3"]
 
 [resource]
 metadata/_ = {
+"Connections": ["testing_levels_dir", "testing_levels_dir", "testing_levels_dir", "testing_levels_dir"],
+"Entities": [[Vector2(40, 4), Array[bool]([true, false]), 0, Vector2(136, 252)], [Vector2(96, 4), Array[bool]([false, true]), 0, Vector2(352, 212)]],
 "PlayerSpawn": Vector2(60, 232)
 }

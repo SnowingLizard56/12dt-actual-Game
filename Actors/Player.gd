@@ -148,7 +148,7 @@ func death():
 	state = states.Falling
 
 func entity_collision(ent):
-	if ent.get_meta("Spike"):
+	if ent.entity_type == Entity.entities.Spike:
 		death()
 
 func crush_check():

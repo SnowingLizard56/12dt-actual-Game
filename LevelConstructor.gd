@@ -1,6 +1,12 @@
 @tool
 extends Node2D
 
+const VIEWPORT_SIZE = Vector2(640, 360)
+
+var building_thread: Thread
+
+var built_levels = []
+
 @export_category("Relevant Scenes")
 @export var dimensional_window_scene:PackedScene
 @export var entity_scene:PackedScene
@@ -15,7 +21,8 @@ extends Node2D
 @export var entity_holder:Node2D
 
 @export_category("Save to file")
-@export var save = false
+enum save_states {Unsaved, Save}
+@export var save:save_states
 @export var level_name = "default"
 
 @export_category("Save Options")
@@ -29,22 +36,42 @@ func _ready():
 	if Engine.is_editor_hint():
 		tilemap.show()
 	else:
-		build_level("testing_levels_dir", Vector2.ZERO)
+		for i in [statics_holder, window_holder, entity_holder]:
+			for c in i.get_children():
+				c.queue_free()
+		build_level("testing_levels_dir", Vector2.ZERO, true, true)
 		tilemap.hide()
 
 func _process(_delta):
 	if Engine.is_editor_hint():
-		if save:
+		if save == save_states.Save:
 			save_level()
-			save = false
+			save = save_states.Unsaved
 		
 
-func build_level(level:String, _offset:Vector2):
+func build_level(level:String, offset:Vector2, active:bool, load_surroundings=false):
+	# Prepare level class
+	var level_obj = Level.new()
+	level_obj.level_name = level
+	
 	# navigate to level directory
 	var dir = DirAccess.open("res://Levels/"+level+"/")
+	
 	# extract data dict
 	var data = ResourceLoader.load(dir.get_current_dir() + "/_.tres") as Resource
 	data = data.get_meta("_")
+	level_obj.data = data
+	
+	# load entities
+	for e in data['Entities']:
+		var k:Entity = entity_scene.instantiate()
+		k.size = e[0]
+		k.exists = e[1]
+		k.entity_type = e[2]
+		k.position = e[3] + offset
+		entity_holder.add_child(k)
+		k.initialize()
+		level_obj.entities.append(k)
 	
 	for i in len(dir.get_files()):
 		if dir.get_files()[i] == "_.tres":
@@ -56,7 +83,7 @@ func build_level(level:String, _offset:Vector2):
 		var pattern = ResourceLoader.load(dir.get_current_dir() +"/"+ dir.get_files()[i]) as TileMapPattern
 		
 		# apply pattern to dw
-		dw.load_branch(pattern)
+		dw.load_branch(pattern, level_obj)
 		# make static bodies
 		var sb = StaticBody2D.new()
 		statics_holder.add_child(sb)
@@ -72,9 +99,35 @@ func build_level(level:String, _offset:Vector2):
 		# Name major components
 		sb.name = str(i)
 		dw.name = str(i)
-	# apply data
-	player.position = data['PlayerSpawn']
-	return data
+		
+		# add dw and sb to level obj
+		level_obj.windows.append(dw)
+		level_obj.statics.append(sb)
+		
+		# apply offset
+		dw.position = offset
+		sb.position = offset
+	# load surroundings
+	if load_surroundings:
+		for i in 4:
+			if data["Connections"][i] != "":
+				# U D L R
+				build_level(data["Connections"][i], 
+				[Vector2(0, -VIEWPORT_SIZE.y), 
+				Vector2(0, VIEWPORT_SIZE.y),
+				Vector2(-VIEWPORT_SIZE.x, 0), 
+				Vector2(VIEWPORT_SIZE.x, 0)
+				][i] + offset, 
+				false, false)
+	# activate/deactivate
+	if active:
+		level_obj.activate()
+		player.position = data['PlayerSpawn']
+	else:
+		level_obj.deactivate()
+	print("level built")
+	built_levels.append(level_obj)
+	return level_obj
 
 
 func save_level():
@@ -83,7 +136,7 @@ func save_level():
 	var entities = []
 	
 	for i in entity_holder.get_children():
-		entities.append([i.size, i.exists, i.entity_type])
+		entities.append([i.size, i.exists, i.entity_type, i.position])
 	
 	data.set_meta("_", {
 		"PlayerSpawn": player.position,
@@ -102,4 +155,55 @@ func save_level():
 		# store data to file
 		pattern.set_meta("stored_polygons", polygons)
 		ResourceSaver.save(pattern, "res://Levels/" + level_name + "/" + str(i) + ".tres")
+	print("level saved")
+
+
+func player_exit_left(body):
+	pass # Replace with function body.
+
+
+func player_exit_up(body):
+	pass # Replace with function body.
+
+
+func player_exit_right(body):
+	pass # Replace with function body.
+
+
+func player_exit_down(body):
+	pass # Replace with function body.
+
+
+class Level:
+	var level_name:String
+	var entities = []
+	var statics = []
+	var windows = []
+	var data
+	
+	func deactivate():
+		for i in entities:
+			i.collision_layer = 0
+			i.collision_mask = 0
+		for i in statics:
+			i.collision_layer = 0
+		for i in windows:
+			i.hide()
 		
+	func activate():
+		for i in entities:
+			i.collision_layer = 4
+			i.collision_mask = 6
+		for i in statics:
+			i.collision_layer = 1
+			i.collision_mask = 0
+		for i in windows:
+			i.show()
+			
+		
+	func unload():
+		pass
+	
+	func load_surroundings():
+		pass
+	
