@@ -2,10 +2,9 @@ class_name Entity extends Area2D
 
 @export var size = Vector2.ONE
 @export var exists:Array[bool]
-
-@onready var initial_position:Vector2 = position
-
 @export var entity_type:entities
+
+var initial_position:Vector2
 
 enum entities {
 	Spike
@@ -13,8 +12,9 @@ enum entities {
 
 var sprite:Sprite2D
 
+
 var sprites:Array[Texture2D] = [
-	load("res://Graphics/spike.png")
+	load("res://Graphics/Entity_Graphics/spike.png")
 ]
 
 var stored_polygons = []

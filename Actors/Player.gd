@@ -146,6 +146,7 @@ func death():
 	real_position = spawn_position
 	velocity = Vector2.ZERO
 	state = states.Falling
+	get_node("../LevelConstructor").allow_switch = true
 
 func entity_collision(ent):
 	if ent.entity_type == Entity.entities.Spike:

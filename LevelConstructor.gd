@@ -1,11 +1,17 @@
 @tool
-extends Node2D
+class_name LevelConstructor extends Node2D
 
 const VIEWPORT_SIZE = Vector2(640, 360)
-
+const OFFSETS = [Vector2(0, -VIEWPORT_SIZE.y), 
+				Vector2(0, VIEWPORT_SIZE.y),
+				Vector2(-VIEWPORT_SIZE.x, 0), 
+				Vector2(VIEWPORT_SIZE.x, 0)]
 var building_thread: Thread
 
 var built_levels = []
+var current_level:Level
+
+var allow_switch = false
 
 @export_category("Relevant Scenes")
 @export var dimensional_window_scene:PackedScene
@@ -21,7 +27,7 @@ var built_levels = []
 @export var entity_holder:Node2D
 
 @export_category("Save to file")
-enum save_states {Unsaved, Save}
+enum save_states {Unsaved, Save, Load_Doesnt_Work}
 @export var save:save_states
 @export var level_name = "default"
 
@@ -47,19 +53,64 @@ func _process(_delta):
 		if save == save_states.Save:
 			save_level()
 			save = save_states.Unsaved
-		
+		if save == save_states.Load_Doesnt_Work:
+			load_level_to_editor()
+			save = save_states.Unsaved
+
+
+func load_level_to_editor():
+	if !Engine.is_editor_hint(): return
+	
+	# Kill entities, clear tilemap
+	tilemap.clear()
+	for i in entity_holder.get_children():
+		i.queue_free()
+	
+	# navigate to level directory
+	var dir = DirAccess.open("res://Levels/"+level_name+"/")
+	# extract data dict
+	var limbo_pattern = ResourceLoader.load(dir.get_current_dir() + "/_.tres") as TileMapPattern
+	var data = limbo_pattern.get_meta("_")
+	# load entities
+	for i in len(data['Entities']):
+		var e = data['Entities'][i]
+		var k:Entity = entity_scene.instantiate()
+		k.size = e[0]
+		k.exists = e[1]
+		k.entity_type = e[2]
+		k.position = e[3]
+		entity_holder.add_child(k)
+		k.owner = owner
+		k.name = "Entity_" + str(i) + " - " + str(k.entity_type)
+	
+	# tilemaps
+	for i in len(dir.get_files()):
+		if dir.get_files()[i] == "_.tres": continue
+		var pattern = ResourceLoader.load(dir.get_current_dir() +"/"+ dir.get_files()[i]) as TileMapPattern
+		tilemap.set_pattern(i, Vector2i.ZERO, pattern)
+	
+	# data
+	level_above = data["Connections"][0]
+	level_below = data["Connections"][1]
+	level_left = data["Connections"][2]
+	level_right = data["Connections"][3]
+	
+	player.position = data["PlayerSpawn"]
+	print("Loaded level '", level_name, "' to editor")
 
 func build_level(level:String, offset:Vector2, active:bool, load_surroundings=false):
 	# Prepare level class
 	var level_obj = Level.new()
 	level_obj.level_name = level
+	level_obj.offset = offset
+	level_obj.constructor = self
 	
 	# navigate to level directory
 	var dir = DirAccess.open("res://Levels/"+level+"/")
 	
 	# extract data dict
-	var data = ResourceLoader.load(dir.get_current_dir() + "/_.tres") as Resource
-	data = data.get_meta("_")
+	var limbo_pattern = ResourceLoader.load(dir.get_current_dir() + "/_.tres") as TileMapPattern
+	var data = limbo_pattern.get_meta("_")
 	level_obj.data = data
 	
 	# load entities
@@ -74,12 +125,12 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 		level_obj.entities.append(k)
 	
 	for i in len(dir.get_files()):
-		if dir.get_files()[i] == "_.tres":
-			continue
+		if dir.get_files()[i] == "_.tres": continue
 		# make dw and load pattern
 		var dw = dimensional_window_scene.instantiate()
 		window_holder.add_child(dw)
 		dw.layer = i
+		dw.offset = offset
 		var pattern = ResourceLoader.load(dir.get_current_dir() +"/"+ dir.get_files()[i]) as TileMapPattern
 		
 		# apply pattern to dw
@@ -95,6 +146,7 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 			sb.add_child(poly_node)
 		# set up stuff for future & speed
 		sb.set_meta("stored_polygons", polygons)
+		sb.set_meta("layer", i)
 		sb.collision_mask = 0
 		# Name major components
 		sb.name = str(i)
@@ -113,11 +165,7 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 			if data["Connections"][i] != "":
 				# U D L R
 				build_level(data["Connections"][i], 
-				[Vector2(0, -VIEWPORT_SIZE.y), 
-				Vector2(0, VIEWPORT_SIZE.y),
-				Vector2(-VIEWPORT_SIZE.x, 0), 
-				Vector2(VIEWPORT_SIZE.x, 0)
-				][i] + offset, 
+				OFFSETS[i] + offset, 
 				false, false)
 	# activate/deactivate
 	if active:
@@ -125,14 +173,15 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 		player.position = data['PlayerSpawn']
 	else:
 		level_obj.deactivate()
-	print("level built")
+	print(level, " built at ", offset)
 	built_levels.append(level_obj)
 	return level_obj
 
 
 func save_level():
+	if !Engine.is_editor_hint(): return
 	# construct data dict
-	var data = Resource.new()
+	var data = TileMapPattern.new()
 	var entities = []
 	
 	for i in entity_holder.get_children():
@@ -146,8 +195,6 @@ func save_level():
 	
 	# create level directory
 	DirAccess.open("res://Levels/").make_dir(level_name)
-	# save data dict
-	ResourceSaver.save(data, "res://Levels/" + level_name + "/_.tres")
 	for i in tilemap.get_layers_count():
 		# get layer tiles and polygons
 		var pattern:TileMapPattern = tilemap.get_pattern(i, tilemap.get_used_cells(i))
@@ -155,24 +202,53 @@ func save_level():
 		# store data to file
 		pattern.set_meta("stored_polygons", polygons)
 		ResourceSaver.save(pattern, "res://Levels/" + level_name + "/" + str(i) + ".tres")
-	print("level saved")
+		# update total save
+		for coord in tilemap.get_used_cells(i):
+			data.set_cell(coord)
+	# save data dict
+	ResourceSaver.save(data, "res://Levels/" + level_name + "/_.tres")
+	print("Level saved to '" + "res://Levels/" + level_name + "'")
 
 
 func player_exit_left(body):
-	pass # Replace with function body.
+	if !body is Player: return
+	enter_new_screen(2)
 
 
 func player_exit_up(body):
-	pass # Replace with function body.
+	if !body is Player: return
+	enter_new_screen(0)
 
 
 func player_exit_right(body):
-	pass # Replace with function body.
+	if !body is Player: return
+	enter_new_screen(3)
 
 
 func player_exit_down(body):
-	pass # Replace with function body.
+	if !body is Player: return
+	enter_new_screen(1)
+	
 
+func enter_new_screen(index:int):
+	if current_level.data["Connections"][index] == "": return
+	print("Player exited " + str(index))
+	allow_switch = false
+	# Activate level
+	var level_obj
+	for i in built_levels:
+		if i.offset == current_level.offset + OFFSETS[index]:
+			print(i.level_name, " activated at ", i.offset)
+			i.activate()
+			i.load_surroundings()
+			level_obj = i
+			break
+	# Move camera
+	get_node("../Camera2D").target_position += OFFSETS[index]
+	get_node("../Camera2D").moving = true
+	# Reset player spawn
+	get_node("../Player").spawn_position = level_obj.data["PlayerSpawn"] + level_obj.offset
+	
 
 class Level:
 	var level_name:String
@@ -180,30 +256,52 @@ class Level:
 	var statics = []
 	var windows = []
 	var data
+	var active = false
+	var offset:Vector2
+	var constructor:LevelConstructor
 	
 	func deactivate():
 		for i in entities:
 			i.collision_layer = 0
 			i.collision_mask = 0
-		for i in statics:
-			i.collision_layer = 0
 		for i in windows:
 			i.hide()
+		active = false
 		
 	func activate():
+		for i in constructor.built_levels:
+			if !i.active: continue
+			i.deactivate()
+		constructor.current_level = self
+	
 		for i in entities:
 			i.collision_layer = 4
 			i.collision_mask = 6
-		for i in statics:
-			i.collision_layer = 1
-			i.collision_mask = 0
 		for i in windows:
 			i.show()
+		active = true
 			
 		
 	func unload():
-		pass
+		for i in entities + statics + windows:
+			i.queue_free()
+		constructor.built_levels.erase(self)
 	
 	func load_surroundings():
-		pass
-	
+		# Unload
+		var kill_list = []
+		var skip_list = []
+		for i in constructor.built_levels:
+			if i == self: continue
+			# is a correct neighbour (U D L R)
+			var cont = false
+			for dir in 4:
+				if i.offset == OFFSETS[dir] + offset and i.level_name == data["Connections"][dir]:
+					cont = true
+					skip_list.append(i)
+					continue
+			if cont: continue
+			kill_list.append(i)
+		for i in kill_list:
+			i.unload()
+			constructor.built_levels.erase(i)

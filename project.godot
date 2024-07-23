@@ -13,7 +13,17 @@ config_version=5
 config/name="12DT Game (Epic Name That Is a NAME right there. hlle yeah)"
 run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.1", "Forward Plus")
+run/max_fps=60
 config/icon="res://icon.svg"
+
+[autoload]
+
+BetterTerrain="*res://addons/better-terrain/BetterTerrain.gd"
+
+[debug]
+
+gdscript/warnings/unused_private_class_variable=0
+gdscript/warnings/unused_parameter=0
 
 [display]
 
@@ -23,6 +33,10 @@ window/size/mode=3
 window/size/resizable=false
 window/size/borderless=true
 window/stretch/mode="viewport"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/better-terrain/plugin.cfg")
 
 [input]
 
