@@ -17,6 +17,10 @@ var sprites:Array[Texture2D] = [
 	load("res://Graphics/Entity_Graphics/spike.png")
 ]
 
+var outlines:Array[Texture2D] = [
+	load("res://Graphics/Entity_Graphics/Outlines/spike.png")
+]
+
 var stored_polygons = []
 
 func initialize():	
@@ -35,7 +39,10 @@ func initialize():
 	sprite.texture = sprites[entity_type]
 	sprite.position = initial_position + size/2
 	
-	
+
+func switch_to_outline():
+	sprite.texture = outlines[entity_type]
+
 func get_polygon():
 	return [
 		initial_position, 

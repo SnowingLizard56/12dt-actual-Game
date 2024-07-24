@@ -1,12 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://dyyclqnanqmah"]
+[gd_scene load_steps=3 format=3 uid="uid://dyyclqnanqmah"]
 
 [ext_resource type="Script" path="res://Actors/dimensional_window.gd" id="1_8a3aw"]
 [ext_resource type="TileSet" uid="uid://c0cg70lv5ie4o" path="res://Graphics/Tiles/TileSet.tres" id="2_cruy2"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_rv3pb"]
-size = Vector2(256, 128)
-
-[node name="DimensionalWindow" type="Control" node_paths=PackedStringArray("tilemap")]
+[node name="DimensionalWindow" type="Control" node_paths=PackedStringArray("tilemap", "outline")]
 custom_minimum_size = Vector2(256, 128)
 layout_direction = 1
 layout_mode = 3
@@ -16,6 +13,7 @@ offset_right = -378.88
 offset_bottom = -193.568
 script = ExtResource("1_8a3aw")
 tilemap = NodePath("WindowFrame/Viewport/TileMap")
+outline = NodePath("Outline")
 
 [node name="WindowFrame" type="SubViewportContainer" parent="."]
 layout_mode = 1
@@ -42,15 +40,10 @@ editor_draw_screen = false
 tile_set = ExtResource("2_cruy2")
 format = 2
 
-[node name="PreventOverlap" type="CharacterBody2D" parent="."]
-collision_layer = 2
-collision_mask = 2
-motion_mode = 1
-platform_on_leave = 2
-
-[node name="Shape" type="CollisionShape2D" parent="PreventOverlap"]
-position = Vector2(128, 64)
-shape = SubResource("RectangleShape2D_rv3pb")
+[node name="Outline" type="Line2D" parent="."]
+z_index = -1
+width = 1.0
+default_color = Color(0.831373, 0.8, 0.364706, 1)
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

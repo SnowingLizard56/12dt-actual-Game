@@ -873,13 +873,13 @@ func set_cell(tm: TileMap, layer: int, coord: Vector2i, type: int) -> bool:
 ## and the associated functions.
 ## [br][br]
 ## Use terrain type -1 to erase cells.
-func set_cells(tm: TileMap, layer: int, coords: Array, type: int) -> bool:
+func set_cells(tm: TileMap, layer: int, coords: Array, type: int, pos=Vector2i.ZERO) -> bool:
 	if !tm or !tm.tile_set or layer < -tm.get_layers_count() or layer >= tm.get_layers_count() or type < TileCategory.EMPTY:
 		return false
 	
 	if type == TileCategory.EMPTY:
 		for c in coords:
-			tm.erase_cell(layer, c)
+			tm.erase_cell(layer, c+pos)
 		return true
 	
 	var cache := _get_cache(tm.tile_set)
@@ -891,7 +891,7 @@ func set_cells(tm: TileMap, layer: int, coords: Array, type: int) -> bool:
 	
 	var tile = cache[type].front()
 	for c in coords:
-		tm.set_cell(layer, c, tile[0], tile[1], tile[2])
+		tm.set_cell(layer, c+pos, tile[0], tile[1], tile[2])
 	return true
 
 
@@ -998,7 +998,7 @@ func get_cell(tm: TileMap, layer: int, coord: Vector2i) -> int:
 ## to the [code]and_surrounding_cells[/code] parameter.
 ## [br][br]
 ## See also [method update_terrain_area] and [method update_terrain_cell].
-func update_terrain_cells(tm: TileMap, layer: int, cells: Array, and_surrounding_cells := true) -> void:
+func update_terrain_cells(tm: TileMap, layer: int, cells: Array, and_surrounding_cells := true, pos := Vector2i.ZERO) -> void:
 	if !tm or !tm.tile_set or layer < -tm.get_layers_count() or layer >= tm.get_layers_count():
 		return
 	
@@ -1008,12 +1008,12 @@ func update_terrain_cells(tm: TileMap, layer: int, cells: Array, and_surrounding
 	
 	var types := {}
 	for c in needed_cells:
-		types[c] = get_cell(tm, layer, c)
+		types[c + pos] = get_cell(tm, layer, c + pos)
 	
 	var ts_meta := _get_terrain_meta(tm.tile_set)
 	var cache := _get_cache(tm.tile_set)
 	for c in cells:
-		_update_tile_immediate(tm, layer, c, ts_meta, types, cache)
+		_update_tile_immediate(tm, layer, c + pos, ts_meta, types, cache)
 
 
 ## Runs the tile solving algorithm on the [TileMap] for the given [code]layer[/code]

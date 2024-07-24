@@ -20,6 +20,7 @@ var allow_switch = false
 @export_category("Relevant Nodes")
 @export var player:Player
 @export var tilemap:TileMap
+@export var limbo_tmap:TileMap
 
 @export_category("Holders")
 @export var statics_holder:Node2D
@@ -175,6 +176,9 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 		level_obj.deactivate()
 	print(level, " built at ", offset)
 	built_levels.append(level_obj)
+	# build limbo area
+	BetterTerrain.set_cells(limbo_tmap, 0, limbo_pattern.get_used_cells(), 0, Vector2i(offset/8))
+	BetterTerrain.update_terrain_cells(limbo_tmap, 0, limbo_pattern.get_used_cells(), true, Vector2i(offset/8))
 	return level_obj
 
 

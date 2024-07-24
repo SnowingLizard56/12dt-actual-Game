@@ -4,6 +4,7 @@ class_name DimensionalWindow extends Control
 const WINDOW_TILE_SIZE = Vector2i(32, 16)
 
 @export var tilemap:TileMap
+@export var outline:Line2D
 
 var hovered:bool = false
 var drag_offset:Vector2 = Vector2.ZERO
@@ -35,6 +36,11 @@ func load_branch(pattern:TileMapPattern, level:):
 		tilemap.add_child(i.sprite.duplicate(8))
 		i.hide()
 	level_obj = level
+	# outline start
+	outline.clear_points()
+	for i in [Vector2.ONE, Vector2(WINDOW_TILE_SIZE.x*8, 1),WINDOW_TILE_SIZE*8, Vector2(1, WINDOW_TILE_SIZE.y*8), Vector2(1, 0.5)]:
+		outline.add_point(i)
+	outline.hide()
 
 # Window Movement And Drag
 func _process(delta):
@@ -46,27 +52,32 @@ func _process(delta):
 	if Input.is_action_just_pressed("Click") and hovered:
 		drag_offset = position - mouse_position
 		dragging = true
+		outline.show()
 	if dragging:
-		# Save prev
-		prev_position = position
-		# Move
-		position = mouse_position + drag_offset
-		# Prevent overlap with other windows
-		for child in len(get_parent().get_children()):
-			var w:DimensionalWindow = get_parent().get_children()[child]
-			if w != self:
-				if w.get_rect().intersects(get_rect()):
-					prevent_overlap(delta)
+		outline.global_position = mouse_position + drag_offset
 		# Clamp to window extents
-		position.x = clamp(position.x, 0 + offset.x, get_viewport_rect().size.x - WINDOW_TILE_SIZE.x * 8 + offset.x)
-		position.y = clamp(position.y, 0 + offset.y, get_viewport_rect().size.y - WINDOW_TILE_SIZE.y * 8 + offset.y)
+		outline.global_position.x = clamp(outline.global_position.x, 0 + offset.x, get_viewport_rect().size.x - WINDOW_TILE_SIZE.x * 8 + offset.x)
+		outline.global_position.y = clamp(outline.global_position.y, 0 + offset.y, get_viewport_rect().size.y - WINDOW_TILE_SIZE.y * 8 + offset.y)
 		# Lock to grid
-		position = round(position / 8) * 8
-		$WindowFrame/Viewport/SubCamera.position = $WindowFrame.global_position
-		clip()
+		outline.global_position = round(outline.global_position / 8) * 8
 			
-	if Input.is_action_just_released("Click"):
-		dragging = false
+		if Input.is_action_just_released("Click"):
+			dragging = false
+			# no overlap
+			var rect = get_rect()
+			rect.position += outline.position
+			for i in level_obj.windows:
+				if i == self: continue
+				if rect.intersects(i.get_rect()):
+					rect = false
+					break
+			if rect:
+				position += outline.position
+				$WindowFrame/Viewport/SubCamera.position = $WindowFrame.global_position
+				clip()
+			outline.hide()
+			outline.position = Vector2.ZERO
+
 
 
 func clip():
@@ -84,25 +95,10 @@ func clip():
 				continue
 			entity.clip_polygon(rect)
 
-# WIP
-func prevent_overlap(_delta:float):
-	var velocity = position - prev_position
-	#reset charbody position
-	$PreventOverlap.position = Vector2.ZERO
-	#reset self position
-	position = prev_position
-	var collision:KinematicCollision2D = $PreventOverlap.move_and_collide(velocity)
-	position += $PreventOverlap.position
-	if collision:
-		var normal:Vector2 = collision.get_normal()
-		if normal.y:
-			position.x = mouse_position.x + drag_offset.x
-		elif normal.x:
-			position.y = mouse_position.y + drag_offset.y
-	$PreventOverlap.position = Vector2.ZERO
 
 func _on_mouse_entered():
 	hovered = true
 
 func _on_mouse_exited():
 	hovered = false
+
