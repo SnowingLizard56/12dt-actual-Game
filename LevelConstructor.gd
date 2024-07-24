@@ -6,7 +6,7 @@ const OFFSETS = [Vector2(0, -VIEWPORT_SIZE.y),
 				Vector2(0, VIEWPORT_SIZE.y),
 				Vector2(-VIEWPORT_SIZE.x, 0), 
 				Vector2(VIEWPORT_SIZE.x, 0)]
-var building_thread: Thread
+var building_threads: Array[Thread]
 
 var built_levels = []
 var current_level:Level
@@ -28,7 +28,7 @@ var allow_switch = false
 @export var entity_holder:Node2D
 
 @export_category("Save to file")
-enum save_states {Unsaved, Save, Load_Doesnt_Work}
+enum save_states {File, Save, Load, Clear}
 @export var save:save_states
 @export var level_name = "default"
 
@@ -53,20 +53,30 @@ func _process(_delta):
 	if Engine.is_editor_hint():
 		if save == save_states.Save:
 			save_level()
-			save = save_states.Unsaved
-		if save == save_states.Load_Doesnt_Work:
+			save = save_states.File
+		if save == save_states.Load:
+			clear_editor()
 			load_level_to_editor()
-			save = save_states.Unsaved
+			save = save_states.File
+		if save == save_states.Clear:
+			clear_editor()
+			save = save_states.File
 
-
-func load_level_to_editor():
+func clear_editor():
 	if !Engine.is_editor_hint(): return
-	
 	# Kill entities, clear tilemap
 	tilemap.clear()
 	for i in entity_holder.get_children():
 		i.queue_free()
+	level_above = ""
+	level_below = ""
+	level_left = ""
+	level_right = ""
+	print("Editor Cleared")
 	
+
+func load_level_to_editor():
+	if !Engine.is_editor_hint(): return
 	# navigate to level directory
 	var dir = DirAccess.open("res://Levels/"+level_name+"/")
 	# extract data dict
@@ -144,7 +154,7 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 			# generate collision polys
 			var poly_node = CollisionPolygon2D.new()
 			poly_node.polygon = poly
-			sb.add_child(poly_node)
+			call_deferred("add_child", poly_node)
 		# set up stuff for future & speed
 		sb.set_meta("stored_polygons", polygons)
 		sb.set_meta("layer", i)
@@ -165,6 +175,7 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 		for i in 4:
 			if data["Connections"][i] != "":
 				# U D L R
+				# TODO thread this?
 				build_level(data["Connections"][i], 
 				OFFSETS[i] + offset, 
 				false, false)
@@ -174,11 +185,14 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 		player.position = data['PlayerSpawn']
 	else:
 		level_obj.deactivate()
-	print(level, " built at ", offset)
 	built_levels.append(level_obj)
 	# build limbo area
 	BetterTerrain.set_cells(limbo_tmap, 0, limbo_pattern.get_used_cells(), 0, Vector2i(offset/8))
 	BetterTerrain.update_terrain_cells(limbo_tmap, 0, limbo_pattern.get_used_cells(), true, Vector2i(offset/8))
+	# outline entities
+	for i in level_obj.entities:
+		i.switch_to_outline()
+	print(level, " built at ", offset)
 	return level_obj
 
 
@@ -216,6 +230,7 @@ func save_level():
 
 func player_exit_left(body):
 	if !body is Player: return
+	if body.last_dir != -1: return
 	enter_new_screen(2)
 
 
@@ -226,6 +241,7 @@ func player_exit_up(body):
 
 func player_exit_right(body):
 	if !body is Player: return
+	if body.last_dir != 1: return
 	enter_new_screen(3)
 
 
@@ -283,6 +299,7 @@ class Level:
 			i.collision_mask = 6
 		for i in windows:
 			i.show()
+			i.clip()
 		active = true
 			
 		
@@ -309,3 +326,9 @@ class Level:
 		for i in kill_list:
 			i.unload()
 			constructor.built_levels.erase(i)
+		for i in 4:
+			var l = data["Connections"][i]
+			if !l: continue
+			if l in skip_list: continue
+			# TODO thread this
+			constructor.build_level(l, offset + OFFSETS[i], false)

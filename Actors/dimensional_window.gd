@@ -10,7 +10,6 @@ var hovered:bool = false
 var drag_offset:Vector2 = Vector2.ZERO
 var dragging:bool = false
 var mouse_position
-var prev_position:Vector2
 var offset:Vector2
 
 var prev_tl_pos = Vector2i.ZERO
@@ -18,12 +17,6 @@ var prev_tiles = []
 var layer:int
 
 var level_obj:LevelConstructor.Level
-
-# Loading
-func _ready():
-	prev_position = position
-	$WindowFrame/Viewport/SubCamera.position = $WindowFrame.global_position
-	clip()
 	
 
 func load_branch(pattern:TileMapPattern, level:):
@@ -41,6 +34,7 @@ func load_branch(pattern:TileMapPattern, level:):
 	for i in [Vector2.ONE, Vector2(WINDOW_TILE_SIZE.x*8, 1),WINDOW_TILE_SIZE*8, Vector2(1, WINDOW_TILE_SIZE.y*8), Vector2(1, 0.5)]:
 		outline.add_point(i)
 	outline.hide()
+
 
 # Window Movement And Drag
 func _process(delta):
@@ -64,14 +58,26 @@ func _process(delta):
 		if Input.is_action_just_released("Click"):
 			dragging = false
 			# no overlap
-			var rect = get_rect()
-			rect.position += outline.position
-			for i in level_obj.windows:
-				if i == self: continue
-				if rect.intersects(i.get_rect()):
-					rect = false
+			var intersects = true
+			for dir in [Vector2.ZERO, 
+			Vector2.UP, Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT,
+			Vector2(0, -2), Vector2(0, 2), Vector2(-2, 0), Vector2(2, 0)]:
+				# construct rect
+				var rect = get_rect()
+				rect.position += outline.position
+				rect.position += dir*8
+				# over windows
+				for window in level_obj.windows:
+					if window == self: continue
+					#check intersect
+					if !rect.intersects(window.get_rect()):
+						intersects = false
+						break
+				#if clear, exit
+				if !intersects:
+					outline.position += dir*8
 					break
-			if rect:
+			if !intersects:
 				position += outline.position
 				$WindowFrame/Viewport/SubCamera.position = $WindowFrame.global_position
 				clip()
@@ -82,18 +88,19 @@ func _process(delta):
 
 func clip():
 	# get rect and adjust for errors
-		var rect = get_rect()
-		rect.size.y += 0.0001
-		# iterate over terrain and entities
-		for body in level_obj.statics:
-			if layer != body.get_meta("layer"):
-				StaticbodyController.clip_polygons_with_rect(body.get_meta('stored_polygons'), 
-					Rect2(position - offset, rect.size), body.get_meta('displayed_polygons', []), body)
-		for entity in level_obj.entities:
-			#if exists on this layer; skip
-			if entity.exists[layer]:
-				continue
-			entity.clip_polygon(rect)
+	$WindowFrame/Viewport/SubCamera.position = $WindowFrame.global_position
+	var rect = get_rect()
+	rect.size.y += 0.0001
+	# iterate over terrain and entities
+	for body in level_obj.statics:
+		if layer != body.get_meta("layer"):
+			StaticbodyController.clip_polygons_with_rect(body.get_meta('stored_polygons'), 
+				Rect2(position - offset, rect.size), body.get_meta('displayed_polygons', []), body)
+	for entity in level_obj.entities:
+		#if exists on this layer; skip
+		if entity.exists[layer]:
+			continue
+		entity.clip_polygon(rect)
 
 
 func _on_mouse_entered():

@@ -42,6 +42,7 @@ func initialize():
 
 func switch_to_outline():
 	sprite.texture = outlines[entity_type]
+	show()
 
 func get_polygon():
 	return [
