@@ -121,5 +121,5 @@ static func clip_polygons_with_rect(polygons:Array, rect:Rect2, displayed_polygo
 				push_warning("Polygon Split Error")
 			var k = CollisionPolygon2D.new()
 			output_parent.add_child(k)
-			k.polygon = i
+			k.set_deferred('polygon', i)
 	return new_polygons

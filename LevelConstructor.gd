@@ -6,7 +6,6 @@ const OFFSETS = [Vector2(0, -VIEWPORT_SIZE.y),
 				Vector2(0, VIEWPORT_SIZE.y),
 				Vector2(-VIEWPORT_SIZE.x, 0), 
 				Vector2(VIEWPORT_SIZE.x, 0)]
-var building_threads: Array[Thread]
 
 var built_levels = []
 var current_level:Level
@@ -49,6 +48,7 @@ func _ready():
 		build_level("testing_levels_dir", Vector2.ZERO, true, true)
 		tilemap.hide()
 
+
 func _process(_delta):
 	if Engine.is_editor_hint():
 		if save == save_states.Save:
@@ -61,6 +61,7 @@ func _process(_delta):
 		if save == save_states.Clear:
 			clear_editor()
 			save = save_states.File
+
 
 func clear_editor():
 	if !Engine.is_editor_hint(): return
@@ -109,6 +110,7 @@ func load_level_to_editor():
 	player.position = data["PlayerSpawn"]
 	print("Loaded level '", level_name, "' to editor")
 
+
 func build_level(level:String, offset:Vector2, active:bool, load_surroundings=false):
 	# Prepare level class
 	var level_obj = Level.new()
@@ -154,7 +156,7 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 			# generate collision polys
 			var poly_node = CollisionPolygon2D.new()
 			poly_node.polygon = poly
-			call_deferred("add_child", poly_node)
+			sb.call_deferred("add_child", poly_node)
 		# set up stuff for future & speed
 		sb.set_meta("stored_polygons", polygons)
 		sb.set_meta("layer", i)
@@ -279,6 +281,7 @@ class Level:
 	var active = false
 	var offset:Vector2
 	var constructor:LevelConstructor
+	var counter
 	
 	func deactivate():
 		for i in entities:

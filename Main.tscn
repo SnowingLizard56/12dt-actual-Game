@@ -1,9 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://c41lerf86ba75"]
+[gd_scene load_steps=10 format=3 uid="uid://c41lerf86ba75"]
 
 [ext_resource type="PackedScene" uid="uid://raujhngxvpl1" path="res://Actors/player.tscn" id="1_2p50b"]
 [ext_resource type="Script" path="res://LevelConstructor.gd" id="1_8c45p"]
 [ext_resource type="PackedScene" uid="uid://pwis3gamyvf" path="res://Actors/EntityBase.tscn" id="4_cr7vn"]
-[ext_resource type="Script" path="res://Actors/Entities/EntityBase.gd" id="4_dmo1s"]
 [ext_resource type="PackedScene" uid="uid://dyyclqnanqmah" path="res://Actors/dimensional_window.tscn" id="4_ff4i8"]
 [ext_resource type="TileSet" uid="uid://c0cg70lv5ie4o" path="res://Graphics/Tiles/TileSet.tres" id="5_iq517"]
 [ext_resource type="Script" path="res://camera.gd" id="6_liqy2"]
@@ -38,15 +37,13 @@ level_right = "testing_levels_dir"
 
 [node name="EntityHolder" type="Node2D" parent="."]
 
-[node name="Entity_0 - 0" type="Area2D" parent="EntityHolder" instance=ExtResource("4_cr7vn")]
+[node name="Entity_0 - 0" parent="EntityHolder" instance=ExtResource("4_cr7vn")]
 position = Vector2(136, 252)
-script = ExtResource("4_dmo1s")
 size = Vector2(40, 4)
 exists = Array[bool]([true, false])
 
-[node name="Entity_1 - 0" type="Area2D" parent="EntityHolder" instance=ExtResource("4_cr7vn")]
+[node name="Entity_1 - 0" parent="EntityHolder" instance=ExtResource("4_cr7vn")]
 position = Vector2(352, 212)
-script = ExtResource("4_dmo1s")
 size = Vector2(96, 4)
 exists = Array[bool]([false, true])
 
@@ -76,6 +73,7 @@ format = 2
 
 [node name="Camera2D" type="Camera2D" parent="."]
 anchor_mode = 0
+zoom = Vector2(0.5, 0.5)
 script = ExtResource("6_liqy2")
 
 [node name="Exit_Left" type="Area2D" parent="Camera2D"]

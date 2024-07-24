@@ -27,7 +27,7 @@ func initialize():
 	add_to_group("Clip_Entity")
 	var k = CollisionPolygon2D.new()
 	k.polygon = get_polygon()
-	add_child(k)
+	call_deferred("add_child", k)
 	initial_position = position
 	position = Vector2.ZERO
 	connect("body_entered", player_entered)
