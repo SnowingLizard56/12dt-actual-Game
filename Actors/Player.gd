@@ -23,6 +23,8 @@ var real_position:Vector2
 
 @onready var spawn_position: Vector2 = position
 
+signal screen_exited
+
 enum states {Grounded, Climb, Falling}
 var state = states.Falling: set=set_state
 
@@ -45,6 +47,7 @@ func set_state(n):
 
 
 func _physics_process(delta):
+	if $"../ActiveLevelFollower".moving: return
 	if real_position:
 		position = real_position
 	direction = Input.get_axis("Left", "Right")
@@ -158,3 +161,7 @@ func crush_check():
 			return false
 	death()
 	return true
+
+
+func _on_visible_notifier_screen_exited():
+	screen_exited.emit()

@@ -33,3 +33,10 @@ emission_colors = PackedColorArray()
 spread = 25.26
 initial_velocity_min = 80.0
 initial_velocity_max = 85.0
+
+[node name="VisibleNotifier" type="VisibleOnScreenNotifier2D" parent="."]
+position = Vector2(0, -11)
+scale = Vector2(0.125, 0.0833333)
+rect = Rect2(-8, -24, 16, 24)
+
+[connection signal="screen_exited" from="VisibleNotifier" to="." method="_on_visible_notifier_screen_exited"]

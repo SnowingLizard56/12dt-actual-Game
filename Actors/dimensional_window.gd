@@ -21,7 +21,6 @@ var level_obj:LevelConstructor.Level
 
 func load_branch(pattern:TileMapPattern, level:):
 	# Main Layer Tilemap
-	tilemap.clear()
 	tilemap.set_pattern(0, Vector2i(level.offset/8), pattern)
 	for i in level.entities:
 		if !i.exists[layer]:

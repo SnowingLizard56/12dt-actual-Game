@@ -7,6 +7,7 @@ const OFFSETS = [Vector2(0, -VIEWPORT_SIZE.y),
 				Vector2(-VIEWPORT_SIZE.x, 0), 
 				Vector2(VIEWPORT_SIZE.x, 0)]
 
+var build_queue:Array[Callable] = []
 var built_levels = []
 var current_level:Level
 
@@ -41,12 +42,16 @@ enum save_states {File, Save, Load, Clear}
 func _ready():
 	if Engine.is_editor_hint():
 		tilemap.show()
+		limbo_tmap.hide()
 	else:
 		for i in [statics_holder, window_holder, entity_holder]:
 			for c in i.get_children():
 				c.queue_free()
+		
+		limbo_tmap.clear()
 		build_level("testing_levels_dir", Vector2.ZERO, true, true)
 		tilemap.hide()
+		limbo_tmap.show()
 
 
 func _process(_delta):
@@ -61,6 +66,9 @@ func _process(_delta):
 		if save == save_states.Clear:
 			clear_editor()
 			save = save_states.File
+	elif build_queue != []:
+		build_queue[0].call()
+		build_queue.remove_at(0)
 
 
 func clear_editor():
@@ -177,8 +185,7 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 		for i in 4:
 			if data["Connections"][i] != "":
 				# U D L R
-				# TODO thread this?
-				build_level(data["Connections"][i], 
+				build_level(data["Connections"][i],
 				OFFSETS[i] + offset, 
 				false, false)
 	# activate/deactivate
@@ -188,9 +195,8 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 	else:
 		level_obj.deactivate()
 	built_levels.append(level_obj)
-	# build limbo area
-	BetterTerrain.set_cells(limbo_tmap, 0, limbo_pattern.get_used_cells(), 0, Vector2i(offset/8))
-	BetterTerrain.update_terrain_cells(limbo_tmap, 0, limbo_pattern.get_used_cells(), true, Vector2i(offset/8))
+	# build limbo area 
+	limbo_tmap.set_pattern(0, Vector2i(offset/8), limbo_pattern)
 	# outline entities
 	for i in level_obj.entities:
 		i.switch_to_outline()
@@ -201,20 +207,13 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 func save_level():
 	if !Engine.is_editor_hint(): return
 	# construct data dict
-	var data = TileMapPattern.new()
 	var entities = []
 	
 	for i in entity_holder.get_children():
 		entities.append([i.size, i.exists, i.entity_type, i.position])
-	
-	data.set_meta("_", {
-		"PlayerSpawn": player.position,
-		"Entities": entities,
-		"Connections": [level_above, level_below, level_left, level_right]
-	})
-	
 	# create level directory
 	DirAccess.open("res://Levels/").make_dir(level_name)
+	var limbo_pos_set = []
 	for i in tilemap.get_layers_count():
 		# get layer tiles and polygons
 		var pattern:TileMapPattern = tilemap.get_pattern(i, tilemap.get_used_cells(i))
@@ -223,36 +222,39 @@ func save_level():
 		pattern.set_meta("stored_polygons", polygons)
 		ResourceSaver.save(pattern, "res://Levels/" + level_name + "/" + str(i) + ".tres")
 		# update total save
-		for coord in tilemap.get_used_cells(i):
-			data.set_cell(coord)
+		BetterTerrain.set_cells(limbo_tmap, 0, tilemap.get_used_cells(i), 0)
+		BetterTerrain.update_terrain_cells(limbo_tmap, 0, tilemap.get_used_cells(i))
+		limbo_pos_set += tilemap.get_used_cells(i)
+	
+	# limbo tmap
+	var data = limbo_tmap.get_pattern(0, limbo_pos_set)
+	for i in limbo_pos_set:
+		limbo_tmap.erase_cell(0, i)
+	
+	# give data to meta
+	data.set_meta("_", {
+		"PlayerSpawn": player.position,
+		"Entities": entities,
+		"Connections": [level_above, level_below, level_left, level_right]
+	})
+	
 	# save data dict
 	ResourceSaver.save(data, "res://Levels/" + level_name + "/_.tres")
 	print("Level saved to '" + "res://Levels/" + level_name + "'")
 
 
-func player_exit_left(body):
-	if !body is Player: return
-	if body.last_dir != -1: return
-	enter_new_screen(2)
-
-
-func player_exit_up(body):
-	if !body is Player: return
-	enter_new_screen(0)
-
-
-func player_exit_right(body):
-	if !body is Player: return
-	if body.last_dir != 1: return
-	enter_new_screen(3)
-
-
-func player_exit_down(body):
-	if !body is Player: return
-	enter_new_screen(1)
-	
-
-func enter_new_screen(index:int):
+func enter_new_screen():
+	var index
+	# figure out direction
+	if player.position.x > current_level.offset.x + VIEWPORT_SIZE.x:
+		index = 3
+	elif player.position.x < current_level.offset.x:
+		index = 2
+	elif player.position.y > current_level.offset.y + VIEWPORT_SIZE.y:
+		index = 1
+	elif player.position.y < current_level.offset.y:
+		index = 0
+	#continue
 	if current_level.data["Connections"][index] == "": return
 	print("Player exited " + str(index))
 	allow_switch = false
@@ -266,8 +268,8 @@ func enter_new_screen(index:int):
 			level_obj = i
 			break
 	# Move camera
-	get_node("../Camera2D").target_position += OFFSETS[index]
-	get_node("../Camera2D").moving = true
+	get_node("../ActiveLevelFollower").target_position += OFFSETS[index]
+	get_node("../ActiveLevelFollower").moving = true
 	# Reset player spawn
 	get_node("../Player").spawn_position = level_obj.data["PlayerSpawn"] + level_obj.offset
 	
@@ -314,17 +316,8 @@ class Level:
 	func load_surroundings():
 		# Unload
 		var kill_list = []
-		var skip_list = []
 		for i in constructor.built_levels:
 			if i == self: continue
-			# is a correct neighbour (U D L R)
-			var cont = false
-			for dir in 4:
-				if i.offset == OFFSETS[dir] + offset and i.level_name == data["Connections"][dir]:
-					cont = true
-					skip_list.append(i)
-					continue
-			if cont: continue
 			kill_list.append(i)
 		for i in kill_list:
 			i.unload()
@@ -332,6 +325,5 @@ class Level:
 		for i in 4:
 			var l = data["Connections"][i]
 			if !l: continue
-			if l in skip_list: continue
-			# TODO thread this
-			constructor.build_level(l, offset + OFFSETS[i], false)
+			var build_callable = constructor.build_level.bind(l, offset + OFFSETS[i], false)
+			constructor.build_queue.append(build_callable)
