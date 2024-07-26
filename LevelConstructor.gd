@@ -8,6 +8,7 @@ const OFFSETS = [Vector2(0, -VIEWPORT_SIZE.y),
 				Vector2(VIEWPORT_SIZE.x, 0)]
 
 var build_queue:Array[Callable] = []
+var born_to_die: Array[Node] = []
 var built_levels = []
 var current_level:Level
 
@@ -200,7 +201,6 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 	# outline entities
 	for i in level_obj.entities:
 		i.switch_to_outline()
-	print(level, " built at ", offset)
 	return level_obj
 
 
@@ -256,13 +256,11 @@ func enter_new_screen():
 		index = 0
 	#continue
 	if current_level.data["Connections"][index] == "": return
-	print("Player exited " + str(index))
 	allow_switch = false
 	# Activate level
 	var level_obj
 	for i in built_levels:
 		if i.offset == current_level.offset + OFFSETS[index]:
-			print(i.level_name, " activated at ", i.offset)
 			i.activate()
 			i.load_surroundings()
 			level_obj = i
@@ -289,8 +287,6 @@ class Level:
 		for i in entities:
 			i.collision_layer = 0
 			i.collision_mask = 0
-		for i in windows:
-			i.hide()
 		active = false
 		
 	func activate():
@@ -309,8 +305,7 @@ class Level:
 			
 		
 	func unload():
-		for i in entities + statics + windows:
-			i.queue_free()
+		constructor.born_to_die.append_array(entities + statics + windows)
 		constructor.built_levels.erase(self)
 	
 	func load_surroundings():
@@ -327,3 +322,10 @@ class Level:
 			if !l: continue
 			var build_callable = constructor.build_level.bind(l, offset + OFFSETS[i], false)
 			constructor.build_queue.append(build_callable)
+
+
+func _on_active_level_follower_target_met():
+	for i in born_to_die:
+		i.queue_free()
+	born_to_die = []
+	

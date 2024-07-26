@@ -3,6 +3,8 @@ extends Node2D
 @export var constructor:LevelConstructor
 @export var cam:Camera2D
 
+signal target_met
+
 var target_position = Vector2.ZERO:set=set_target
 var prev_position = Vector2.ZERO
 var moving = false
@@ -22,4 +24,4 @@ func _process(delta):
 	if (target_position - cam.position).length() < 1:
 		cam.position = target_position
 		moving = false
-
+		target_met.emit()

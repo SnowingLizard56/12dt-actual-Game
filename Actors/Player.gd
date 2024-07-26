@@ -1,6 +1,7 @@
 class_name Player extends CharacterBody2D
 
 const SPEED = 150.0
+const SLOW_SPEED = 75.0
 const JUMP_SPEED_HORIZONTAL = 200
 const AIR_MOVE_SPEED = 250.0
 const CLIMB_SPEED = 120.0
@@ -20,6 +21,7 @@ var climb_dir = 0
 var overlapping_windows = []
 var overlapping_inner = false
 var real_position:Vector2
+var jumping = false
 
 @onready var spawn_position: Vector2 = position
 
@@ -48,10 +50,15 @@ func set_state(n):
 
 func _physics_process(delta):
 	if $"../ActiveLevelFollower".moving: return
+	crush_check()
 	if real_position:
 		position = real_position
 	direction = Input.get_axis("Left", "Right")
-	if state == states.Grounded or (Input.is_action_just_pressed("Jump") and !$CoyoteTimer.is_stopped()):
+	if Input.is_action_just_pressed("Jump") or $JumpBuffer.time_left > 0:
+		jumping = true
+	else:
+		jumping = false
+	if state == states.Grounded or (jumping and !$CoyoteTimer.is_stopped()):
 		grounded(delta)
 	elif state == states.Falling:
 		falling(delta)
@@ -60,33 +67,43 @@ func _physics_process(delta):
 	move_and_slide()
 	real_position = position
 	position = round(position)
-	crush_check()
 
 
 # Physics States
 func falling(delta):
 	# Gravity
-	velocity.y = move_toward(velocity.y, GRAVITY, GRAVITY * delta)
+	velocity.y = move_toward(velocity.y, GRAVITY*2.7, GRAVITY * delta)
 	# Friction
 	velocity.x = move_toward(velocity.x, 0, AIR_FRICTION * delta)
 	
+	
+	velocity.x = lerp(velocity.x, direction * SPEED, delta*6)
+	
+	if Input.is_action_just_pressed("Jump"):
+		$JumpBuffer.start()
+	
 	if is_on_ceiling():
 		velocity.y = CEILING_BOUNCE_SPEED
-	# Change states
+	# Change statesd a
 	if is_on_floor():
 		state = states.Grounded
 	elif test_move(transform, Vector2.RIGHT*last_dir):
 		state = states.Climb
 
 
-func grounded(_delta):
+func grounded(delta):
 	# Handle Jump.
-	if Input.is_action_just_pressed("Jump") and (is_on_floor() or !$CoyoteTimer.is_stopped()):
+	if jumping and (is_on_floor() or !$CoyoteTimer.is_stopped()):
 		velocity.y = JUMP_SPEED
 		state = states.Falling
 	
 	# Change velocity
-	velocity.x = direction * SPEED
+	if Input.is_action_pressed("Down"):
+		velocity.x = lerp(velocity.x, direction * SLOW_SPEED, delta*30)
+	else:
+		velocity.x = lerp(velocity.x, direction * SPEED, delta*30)
+	if abs(velocity.x) < 1.5:
+		velocity.x = 0
 	
 	if !is_on_floor():
 		state = states.Falling
@@ -114,7 +131,7 @@ func climb(delta):
 	velocity.y = vdirection * CLIMB_SPEED
 	
 	# Wall Jump!
-	if Input.is_action_just_pressed("Jump"):
+	if jumping:
 		state = states.Falling
 		if direction:
 			velocity = WALL_JUMP_VELOCITY
@@ -140,10 +157,8 @@ func climb(delta):
 func on_window_entered(window):
 	overlapping_windows.append(window)
 
-
 func on_window_exited(window):
 	overlapping_windows.erase(window)
-
 
 func death():
 	real_position = spawn_position
@@ -157,11 +172,10 @@ func entity_collision(ent):
 
 func crush_check():
 	for i in [Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT]:
-		if !test_move(transform, i):
+		if !test_move(transform.translated(i*2), Vector2.ZERO):
 			return false
 	death()
 	return true
-
 
 func _on_visible_notifier_screen_exited():
 	screen_exited.emit()

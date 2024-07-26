@@ -4,6 +4,7 @@
 [ext_resource type="TileSet" uid="uid://c0cg70lv5ie4o" path="res://Graphics/Tiles/TileSet.tres" id="2_cruy2"]
 
 [node name="DimensionalWindow" type="Control" node_paths=PackedStringArray("tilemap", "outline")]
+visible = false
 custom_minimum_size = Vector2(256, 128)
 layout_direction = 1
 layout_mode = 3
@@ -30,7 +31,7 @@ handle_input_locally = false
 gui_disable_input = true
 gui_embed_subwindows = true
 size = Vector2i(256, 128)
-render_target_update_mode = 4
+render_target_update_mode = 0
 
 [node name="SubCamera" type="Camera2D" parent="WindowFrame/Viewport"]
 anchor_mode = 0
