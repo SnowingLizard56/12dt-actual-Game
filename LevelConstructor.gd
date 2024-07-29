@@ -50,7 +50,7 @@ func _ready():
 				c.queue_free()
 		
 		limbo_tmap.clear()
-		build_level("testing_levels_dir", Vector2.ZERO, true, true)
+		build_level("emerge", Vector2.ZERO, true, true)
 		tilemap.hide()
 		limbo_tmap.show()
 
@@ -142,6 +142,7 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 		k.exists = e[1]
 		k.entity_type = e[2]
 		k.position = e[3] + offset
+		k.rotat = e[4]
 		entity_holder.add_child(k)
 		k.initialize()
 		level_obj.entities.append(k)
@@ -181,6 +182,9 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 		# apply offset
 		dw.position = offset
 		sb.position = offset
+		
+		# increase to prevent overlap
+		dw.position.x += (len(level_obj.windows)-1)*33*8
 	# load surroundings
 	if load_surroundings:
 		for i in 4:
@@ -210,7 +214,7 @@ func save_level():
 	var entities = []
 	
 	for i in entity_holder.get_children():
-		entities.append([i.size, i.exists, i.entity_type, i.position])
+		entities.append([i.size, i.exists, i.entity_type, i.position, i.rotat])
 	# create level directory
 	DirAccess.open("res://Levels/").make_dir(level_name)
 	var limbo_pos_set = []
@@ -252,7 +256,7 @@ func enter_new_screen():
 		index = 2
 	elif player.position.y > current_level.offset.y + VIEWPORT_SIZE.y:
 		index = 1
-	elif player.position.y < current_level.offset.y:
+	elif player.position.y < current_level.offset.y: 
 		index = 0
 	#continue
 	if current_level.data["Connections"][index] == "": return

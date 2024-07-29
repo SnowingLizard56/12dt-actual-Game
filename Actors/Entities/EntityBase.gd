@@ -3,6 +3,7 @@ class_name Entity extends Area2D
 @export var size = Vector2.ONE
 @export var exists:Array[bool]
 @export var entity_type:entities
+@export var rotat:int
 
 var initial_position:Vector2
 
@@ -23,13 +24,13 @@ var outlines:Array[Texture2D] = [
 
 var stored_polygons = []
 
-func initialize():	
+func initialize():
+	initial_position = position
+	position = Vector2.ZERO
 	add_to_group("Clip_Entity")
 	var k = CollisionPolygon2D.new()
 	k.polygon = get_polygon()
 	call_deferred("add_child", k)
-	initial_position = position
-	position = Vector2.ZERO
 	connect("body_entered", player_entered)
 	sprite = Sprite2D.new()
 	add_child(sprite)
@@ -37,7 +38,10 @@ func initialize():
 	sprite.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	sprite.region_rect = Rect2(Vector2.ZERO, size)
 	sprite.texture = sprites[entity_type]
-	sprite.position = initial_position + size/2
+	sprite.position = initial_position
+	sprite.centered = false
+	sprite.rotation_degrees = rotat
+	
 	
 
 func switch_to_outline():
@@ -45,16 +49,18 @@ func switch_to_outline():
 	show()
 
 func get_polygon():
-	return [
+	var out = [
 		initial_position, 
 		initial_position + Vector2(size.x, 0), 
 		initial_position + size, 
 		initial_position + Vector2(0, size.y)
 		]
-
+	if rotat != 0:
+		out = StaticbodyController.rotate_polygon(out, initial_position, rotat)
+	return out
 
 func clip_polygon(rect:Rect2):
-	stored_polygons = StaticbodyController.clip_polygons_with_rect([get_polygon()], rect, stored_polygons, self)
+	stored_polygons = StaticbodyController.clip_polygons_with_rect([get_polygon()], rect, self)
 
 
 func player_entered(body):

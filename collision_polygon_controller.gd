@@ -92,7 +92,7 @@ static func get_tile_polygon(points):
 	return [points[0], points[1], points[1], points[2], points[2], points[3], points[3], points[0]]
 
 
-static func clip_polygons_with_rect(polygons:Array, rect:Rect2, displayed_polygons:Array=[], output_parent:Node=null):
+static func clip_polygons_with_rect(polygons:Array, rect:Rect2, output_parent:Node=null):
 	#01
 	#32
 	var rect_polygon = [
@@ -106,9 +106,6 @@ static func clip_polygons_with_rect(polygons:Array, rect:Rect2, displayed_polygo
 	var new_polygons = []
 	for i in polygons:
 		new_polygons.append_array(Geometry2D.clip_polygons(i, rect_polygon))
-	# Store and skip
-	if displayed_polygons == new_polygons:
-		return new_polygons
 	# poof
 	if output_parent:
 		for i in output_parent.get_children():
@@ -123,3 +120,11 @@ static func clip_polygons_with_rect(polygons:Array, rect:Rect2, displayed_polygo
 			output_parent.add_child(k)
 			k.set_deferred('polygon', i)
 	return new_polygons
+
+
+static func rotate_polygon(polygon:PackedVector2Array, pivot:Vector2, rotation_degrees:int):
+	var out = []
+	for i in polygon:
+		out.append((i - pivot).rotated(deg_to_rad(rotation_degrees)) + pivot)
+	return out
+	

@@ -94,11 +94,11 @@ func clip():
 	for body in level_obj.statics:
 		if layer != body.get_meta("layer"):
 			StaticbodyController.clip_polygons_with_rect(body.get_meta('stored_polygons'), 
-				Rect2(position - offset, rect.size), body.get_meta('displayed_polygons', []), body)
+				Rect2(position - offset, rect.size), body)
 	for entity in level_obj.entities:
 		#if exists on this layer; skip
-		if entity.exists[layer]:
-			continue
+		if entity.exists[layer]: continue
+		print(entity)
 		entity.clip_polygon(rect)
 
 

@@ -45,8 +45,8 @@ process_material = SubResource("ParticleProcessMaterial_e8xe8")
 explosiveness = 1.0
 
 [node name="VisibleNotifier" type="VisibleOnScreenNotifier2D" parent="."]
-position = Vector2(0, -11)
-scale = Vector2(0.125, 0.0833333)
-rect = Rect2(-8, -24, 16, 24)
+position = Vector2(0, -8.25)
+scale = Vector2(0.125, 0.34375)
+rect = Rect2(-8, -24, 16, 48)
 
 [connection signal="screen_exited" from="VisibleNotifier" to="." method="_on_visible_notifier_screen_exited"]

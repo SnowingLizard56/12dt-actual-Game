@@ -72,7 +72,7 @@ func _physics_process(delta):
 # Physics States
 func falling(delta):
 	# Gravity
-	velocity.y = move_toward(velocity.y, GRAVITY*2.7, GRAVITY * delta)
+	velocity.y = move_toward(velocity.y, GRAVITY/2, GRAVITY * delta)
 	# Friction
 	velocity.x = move_toward(velocity.x, 0, AIR_FRICTION * delta)
 	
