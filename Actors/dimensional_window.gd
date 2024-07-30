@@ -76,6 +76,7 @@ func _process(delta):
 				if !intersects:
 					outline.position += dir*8
 					break
+			#clip
 			if !intersects:
 				position += outline.position
 				$WindowFrame/Viewport/SubCamera.position = $WindowFrame.global_position
@@ -98,7 +99,6 @@ func clip():
 	for entity in level_obj.entities:
 		#if exists on this layer; skip
 		if entity.exists[layer]: continue
-		print(entity)
 		entity.clip_polygon(rect)
 
 

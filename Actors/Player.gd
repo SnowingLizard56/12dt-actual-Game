@@ -1,7 +1,7 @@
 class_name Player extends CharacterBody2D
 
-const SPEED = 150.0
-const SLOW_SPEED = 75.0
+const SPEED = 125.0
+const SLOW_SPEED = 50.0
 const JUMP_SPEED_HORIZONTAL = 200
 const AIR_MOVE_SPEED = 250.0
 const CLIMB_SPEED = 120.0

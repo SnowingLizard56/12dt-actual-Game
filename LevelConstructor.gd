@@ -40,6 +40,9 @@ enum save_states {File, Save, Load, Clear}
 @export var level_left = ""
 @export var level_right = ""
 
+@export_category("Runtime Options")
+@export var start_game_level_name = ""
+
 func _ready():
 	if Engine.is_editor_hint():
 		tilemap.show()
@@ -50,7 +53,7 @@ func _ready():
 				c.queue_free()
 		
 		limbo_tmap.clear()
-		build_level("emerge", Vector2.ZERO, true, true)
+		build_level(start_game_level_name, Vector2.ZERO, true)
 		tilemap.hide()
 		limbo_tmap.show()
 
@@ -100,6 +103,7 @@ func load_level_to_editor():
 		k.exists = e[1]
 		k.entity_type = e[2]
 		k.position = e[3]
+		k.rotat = e[4]
 		entity_holder.add_child(k)
 		k.owner = owner
 		k.name = "Entity_" + str(i) + " - " + str(k.entity_type)
@@ -120,12 +124,15 @@ func load_level_to_editor():
 	print("Loaded level '", level_name, "' to editor")
 
 
-func build_level(level:String, offset:Vector2, active:bool, load_surroundings=false):
+func build_level(level:String, offset:Vector2, active:bool):
+	# TODO - split level construction over multiple frames.
 	# Prepare level class
 	var level_obj = Level.new()
 	level_obj.level_name = level
 	level_obj.offset = offset
 	level_obj.constructor = self
+	var level_index = len(built_levels)
+	built_levels.append(level_obj)
 	
 	# navigate to level directory
 	var dir = DirAccess.open("res://Levels/"+level+"/")
@@ -135,7 +142,23 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 	var data = limbo_pattern.get_meta("_")
 	level_obj.data = data
 	
-	# load entities
+	if active:
+		# load entities
+		build_entities(data, offset, level_index)
+		# dw and sb
+		build_collision(dir, offset, level_index)
+		build_windows(dir, offset, level_index)
+		# load surroundings
+		post_level_build(data, offset, level_index, active, limbo_pattern)
+	else:
+		build_queue.append(build_entities.bind(data, offset, level_index))
+		build_queue.append(build_collision.bind(dir, offset, level_index))
+		build_queue.append(build_windows.bind(dir, offset, level_index))
+		build_queue.append(post_level_build.bind(data, offset, level_index, active, limbo_pattern))
+	return level_index
+
+
+func build_entities(data, offset:Vector2, level_index:int):
 	for e in data['Entities']:
 		var k:Entity = entity_scene.instantiate()
 		k.size = e[0]
@@ -145,22 +168,17 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 		k.rotat = e[4]
 		entity_holder.add_child(k)
 		k.initialize()
-		level_obj.entities.append(k)
-	
+		built_levels[level_index].entities.append(k)
+		k.name = "Entity - " + str(k.entity_type)
+
+
+func build_collision(dir, offset:Vector2, level_index:int):
 	for i in len(dir.get_files()):
 		if dir.get_files()[i] == "_.tres": continue
-		# make dw and load pattern
-		var dw = dimensional_window_scene.instantiate()
-		window_holder.add_child(dw)
-		dw.layer = i
-		dw.offset = offset
-		var pattern = ResourceLoader.load(dir.get_current_dir() +"/"+ dir.get_files()[i]) as TileMapPattern
-		
-		# apply pattern to dw
-		dw.load_branch(pattern, level_obj)
 		# make static bodies
 		var sb = StaticBody2D.new()
 		statics_holder.add_child(sb)
+		var pattern = ResourceLoader.load(dir.get_current_dir() +"/"+ dir.get_files()[i]) as TileMapPattern
 		var polygons = pattern.get_meta("stored_polygons", [])
 		for poly in polygons:
 			# generate collision polys
@@ -173,39 +191,54 @@ func build_level(level:String, offset:Vector2, active:bool, load_surroundings=fa
 		sb.collision_mask = 0
 		# Name major components
 		sb.name = str(i)
-		dw.name = str(i)
 		
-		# add dw and sb to level obj
-		level_obj.windows.append(dw)
-		level_obj.statics.append(sb)
+		# add sb to level obj
+		built_levels[level_index].statics.append(sb)
 		
 		# apply offset
-		dw.position = offset
 		sb.position = offset
+
+
+func build_windows(dir, offset:Vector2, level_index:int):
+	for i in len(dir.get_files()):
+		if dir.get_files()[i] == "_.tres": continue
+		# make dw and load pattern
+		var dw = dimensional_window_scene.instantiate()
+		window_holder.add_child(dw)
+		dw.layer = i
+		dw.offset = offset
+
+		# apply pattern to dw
+		var pattern = ResourceLoader.load(dir.get_current_dir() +"/"+ dir.get_files()[i]) as TileMapPattern
+		dw.load_branch(pattern, built_levels[level_index])
+		dw.name = str(i)
+		built_levels[level_index].windows.append(dw)
+		# apply offset
+		dw.position = offset
 		
 		# increase to prevent overlap
-		dw.position.x += (len(level_obj.windows)-1)*33*8
-	# load surroundings
-	if load_surroundings:
+		dw.position.x += (len(built_levels[level_index].windows)-1)*33*8
+
+
+func post_level_build(data, offset:Vector2, level_index:int, active:bool, limbo_pattern):
+	if active:
 		for i in 4:
 			if data["Connections"][i] != "":
 				# U D L R
 				build_level(data["Connections"][i],
 				OFFSETS[i] + offset, 
-				false, false)
+				false)
 	# activate/deactivate
 	if active:
-		level_obj.activate()
+		built_levels[level_index].activate()
 		player.position = data['PlayerSpawn']
 	else:
-		level_obj.deactivate()
-	built_levels.append(level_obj)
+		built_levels[level_index].deactivate()
 	# build limbo area 
 	limbo_tmap.set_pattern(0, Vector2i(offset/8), limbo_pattern)
 	# outline entities
-	for i in level_obj.entities:
+	for i in built_levels[level_index].entities:
 		i.switch_to_outline()
-	return level_obj
 
 
 func save_level():
@@ -304,7 +337,7 @@ class Level:
 			i.collision_mask = 6
 		for i in windows:
 			i.show()
-			i.clip()
+			i.call_deferred("clip")
 		active = true
 			
 		
