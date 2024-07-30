@@ -21,11 +21,13 @@ var level_obj:LevelConstructor.Level
 
 func load_branch(pattern:TileMapPattern, level:):
 	# Main Layer Tilemap
-	tilemap.set_pattern(0, Vector2i(level.offset/8), pattern)
+	tilemap.set_pattern(0, Vector2i.ZERO, pattern)
 	for i in level.entities:
 		if !i.exists[layer]:
 			continue
-		tilemap.add_child(i.sprite.duplicate(8))
+		var k = i.sprite.duplicate(8)
+		k.position -= offset
+		$Clip/TileMap.add_child(k)
 		i.hide()
 	level_obj = level
 	# outline start
@@ -79,7 +81,6 @@ func _process(delta):
 			#clip
 			if !intersects:
 				position += outline.position
-				$WindowFrame/Viewport/SubCamera.position = $WindowFrame.global_position
 				clip()
 			outline.hide()
 			outline.position = Vector2.ZERO
@@ -88,7 +89,7 @@ func _process(delta):
 
 func clip():
 	# get rect and adjust for errors
-	$WindowFrame/Viewport/SubCamera.position = $WindowFrame.global_position
+	$Clip/TileMap.global_position = offset
 	var rect = get_rect()
 	rect.size.y += 0.0001
 	# iterate over terrain and entities

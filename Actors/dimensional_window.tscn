@@ -4,7 +4,6 @@
 [ext_resource type="TileSet" uid="uid://c0cg70lv5ie4o" path="res://Graphics/Tiles/TileSet.tres" id="2_cruy2"]
 
 [node name="DimensionalWindow" type="Control" node_paths=PackedStringArray("tilemap", "outline")]
-visible = false
 custom_minimum_size = Vector2(256, 128)
 layout_direction = 1
 layout_mode = 3
@@ -13,31 +12,21 @@ anchor_bottom = 0.356
 offset_right = -378.88
 offset_bottom = -193.568
 script = ExtResource("1_8a3aw")
-tilemap = NodePath("WindowFrame/Viewport/TileMap")
+tilemap = NodePath("Clip/TileMap")
 outline = NodePath("Outline")
 
-[node name="WindowFrame" type="SubViewportContainer" parent="."]
+[node name="Clip" type="ColorRect" parent="."]
+clip_children = 2
 layout_mode = 1
-anchors_preset = -1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-metadata/_edit_use_anchors_ = true
+mouse_filter = 1
+color = Color(0, 0.478431, 0.341176, 1)
 
-[node name="Viewport" type="SubViewport" parent="WindowFrame"]
-disable_3d = true
-handle_input_locally = false
-gui_disable_input = true
-gui_embed_subwindows = true
-size = Vector2i(256, 128)
-render_target_update_mode = 0
-
-[node name="SubCamera" type="Camera2D" parent="WindowFrame/Viewport"]
-anchor_mode = 0
-editor_draw_screen = false
-
-[node name="TileMap" type="TileMap" parent="WindowFrame/Viewport"]
+[node name="TileMap" type="TileMap" parent="Clip"]
 tile_set = ExtResource("2_cruy2")
 format = 2
 
