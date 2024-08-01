@@ -1,10 +1,14 @@
 # oohhhhh no.
+@tool
 class_name DimensionalWindow extends Control
 
 const WINDOW_TILE_SIZE = Vector2i(32, 16)
 
+@export_category("References")
 @export var tilemap:TileMap
 @export var outline:Line2D
+@export_category("Window Settings")
+@export var reveals_layer:int
 
 var hovered:bool = false
 var drag_offset:Vector2 = Vector2.ZERO
@@ -20,6 +24,7 @@ var level_obj:LevelConstructor.Level
 	
 
 func load_branch(pattern:TileMapPattern, level:):
+	if Engine.is_editor_hint(): return
 	# Main Layer Tilemap
 	tilemap.set_pattern(0, Vector2i.ZERO, pattern)
 	for i in level.entities:
@@ -32,13 +37,14 @@ func load_branch(pattern:TileMapPattern, level:):
 	level_obj = level
 	# outline start
 	outline.clear_points()
-	for i in [Vector2.ONE, Vector2(WINDOW_TILE_SIZE.x*8, 1),WINDOW_TILE_SIZE*8, Vector2(1, WINDOW_TILE_SIZE.y*8), Vector2(1, 0.5)]:
+	for i in [Vector2.ONE, Vector2(get_rect().size.x, 1),get_rect().size, Vector2(1, get_rect().size.y), Vector2(1, 0.5)]:
 		outline.add_point(i)
 	outline.hide()
 
 
 # Window Movement And Drag
 func _process(delta):
+	if Engine.is_editor_hint(): return
 	# this needs to be here bc if its not then i get an error every frame while in the editor i do NOT understand
 	if Engine.is_editor_hint():
 		return
@@ -51,15 +57,19 @@ func _process(delta):
 	if dragging:
 		outline.global_position = mouse_position + drag_offset
 		# Clamp to window extents
-		outline.global_position.x = clamp(outline.global_position.x, 0 + offset.x, get_viewport_rect().size.x - WINDOW_TILE_SIZE.x * 8 + offset.x)
-		outline.global_position.y = clamp(outline.global_position.y, 0 + offset.y, get_viewport_rect().size.y - WINDOW_TILE_SIZE.y * 8 + offset.y)
+		outline.global_position.x = clamp(outline.global_position.x, 0 + offset.x, get_viewport_rect().size.x - get_rect().size.x + offset.x)
+		outline.global_position.y = clamp(outline.global_position.y, 0 + offset.y, get_viewport_rect().size.y - get_rect().size.y + offset.y)
 		# Lock to grid
 		outline.global_position = round(outline.global_position / 8) * 8
-			
+		
+		if get_node("../../ActiveLevelFollower").moving:
+			dragging = false
+			return
+		
 		if Input.is_action_just_released("Click"):
 			dragging = false
 			# no overlap
-			var intersects = true
+			var intersects = false
 			for dir in [Vector2.ZERO, 
 			Vector2.UP, Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT,
 			Vector2(0, -2), Vector2(0, 2), Vector2(-2, 0), Vector2(2, 0)]:
@@ -71,8 +81,8 @@ func _process(delta):
 				for window in level_obj.windows:
 					if window == self: continue
 					#check intersect
-					if !rect.intersects(window.get_rect()):
-						intersects = false
+					if rect.intersects(window.get_rect()):
+						intersects = true
 						break
 				#if clear, exit
 				if !intersects:
@@ -84,7 +94,6 @@ func _process(delta):
 				clip()
 			outline.hide()
 			outline.position = Vector2.ZERO
-
 
 
 func clip():
@@ -104,8 +113,21 @@ func clip():
 
 
 func _on_mouse_entered():
+	if Engine.is_editor_hint(): return
 	hovered = true
 
 func _on_mouse_exited():
+	if Engine.is_editor_hint(): return
 	hovered = false
 
+
+func update_editor_qualities():
+	if !Engine.is_editor_hint(): return
+	if fmod(size.x, 8) != 0:
+		size.x = round(size.x/8)*8
+	if fmod(size.y, 8) != 0:
+		size.y = round(size.y/8)*8
+	if fmod(position.x, 8) != 0:
+		position.x = round(position.x/8)*8
+	if fmod(position.y, 8) != 0:
+		position.y = round(position.y/8)*8

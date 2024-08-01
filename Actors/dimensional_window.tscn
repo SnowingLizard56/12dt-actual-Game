@@ -4,13 +4,14 @@
 [ext_resource type="TileSet" uid="uid://c0cg70lv5ie4o" path="res://Graphics/Tiles/TileSet.tres" id="2_cruy2"]
 
 [node name="DimensionalWindow" type="Control" node_paths=PackedStringArray("tilemap", "outline")]
-custom_minimum_size = Vector2(256, 128)
+visible = false
+custom_minimum_size = Vector2(16, 16)
 layout_direction = 1
 layout_mode = 3
-anchor_right = 0.4
-anchor_bottom = 0.356
-offset_right = -378.88
-offset_bottom = -193.568
+anchor_right = 0.025
+anchor_bottom = 0.044
+offset_right = 240.0
+offset_bottom = 112.16
 script = ExtResource("1_8a3aw")
 tilemap = NodePath("Clip/TileMap")
 outline = NodePath("Outline")
@@ -24,7 +25,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
-color = Color(0, 0.478431, 0.341176, 1)
+color = Color(0.380392, 0.380392, 0.380392, 1)
 
 [node name="TileMap" type="TileMap" parent="Clip"]
 tile_set = ExtResource("2_cruy2")
@@ -37,3 +38,4 @@ default_color = Color(0.831373, 0.8, 0.364706, 1)
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="resized" from="." to="." method="update_editor_qualities"]

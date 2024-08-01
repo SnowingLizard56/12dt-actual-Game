@@ -47,7 +47,6 @@ func set_state(n):
 			climb_dir = -1
 	state = n
 
-
 func _physics_process(delta):
 	if $"../ActiveLevelFollower".moving: return
 	crush_check()
@@ -133,9 +132,12 @@ func climb(delta):
 	# Wall Jump!
 	if jumping:
 		state = states.Falling
-		if direction:
+		if direction == -climb_dir:
 			velocity = WALL_JUMP_VELOCITY
 			velocity.x *= -climb_dir
+		elif direction == climb_dir:
+			velocity = WALL_JUMP_VELOCITY
+			velocity.x = 0
 		else:
 			velocity.x = -climb_dir * WALL_DROP_SPEED
 	
@@ -168,7 +170,14 @@ func death():
 
 func entity_collision(ent):
 	if ent.entity_type == Entity.entities.Spike:
-		death()
+		if ent.rotat == 0 and velocity.y >= 0:
+			death()
+		elif ent.rotat == 90 and velocity.x <= 0:
+			death()
+		elif ent.rotat == 270 and velocity.x >= 0:
+			death()
+		elif ent.rotat == 180 and velocity.y <= 0:
+			death()
 
 func crush_check():
 	for i in [Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT]:

@@ -2,7 +2,7 @@
 class_name StaticbodyController extends RefCounted
 
 const CELL_SIZE = Vector2(8,8)
-
+const DELTA = 0.001
 # please for the love of god rename this function later
 # this is VERY O(n^2) so. figure that out future me
 static func generate_static_body_polygons(tilemap:TileMap, layer:int, static_body_parent:Node = null):
@@ -101,10 +101,30 @@ static func clip_polygons_with_rect(polygons:Array, rect:Rect2, output_parent:No
 		rect.position + rect.size, #2
 		rect.position + Vector2(0, rect.size.y) #3
 		]
-
+	
+	# check for what type of clip to run
+	var contained
+	for i in len(polygons):
+		var p = polygons[i]
+		if len(Geometry2D.intersect_polyline_with_polygon(p, rect_polygon)) != 0: continue
+		if Geometry2D.is_point_in_polygon(rect_polygon[0], p):
+			contained = i
+			break
+	var clip_polygons = []
+	clip_polygons.append_array(polygons)
+	if contained is int:
+		# extents
+		var polyline = [
+			Vector2(rect.position.x, 0),
+			Vector2(rect.position.x, 360)
+		]
+		clip_polygons.remove_at(contained)
+		polyline = Geometry2D.offset_polyline(polyline, DELTA)[0]
+		clip_polygons.append_array(Geometry2D.clip_polygons(polygons[contained], polyline))
+	
 	# split and free the old ones
 	var new_polygons = []
-	for i in polygons:
+	for i in clip_polygons:
 		new_polygons.append_array(Geometry2D.clip_polygons(i, rect_polygon))
 	# poof
 	if output_parent:

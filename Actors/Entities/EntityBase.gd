@@ -43,10 +43,10 @@ func initialize():
 	sprite.rotation_degrees = rotat
 	
 	
-
 func switch_to_outline():
 	sprite.texture = outlines[entity_type]
 	show()
+
 
 func get_polygon():
 	var out = [
@@ -58,6 +58,7 @@ func get_polygon():
 	if rotat != 0:
 		out = StaticbodyController.rotate_polygon(out, initial_position, rotat)
 	return out
+
 
 func clip_polygon(rect:Rect2):
 	stored_polygons = StaticbodyController.clip_polygons_with_rect([get_polygon()], rect, self)

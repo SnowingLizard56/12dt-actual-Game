@@ -5,5 +5,6 @@ tile_data = PackedInt32Array(0, 196609, 1, 65536, 196609, 1, 131072, 196609, 1, 
 metadata/_ = {
 "Connections": ["", "divert", "", ""],
 "Entities": [],
-"PlayerSpawn": Vector2(315, 63)
+"PlayerSpawn": Vector2(315, 63),
+"Windows": [[Rect2(232, 0, 168, 112), 0]]
 }

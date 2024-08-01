@@ -147,13 +147,13 @@ func build_level(level:String, offset:Vector2, active:bool):
 		build_entities(data, offset, level_index)
 		# dw and sb
 		build_collision(dir, offset, level_index)
-		build_windows(dir, offset, level_index)
+		build_windows(dir, data, offset, level_index)
 		# load surroundings
 		post_level_build(data, offset, level_index, active, limbo_pattern)
 	else:
 		build_queue.append(build_entities.bind(data, offset, level_index))
 		build_queue.append(build_collision.bind(dir, offset, level_index))
-		build_queue.append(build_windows.bind(dir, offset, level_index))
+		build_queue.append(build_windows.bind(dir, data, offset, level_index))
 		build_queue.append(post_level_build.bind(data, offset, level_index, active, limbo_pattern))
 	return level_index
 
@@ -199,25 +199,21 @@ func build_collision(dir, offset:Vector2, level_index:int):
 		sb.position = offset
 
 
-func build_windows(dir, offset:Vector2, level_index:int):
-	for i in len(dir.get_files()):
-		if dir.get_files()[i] == "_.tres": continue
-		# make dw and load pattern
-		var dw = dimensional_window_scene.instantiate()
-		window_holder.add_child(dw)
-		dw.layer = i
+func build_windows(dir, data, offset:Vector2, level_index:int):
+	for i in data["Windows"]:
+		#make dw + load pattern
+		var dw:Control = dimensional_window_scene.instantiate()
+		dw.layer = i[1]
+		# move and size
 		dw.offset = offset
-
-		# apply pattern to dw
-		var pattern = ResourceLoader.load(dir.get_current_dir() +"/"+ dir.get_files()[i]) as TileMapPattern
-		dw.load_branch(pattern, built_levels[level_index])
-		dw.name = str(i)
-		built_levels[level_index].windows.append(dw)
-		# apply offset
-		dw.position = offset
+		dw.position = offset + i[0].position
+		dw.size = i[0].size
+		window_holder.add_child(dw)
 		
-		# increase to prevent overlap
-		dw.position.x += (len(built_levels[level_index].windows)-1)*33*8
+		built_levels[level_index].windows.append(dw)
+		#apply pattern
+		var pattern = ResourceLoader.load(dir.get_current_dir() +"/"+ str(i[1]) + ".tres") as TileMapPattern
+		dw.load_branch(pattern, built_levels[level_index])
 
 
 func post_level_build(data, offset:Vector2, level_index:int, active:bool, limbo_pattern):
@@ -268,11 +264,17 @@ func save_level():
 	for i in limbo_pos_set:
 		limbo_tmap.erase_cell(0, i)
 	
+	# Windows
+	var windows = []
+	for i in window_holder.get_children():
+		windows.append([Rect2(i.position, i.size), i.reveals_layer])
+	
 	# give data to meta
 	data.set_meta("_", {
 		"PlayerSpawn": player.position,
 		"Entities": entities,
-		"Connections": [level_above, level_below, level_left, level_right]
+		"Connections": [level_above, level_below, level_left, level_right],
+		"Windows": windows
 	})
 	
 	# save data dict
