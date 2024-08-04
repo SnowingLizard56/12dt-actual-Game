@@ -4,14 +4,11 @@
 [ext_resource type="TileSet" uid="uid://c0cg70lv5ie4o" path="res://Graphics/Tiles/TileSet.tres" id="2_cruy2"]
 
 [node name="DimensionalWindow" type="Control" node_paths=PackedStringArray("tilemap", "outline")]
-visible = false
 custom_minimum_size = Vector2(16, 16)
 layout_direction = 1
 layout_mode = 3
-anchor_right = 0.025
-anchor_bottom = 0.044
-offset_right = 240.0
-offset_bottom = 112.16
+offset_right = 256.0
+offset_bottom = 128.0
 script = ExtResource("1_8a3aw")
 tilemap = NodePath("Clip/TileMap")
 outline = NodePath("Outline")

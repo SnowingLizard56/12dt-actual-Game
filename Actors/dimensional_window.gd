@@ -35,10 +35,6 @@ func load_branch(pattern:TileMapPattern, level:):
 		$Clip/TileMap.add_child(k)
 		i.hide()
 	level_obj = level
-	# outline start
-	outline.clear_points()
-	for i in [Vector2.ONE, Vector2(get_rect().size.x, 1),get_rect().size, Vector2(1, get_rect().size.y), Vector2(1, 0.5)]:
-		outline.add_point(i)
 	outline.hide()
 
 
@@ -51,6 +47,11 @@ func _process(delta):
 	if dragging or hovered:
 		mouse_position = get_global_mouse_position()
 	if Input.is_action_just_pressed("Click") and hovered:
+		# outline start
+		outline.clear_points()
+		for i in [Vector2.ONE, Vector2(get_rect().size.x, 1),get_rect().size, Vector2(1, get_rect().size.y), Vector2(1, 0.5)]:
+			outline.add_point(i)
+		
 		drag_offset = position - mouse_position
 		dragging = true
 		outline.show()
@@ -69,24 +70,15 @@ func _process(delta):
 		if Input.is_action_just_released("Click"):
 			dragging = false
 			# no overlap
+			# over windows
 			var intersects = false
-			for dir in [Vector2.ZERO, 
-			Vector2.UP, Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT,
-			Vector2(0, -2), Vector2(0, 2), Vector2(-2, 0), Vector2(2, 0)]:
-				# construct rect
-				var rect = get_rect()
-				rect.position += outline.position
-				rect.position += dir*8
-				# over windows
-				for window in level_obj.windows:
-					if window == self: continue
-					#check intersect
-					if rect.intersects(window.get_rect()):
-						intersects = true
-						break
-				#if clear, exit
-				if !intersects:
-					outline.position += dir*8
+			var rect = get_rect()
+			rect.position += outline.position
+			for window in level_obj.windows:
+				if window == self: continue
+				#check intersect
+				if rect.intersects(window.get_rect()):
+					intersects = true
 					break
 			#clip
 			if !intersects:
