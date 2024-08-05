@@ -4,6 +4,7 @@ class_name Entity extends Area2D
 @export var exists:Array[bool]
 @export var entity_type:entities
 @export var rotat:int
+@export var flag:int = -1
 
 var initial_position:Vector2
 

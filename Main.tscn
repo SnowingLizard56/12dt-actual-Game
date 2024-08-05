@@ -77,12 +77,14 @@ anchors_preset = 0
 
 [node name="DimensionalWindow2" parent="WindowHolder" instance=ExtResource("4_ff4i8")]
 layout_mode = 1
+anchors_preset = 0
 offset_right = 152.0
 offset_bottom = 56.0
 reveals_layer = 1
 
 [node name="DimensionalWindow3" parent="WindowHolder" node_paths=PackedStringArray("tilemap", "outline") instance=ExtResource("4_ff4i8")]
 layout_mode = 1
+anchors_preset = 0
 offset_left = 160.0
 offset_right = 312.0
 offset_bottom = 56.0
