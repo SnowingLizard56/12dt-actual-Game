@@ -122,23 +122,12 @@ static func clip_polygons_with_rect(polygons:Array, rect:Rect2, output_parent:No
 		polyline = Geometry2D.offset_polyline(polyline, DELTA)[0]
 		clip_polygons.append_array(Geometry2D.clip_polygons(polygons[contained], polyline))
 	
-	# split and free the old ones
 	var new_polygons = []
 	for i in clip_polygons:
 		new_polygons.append_array(Geometry2D.clip_polygons(i, rect_polygon))
 	# poof
 	if output_parent:
-		for i in output_parent.get_children():
-			if i is CollisionPolygon2D:
-				i.queue_free()
-			
-		# make and apply the new ones
-		for i in new_polygons:
-			if Geometry2D.is_polygon_clockwise(i):
-				push_warning("Polygon Split Error")
-			var k = CollisionPolygon2D.new()
-			output_parent.add_child(k)
-			k.set_deferred('polygon', i)
+		add_polygons_as_children(polygons, output_parent)
 	return new_polygons
 
 
@@ -148,3 +137,15 @@ static func rotate_polygon(polygon:PackedVector2Array, pivot:Vector2, rotation_d
 		out.append((i - pivot).rotated(deg_to_rad(rotation_degrees)) + pivot)
 	return out
 	
+	
+static func add_polygons_as_children(polygons:Array, output_parent:Node):
+	# out with the old
+	for i in output_parent.get_children():
+		if i is CollisionPolygon2D:
+			i.queue_free()
+		
+	# in with the new
+	for i in polygons:
+		var k = CollisionPolygon2D.new()
+		output_parent.add_child(k)
+		k.set_deferred('polygon', i)

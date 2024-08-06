@@ -7,7 +7,7 @@ const AIR_MOVE_SPEED = 250.0
 const CLIMB_SPEED = 120.0
 const JUMP_SPEED = -300.0
 const CLIMB_FINISH_SPEED = 50.0
-const MAX_STAMINA = 100.0
+const MAX_STAMINA = 300.0
 const AIR_FRICTION = 25.0
 const WALL_JUMP_VELOCITY = Vector2(200.0, -280.0)
 const WALL_DROP_SPEED = 60.0
@@ -16,7 +16,7 @@ const CEILING_BOUNCE_SPEED = 2
 
 var direction: set=update_dir
 var last_dir = 1
-var stamina = 0
+@onready var stamina = MAX_STAMINA
 var climb_dir = 0
 var overlapping_windows = []
 var overlapping_inner = false

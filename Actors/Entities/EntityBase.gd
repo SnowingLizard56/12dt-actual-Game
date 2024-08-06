@@ -5,6 +5,7 @@ class_name Entity extends Area2D
 @export var entity_type:entities
 @export var rotat:int
 @export var flag:int = -1
+@export var invert_flag:bool = false
 
 var initial_position:Vector2
 
@@ -24,6 +25,8 @@ var outlines:Array[Texture2D] = [
 ]
 
 var stored_polygons = []
+
+var window_copies = []
 
 func initialize():
 	initial_position = position
@@ -60,11 +63,57 @@ func get_polygon():
 		out = StaticbodyController.rotate_polygon(out, initial_position, rotat)
 	return out
 
+func reset_polygon():
+	stored_polygons = [get_polygon()]
 
 func clip_polygon(rect:Rect2):
-	stored_polygons = StaticbodyController.clip_polygons_with_rect([get_polygon()], rect, self)
+	stored_polygons = StaticbodyController.clip_polygons_with_rect(stored_polygons, rect)
 
+func apply_polygons():
+	StaticbodyController.add_polygons_as_children(stored_polygons, self)
 
+# Player Collision Stuff!
 func player_entered(body):
 	if body is Player:
 		body.entity_collision(self)
+
+
+# Flag Stuff!
+var prev_offset
+var target_offset
+var timer:SceneTreeTimer
+const SPIKE_OFFSET_DISTANCE = 3
+const SPIKE_MOVE_TIME = 0.1
+
+
+func activate():
+	if flag > -1:
+		FlagManager.on_flag(flag, flag_on(), invert_flag)
+		FlagManager.on_flag(flag, flag_off(), !invert_flag)
+		if invert_flag:
+			flag_on()
+			position = target_offset
+			timer = null
+
+
+func flag_on():
+	if entity_type == entities.Spike:
+		prev_offset = target_offset
+		target_offset += Vector2(0, SPIKE_OFFSET_DISTANCE).rotated(deg_to_rad(rotat))
+		timer = get_tree().create_timer(SPIKE_MOVE_TIME)
+		monitoring = false
+		monitorable = false
+
+
+func flag_off():
+	if entity_type == entities.Spike:
+		prev_offset = target_offset
+		target_offset -= Vector2(0, SPIKE_OFFSET_DISTANCE).rotated(deg_to_rad(rotat))
+		timer = get_tree().create_timer(SPIKE_MOVE_TIME)
+		monitoring = true
+		monitorable = true
+
+
+func _process(delta):
+	if timer and entity_type == entities.Spike:
+		position = lerp(prev_offset, target_offset, (SPIKE_MOVE_TIME - timer.time_left)/SPIKE_MOVE_TIME)

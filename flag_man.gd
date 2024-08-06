@@ -8,8 +8,12 @@ static func set_flag(index:int, value:bool):
 	update_length(index)
 	flags[index] = value
 	for i in FlagManager.callable_holder[index]:
-		if i[1] != value: continue
+		if i[1] == value: continue
 		i[0].call()
+
+static func get_flag(index:int):
+	if index < len(flags): return false
+	return flags[index]
 
 
 static func on_flag(index:int, callable:Callable, invert:bool=false):

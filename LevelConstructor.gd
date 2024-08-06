@@ -81,6 +81,8 @@ func clear_editor():
 	tilemap.clear()
 	for i in entity_holder.get_children():
 		i.queue_free()
+	for i in window_holder.get_children():
+		i.queue_free()
 	level_above = ""
 	level_below = ""
 	level_left = ""
@@ -107,7 +109,16 @@ func load_level_to_editor():
 		entity_holder.add_child(k)
 		k.owner = owner
 		k.name = "Entity_" + str(i) + " - " + str(k.entity_type)
-	
+	# load windows
+	for i in len(data["Windows"]):
+		var w = data["Windows"][i]
+		var k = dimensional_window_scene.instantiate()
+		k.size = w[0].size
+		k.position = w[0].position
+		k.reveals_layer = w[1]
+		window_holder.add_child(k)
+		k.owner = owner
+		k.name = "window - layer " + str(w[1])
 	# tilemaps
 	for i in len(dir.get_files()):
 		if dir.get_files()[i] == "_.tres": continue
@@ -329,6 +340,8 @@ class Level:
 		active = false
 		
 	func activate():
+		FlagManager.clear_flags()
+		
 		for i in constructor.built_levels:
 			if !i.active: continue
 			i.deactivate()
@@ -337,9 +350,13 @@ class Level:
 		for i in entities:
 			i.collision_layer = 4
 			i.collision_mask = 6
+			i.activate()
 		for i in windows:
 			i.show()
-			i.call_deferred("clip")
+		for i in 2:
+			for w in windows:
+				if w.layer == i:
+					w.call_deferred("call_clip")
 		active = true
 			
 		
