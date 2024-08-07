@@ -12,16 +12,17 @@ const AIR_FRICTION = 25.0
 const WALL_JUMP_VELOCITY = Vector2(200.0, -280.0)
 const WALL_DROP_SPEED = 60.0
 const GRAVITY = 980
-const CEILING_BOUNCE_SPEED = 2
 
 var direction: set=update_dir
 var last_dir = 1
-@onready var stamina = MAX_STAMINA
+var stamina = MAX_STAMINA
 var climb_dir = 0
 var overlapping_windows = []
 var overlapping_inner = false
 var real_position:Vector2
 var jumping = false
+
+var locked_direction
 
 @onready var spawn_position: Vector2 = position
 
@@ -52,7 +53,10 @@ func _physics_process(delta):
 	crush_check()
 	if real_position:
 		position = real_position
-	direction = Input.get_axis("Left", "Right")
+	if !$LockDirectionTimer.is_stopped():
+		direction = locked_direction
+	else:
+		direction = Input.get_axis("Left", "Right")
 	if Input.is_action_just_pressed("Jump") or $JumpBuffer.time_left > 0:
 		jumping = true
 	else:
@@ -81,13 +85,15 @@ func falling(delta):
 	if Input.is_action_just_pressed("Jump"):
 		$JumpBuffer.start()
 	
-	if is_on_ceiling():
-		velocity.y = CEILING_BOUNCE_SPEED
 	# Change statesd a
 	if is_on_floor():
 		state = states.Grounded
-	elif test_move(transform, Vector2.RIGHT*last_dir):
-		state = states.Climb
+	else:
+		for i in [-1, 1]:
+			if test_move(transform, Vector2(i, 0)):
+				state = states.Climb
+				direction = i
+				break
 
 
 func grounded(delta):
@@ -123,7 +129,7 @@ func climb(delta):
 	
 	# Change Stamina
 	if vdirection < 0:
-		stamina -= 40 * delta
+		stamina -= 75 * delta
 	elif vdirection == 0:
 		stamina -= 25 * delta
 	
@@ -132,14 +138,13 @@ func climb(delta):
 	# Wall Jump!
 	if jumping:
 		state = states.Falling
-		if direction == -climb_dir:
-			velocity = WALL_JUMP_VELOCITY
-			velocity.x *= -climb_dir
-		elif direction == climb_dir:
-			velocity = WALL_JUMP_VELOCITY
-			velocity.x = 0
+		if vdirection > 0:
+			velocity = Vector2(WALL_DROP_SPEED, 0)
 		else:
-			velocity.x = -climb_dir * WALL_DROP_SPEED
+			velocity = WALL_JUMP_VELOCITY
+			locked_direction = -climb_dir
+			$LockDirectionTimer.start()
+		velocity.x *= -climb_dir
 	
 	# Leaving state
 	elif !test_move(transform, Vector2.RIGHT * climb_dir):

@@ -37,12 +37,14 @@ func load_branch(pattern:TileMapPattern, level:):
 		i.hide()
 	level_obj = level
 	outline.hide()
-
+	$Area.position = get_rect().size / 2
+	$Area/CollisionShape2D.shape.size = get_rect().size
+	hide()
 
 # Window Movement And Drag
 func _process(delta):
 	if Engine.is_editor_hint(): return
-	# this needs to be here bc if its not then i get an error every frame while in the editor i do NOT understand
+	# this ^ needs to be here bc if its not then i get an error every frame while in the editor i do NOT understand
 	if dragging or hovered:
 		mouse_position = get_global_mouse_position()
 	if Input.is_action_just_pressed("Click") and hovered:

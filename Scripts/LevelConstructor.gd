@@ -260,6 +260,12 @@ func save_level():
 	var limbo_pos_set = []
 	for i in tilemap.get_layers_count():
 		# get layer tiles and polygons
+		# get non-decor tiles
+		var terrain_cells = []
+		for coord in tilemap.get_used_cells(i):
+			if tilemap.get_cell_tile_data(i, coord).get_custom_data("is_decor"): continue
+			terrain_cells.append(coord)
+		#move on. immediately dont use them
 		var pattern:TileMapPattern = tilemap.get_pattern(i, tilemap.get_used_cells(i))
 		var polygons = StaticbodyController.generate_static_body_polygons(tilemap, i)
 		# store data to file
@@ -267,8 +273,8 @@ func save_level():
 		ResourceSaver.save(pattern, "res://Levels/" + level_name + "/" + str(i) + ".tres")
 		# update total save
 		BetterTerrain.set_cells(limbo_tmap, 0, tilemap.get_used_cells(i), 0)
-		BetterTerrain.update_terrain_cells(limbo_tmap, 0, tilemap.get_used_cells(i))
-		limbo_pos_set += tilemap.get_used_cells(i)
+		BetterTerrain.update_terrain_cells(limbo_tmap, 0, terrain_cells)
+		limbo_pos_set += terrain_cells
 	
 	# limbo tmap
 	var data = limbo_tmap.get_pattern(0, limbo_pos_set)
