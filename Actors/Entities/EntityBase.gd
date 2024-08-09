@@ -7,50 +7,48 @@ class_name Entity extends Area2D
 @export var flag:int = -1
 @export var invert_flag:bool = false
 
+var sub_sprites = []
+
 var initial_position:Vector2
 
 enum entities {
-	Spike
+	Spike,
+	SchrodingerSwitch
 }
 
 var sprite:Sprite2D
 
-
-var sprites:Array[Texture2D] = [
-	load("res://Graphics/Entity_Graphics/spike.png")
-]
-
-var outlines:Array[Texture2D] = [
-	load("res://Graphics/Entity_Graphics/Outlines/spike.png")
-]
-
+@export_category("Setup")
+@export var sprite_anims:Array[PackedScene]
 var stored_polygons = []
 
-var window_copies = []
-
 func initialize():
+	if entity_type == entities.Spike:
+		size.y = 8
+		connect("body_entered", player_entered)
+	elif entity_type == entities.SchrodingerSwitch:
+		size = Vector2.ONE * 8
+		var found = false
+		for i in len(exists):
+			if found:
+				exists[i] = false
+			elif exists[i]:
+				found = true
+		if !found:
+			exists[0] = true
+	add_to_group("Clip_Entity")
 	initial_position = position
 	position = Vector2.ZERO
-	add_to_group("Clip_Entity")
 	var k = CollisionPolygon2D.new()
 	k.polygon = get_polygon()
 	call_deferred("add_child", k)
-	connect("body_entered", player_entered)
-	sprite = Sprite2D.new()
+	sprite = sprite_anims[entity_type].instantiate()
 	add_child(sprite)
-	sprite.region_enabled = true
-	sprite.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	sprite.region_rect = Rect2(Vector2.ZERO, size)
-	sprite.texture = sprites[entity_type]
 	sprite.position = initial_position
-	sprite.centered = false
 	sprite.rotation_degrees = rotat
+	sub_sprites.append(sprite)
 	
-	
-func switch_to_outline():
-	sprite.texture = outlines[entity_type]
-	show()
-
 
 func get_polygon():
 	var out = [
@@ -63,6 +61,7 @@ func get_polygon():
 		out = StaticbodyController.rotate_polygon(out, initial_position, rotat)
 	return out
 
+
 func reset_polygon():
 	stored_polygons = [get_polygon()]
 
@@ -71,6 +70,15 @@ func clip_polygon(rect:Rect2):
 
 func apply_polygons():
 	StaticbodyController.add_polygons_as_children(stored_polygons, self)
+	if stored_polygons == []:
+		inside_window()
+	else:
+		uninside_window()
+	
+func switch_to_outline():
+	get_child(0).is_alt = true
+	get_child(0).is_alt = true
+	show()
 
 # Player Collision Stuff!
 func player_entered(body):
@@ -78,42 +86,44 @@ func player_entered(body):
 		body.entity_collision(self)
 
 
+func inside_window():
+	if entity_type == entities.SchrodingerSwitch:
+		FlagManager.set_flag(flag, true)
+
+func uninside_window():
+	if entity_type == entities.SchrodingerSwitch:
+		FlagManager.set_flag(flag, false)
+
 # Flag Stuff!
 var prev_offset
-var target_offset
+var target_offset = Vector2.ZERO
 var timer:SceneTreeTimer
-const SPIKE_OFFSET_DISTANCE = 3
-const SPIKE_MOVE_TIME = 0.1
 
 
 func activate():
 	if flag > -1:
-		FlagManager.on_flag(flag, flag_on(), invert_flag)
-		FlagManager.on_flag(flag, flag_off(), !invert_flag)
+		FlagManager.on_flag(flag, flag_on, invert_flag)
+		FlagManager.on_flag(flag, flag_off, !invert_flag)
 		if invert_flag:
 			flag_on()
-			position = target_offset
-			timer = null
-
+			
 
 func flag_on():
 	if entity_type == entities.Spike:
-		prev_offset = target_offset
-		target_offset += Vector2(0, SPIKE_OFFSET_DISTANCE).rotated(deg_to_rad(rotat))
-		timer = get_tree().create_timer(SPIKE_MOVE_TIME)
+		for i in sub_sprites:
+			i.get_child(0).play("retract")
 		monitoring = false
 		monitorable = false
 
 
 func flag_off():
 	if entity_type == entities.Spike:
-		prev_offset = target_offset
-		target_offset -= Vector2(0, SPIKE_OFFSET_DISTANCE).rotated(deg_to_rad(rotat))
-		timer = get_tree().create_timer(SPIKE_MOVE_TIME)
+		for i in sub_sprites:
+			i.get_child(0).play("extend")
 		monitoring = true
 		monitorable = true
 
 
 func _process(delta):
-	if timer and entity_type == entities.Spike:
-		position = lerp(prev_offset, target_offset, (SPIKE_MOVE_TIME - timer.time_left)/SPIKE_MOVE_TIME)
+	if entity_type == entities.Spike:
+		pass

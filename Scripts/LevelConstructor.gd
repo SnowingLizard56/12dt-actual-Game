@@ -177,6 +177,9 @@ func build_entities(data, offset:Vector2, level_index:int):
 		k.entity_type = e[2]
 		k.position = e[3] + offset
 		k.rotat = e[4]
+		if len(e) > 5:
+			k.flag = e[5]
+			k.invert_flag = e[6]
 		entity_holder.add_child(k)
 		k.initialize()
 		built_levels[level_index].entities.append(k)
@@ -254,7 +257,7 @@ func save_level():
 	var entities = []
 	
 	for i in entity_holder.get_children():
-		entities.append([i.size, i.exists, i.entity_type, i.position, i.rotat])
+		entities.append([i.size, i.exists, i.entity_type, i.position, i.rotat, i.flag, i.invert_flag])
 	# create level directory
 	DirAccess.open("res://Levels/").make_dir(level_name)
 	var limbo_pos_set = []

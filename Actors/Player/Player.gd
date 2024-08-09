@@ -17,8 +17,6 @@ var direction: set=update_dir
 var last_dir = 1
 var stamina = MAX_STAMINA
 var climb_dir = 0
-var overlapping_windows = []
-var overlapping_inner = false
 var real_position:Vector2
 var jumping = false
 
@@ -160,19 +158,12 @@ func climb(delta):
 	elif is_on_floor():
 		state = states.Grounded
 
-# Change Overlapping Windows
-func on_window_entered(window):
-	overlapping_windows.append(window)
-
-func on_window_exited(window):
-	overlapping_windows.erase(window)
-
 func death():
 	real_position = spawn_position
 	velocity = Vector2.ZERO
 	state = states.Falling
 	get_node("../LevelConstructor").allow_switch = true
-
+	
 func entity_collision(ent):
 	if ent.entity_type == Entity.entities.Spike:
 		if ent.rotat == 0 and velocity.y >= 0:

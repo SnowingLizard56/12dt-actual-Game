@@ -1,6 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://pwis3gamyvf"]
+[gd_scene load_steps=4 format=3 uid="uid://pwis3gamyvf"]
 
 [ext_resource type="Script" path="res://Actors/Entities/EntityBase.gd" id="1_v1jli"]
+[ext_resource type="PackedScene" uid="uid://7gphemono4ik" path="res://Actors/Entities/Anims/spike.tscn" id="2_gcfmv"]
+[ext_resource type="PackedScene" uid="uid://b1s1wmyjc1bb1" path="res://Actors/Entities/Anims/catswitch.tscn" id="3_7rpbt"]
 
 [node name="EntityBase" type="Area2D"]
+collision_layer = 0
+collision_mask = 0
 script = ExtResource("1_v1jli")
+sprite_anims = Array[PackedScene]([ExtResource("2_gcfmv"), ExtResource("3_7rpbt")])

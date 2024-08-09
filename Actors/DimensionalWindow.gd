@@ -31,7 +31,7 @@ func load_branch(pattern:TileMapPattern, level:):
 		if !i.exists[layer]:
 			continue
 		var k = i.sprite.duplicate(8)
-		i.window_copies.append(k)
+		i.sub_sprites.append(k)
 		k.position -= offset
 		$Clip/TileMap.add_child(k)
 		i.hide()

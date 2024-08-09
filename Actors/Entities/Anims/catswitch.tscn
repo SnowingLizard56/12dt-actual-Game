@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://b1s1wmyjc1bb1"]
+
+[ext_resource type="Script" path="res://Actors/Entities/Anims/TiledSpriteAnimator.gd" id="1_p62qg"]
+[ext_resource type="Texture2D" uid="uid://hgvg6ofub3tl" path="res://Graphics/Entity_Graphics/catswitch.png" id="2_yhfgm"]
+
+[node name="Spike" type="Sprite2D"]
+texture_repeat = 2
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 8)
+script = ExtResource("1_p62qg")
+frames = Array[Texture2D]([ExtResource("2_yhfgm")])
+alt_frames = Array[Texture2D]([ExtResource("2_yhfgm")])

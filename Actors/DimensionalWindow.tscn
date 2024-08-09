@@ -17,6 +17,7 @@ tilemap = NodePath("Clip/TileMap")
 outline = NodePath("Outline")
 
 [node name="Area" type="Area2D" parent="."]
+position = Vector2(16, 16)
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -36,6 +37,7 @@ mouse_filter = 1
 color = Color(0.380392, 0.380392, 0.380392, 1)
 
 [node name="TileMap" type="TileMap" parent="Clip"]
+clip_children = 2
 tile_set = ExtResource("2_cruy2")
 format = 2
 
