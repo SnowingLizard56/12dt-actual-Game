@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://hgvg6ofub3tl"
-path="res://.godot/imported/catswitch.png-4ba9104ade1948c8701ade5625b4ddad.ctex"
+uid="uid://r4an6mneic84"
+path="res://.godot/imported/spike_outline2.png-96f9fff8dc3c560d07f4b7629cb3c48e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Graphics/Entity_Graphics/catswitch.png"
-dest_files=["res://.godot/imported/catswitch.png-4ba9104ade1948c8701ade5625b4ddad.ctex"]
+source_file="res://Graphics/Entity_Graphics/spike/spike_outline2.png"
+dest_files=["res://.godot/imported/spike_outline2.png-96f9fff8dc3c560d07f4b7629cb3c48e.ctex"]
 
 [params]
 

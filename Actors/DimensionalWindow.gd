@@ -23,13 +23,13 @@ var layer:int
 var level_obj:LevelConstructor.Level
 
 
-func load_branch(pattern:TileMapPattern, level:):
+func load_branch(pattern:TileMapPattern, level):
 	if Engine.is_editor_hint(): return
 	# Main Layer Tilemap
-	tilemap.set_pattern(0, Vector2i.ZERO, pattern)
+	tilemap.set_pattern(0, Vector2i(0, level.data["TileOffsets"][layer]), pattern)
 	for i in level.entities:
-		if !i.exists[layer]:
-			continue
+		if !i.exists[layer] and i.entity_type == Entity.entities.Spike: continue
+		if i.exists[layer] and i.entity_type == Entity.entities.SchrodingerSwitch: continue
 		var k = i.sprite.duplicate(8)
 		i.sub_sprites.append(k)
 		k.position -= offset

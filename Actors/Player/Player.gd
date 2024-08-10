@@ -66,6 +66,16 @@ func _physics_process(delta):
 	elif state == states.Climb:
 		climb(delta)
 	move_and_slide()
+	# keep on sides of screen
+	var current_level = get_node("../LevelConstructor").current_level
+	if position.x > current_level.offset.x + 632:
+		if current_level.data["Connections"][3] == "": 
+			position.x = current_level.offset.x + 632
+			velocity.x = 0
+	elif position.x < current_level.offset.x + 8:
+		if current_level.data["Connections"][2] == "":
+			position.x = current_level.offset.x + 8
+			velocity.x = 0
 	real_position = position
 	position = round(position)
 
@@ -157,6 +167,7 @@ func climb(delta):
 				velocity.y *= 0.5
 	elif is_on_floor():
 		state = states.Grounded
+
 
 func death():
 	real_position = spawn_position

@@ -5,10 +5,10 @@
 [ext_resource type="Texture2D" uid="uid://24ilxuxp6xqf" path="res://Graphics/Entity_Graphics/spike/spike1.png" id="3_e5qyx"]
 [ext_resource type="Texture2D" uid="uid://ij30cwxafwgj" path="res://Graphics/Entity_Graphics/spike/spike2.png" id="4_knpnu"]
 [ext_resource type="Texture2D" uid="uid://cvt7agbegd54v" path="res://Graphics/Entity_Graphics/spike/spike3.png" id="5_70u0j"]
-[ext_resource type="Texture2D" uid="uid://cd6ee3sraxdms" path="res://Graphics/Entity_Graphics/spike_outline/spike_outline0.png" id="6_yrs4q"]
-[ext_resource type="Texture2D" uid="uid://dcpbxi7kc4i4d" path="res://Graphics/Entity_Graphics/spike_outline/spike_outline1.png" id="7_q1voj"]
-[ext_resource type="Texture2D" uid="uid://r4an6mneic84" path="res://Graphics/Entity_Graphics/spike_outline/spike_outline2.png" id="8_wms74"]
-[ext_resource type="Texture2D" uid="uid://ca6up1j3ahhwu" path="res://Graphics/Entity_Graphics/spike_outline/spike_outline3.png" id="9_ecv0k"]
+[ext_resource type="Texture2D" uid="uid://cd6ee3sraxdms" path="res://Graphics/Entity_Graphics/spike/spike_outline0.png" id="6_03x1r"]
+[ext_resource type="Texture2D" uid="uid://dcpbxi7kc4i4d" path="res://Graphics/Entity_Graphics/spike/spike_outline1.png" id="7_0q6wi"]
+[ext_resource type="Texture2D" uid="uid://r4an6mneic84" path="res://Graphics/Entity_Graphics/spike/spike_outline2.png" id="8_xu6wk"]
+[ext_resource type="Texture2D" uid="uid://ca6up1j3ahhwu" path="res://Graphics/Entity_Graphics/spike/spike_outline3.png" id="9_27550"]
 
 [sub_resource type="Animation" id="Animation_7dsw3"]
 resource_name = "extend"
@@ -57,7 +57,7 @@ region_enabled = true
 region_rect = Rect2(0, 0, 32, 8)
 script = ExtResource("1_ixlst")
 frames = Array[Texture2D]([ExtResource("2_rd4v6"), ExtResource("3_e5qyx"), ExtResource("4_knpnu"), ExtResource("5_70u0j")])
-alt_frames = Array[Texture2D]([ExtResource("6_yrs4q"), ExtResource("7_q1voj"), ExtResource("8_wms74"), ExtResource("9_ecv0k")])
+alt_frames = Array[Texture2D]([ExtResource("6_03x1r"), ExtResource("7_0q6wi"), ExtResource("8_xu6wk"), ExtResource("9_27550")])
 own_frame = 3
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]

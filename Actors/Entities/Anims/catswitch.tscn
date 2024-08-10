@@ -1,13 +1,73 @@
-[gd_scene load_steps=3 format=3 uid="uid://b1s1wmyjc1bb1"]
+[gd_scene load_steps=25 format=3 uid="uid://b1s1wmyjc1bb1"]
 
 [ext_resource type="Script" path="res://Actors/Entities/Anims/TiledSpriteAnimator.gd" id="1_p62qg"]
-[ext_resource type="Texture2D" uid="uid://hgvg6ofub3tl" path="res://Graphics/Entity_Graphics/catswitch.png" id="2_yhfgm"]
+[ext_resource type="Texture2D" uid="uid://bri1fl53d6dpf" path="res://Graphics/Entity_Graphics/catswitch/active0.png" id="2_t7c88"]
+[ext_resource type="Texture2D" uid="uid://btb3f0k6bh8mo" path="res://Graphics/Entity_Graphics/catswitch/active1.png" id="3_6gbgi"]
+[ext_resource type="Texture2D" uid="uid://c1hfbe6aibbv6" path="res://Graphics/Entity_Graphics/catswitch/active2.png" id="4_fwodp"]
+[ext_resource type="Texture2D" uid="uid://c1r43gjit2g5a" path="res://Graphics/Entity_Graphics/catswitch/active3.png" id="5_l1rja"]
+[ext_resource type="Texture2D" uid="uid://bbertbi5wj3vj" path="res://Graphics/Entity_Graphics/catswitch/active4.png" id="6_0avbh"]
+[ext_resource type="Texture2D" uid="uid://bypgib32q8fix" path="res://Graphics/Entity_Graphics/catswitch/active5.png" id="7_y1xqm"]
+[ext_resource type="Texture2D" uid="uid://bgte716n7o80u" path="res://Graphics/Entity_Graphics/catswitch/active6.png" id="8_qp514"]
+[ext_resource type="Texture2D" uid="uid://cw45yvduanerj" path="res://Graphics/Entity_Graphics/catswitch/active7.png" id="9_d6vqp"]
+[ext_resource type="Texture2D" uid="uid://d0im2fc6h6q1b" path="res://Graphics/Entity_Graphics/catswitch/active8.png" id="10_w3cig"]
+[ext_resource type="Texture2D" uid="uid://bgakekibwmgcj" path="res://Graphics/Entity_Graphics/catswitch/active9.png" id="11_th3ba"]
+[ext_resource type="Texture2D" uid="uid://b6kv140ndhhe0" path="res://Graphics/Entity_Graphics/catswitch/inactive0.png" id="12_3l3sp"]
+[ext_resource type="Texture2D" uid="uid://cuc8e12n4lcfa" path="res://Graphics/Entity_Graphics/catswitch/inactive1.png" id="13_0gr3f"]
+[ext_resource type="Texture2D" uid="uid://brpsbb3c61i8o" path="res://Graphics/Entity_Graphics/catswitch/inactive2.png" id="14_pc3ir"]
+[ext_resource type="Texture2D" uid="uid://tjp2ijf07xvh" path="res://Graphics/Entity_Graphics/catswitch/inactive3.png" id="15_3go7v"]
+[ext_resource type="Texture2D" uid="uid://btymslgu2pr0y" path="res://Graphics/Entity_Graphics/catswitch/inactive4.png" id="16_rvbd6"]
+[ext_resource type="Texture2D" uid="uid://be4oe8nsi0fyy" path="res://Graphics/Entity_Graphics/catswitch/inactive5.png" id="17_b1tpb"]
+[ext_resource type="Texture2D" uid="uid://de2dkw5qc12jm" path="res://Graphics/Entity_Graphics/catswitch/inactive6.png" id="18_uiguj"]
+[ext_resource type="Texture2D" uid="uid://bo1j35y315lob" path="res://Graphics/Entity_Graphics/catswitch/inactive7.png" id="19_tu7ky"]
+[ext_resource type="Texture2D" uid="uid://by74cby5ns7g8" path="res://Graphics/Entity_Graphics/catswitch/inactive8.png" id="20_a4d3b"]
+[ext_resource type="Texture2D" uid="uid://cctke3fm0lkr5" path="res://Graphics/Entity_Graphics/catswitch/inactive9.png" id="21_xm4me"]
 
-[node name="Spike" type="Sprite2D"]
+[sub_resource type="Animation" id="Animation_1cqwh"]
+resource_name = "activate"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:own_frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+}
+
+[sub_resource type="Animation" id="Animation_3s2rv"]
+resource_name = "deactivate"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:own_frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_72p5d"]
+_data = {
+"activate": SubResource("Animation_1cqwh"),
+"deactivate": SubResource("Animation_3s2rv")
+}
+
+[node name="Schrodinger Switch" type="Sprite2D"]
 texture_repeat = 2
 centered = false
 region_enabled = true
 region_rect = Rect2(0, 0, 32, 8)
 script = ExtResource("1_p62qg")
-frames = Array[Texture2D]([ExtResource("2_yhfgm")])
-alt_frames = Array[Texture2D]([ExtResource("2_yhfgm")])
+frames = Array[Texture2D]([ExtResource("2_t7c88"), ExtResource("3_6gbgi"), ExtResource("4_fwodp"), ExtResource("5_l1rja"), ExtResource("6_0avbh"), ExtResource("7_y1xqm"), ExtResource("8_qp514"), ExtResource("9_d6vqp"), ExtResource("10_w3cig"), ExtResource("11_th3ba"), ExtResource("12_3l3sp"), ExtResource("13_0gr3f"), ExtResource("14_pc3ir"), ExtResource("15_3go7v"), ExtResource("16_rvbd6"), ExtResource("17_b1tpb"), ExtResource("18_uiguj"), ExtResource("19_tu7ky"), ExtResource("20_a4d3b"), ExtResource("21_xm4me")])
+own_frame = 9
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_72p5d")
+}

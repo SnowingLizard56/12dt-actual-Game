@@ -88,11 +88,15 @@ func player_entered(body):
 
 func inside_window():
 	if entity_type == entities.SchrodingerSwitch:
-		FlagManager.set_flag(flag, true)
+		if FlagManager.set_flag(flag, true):
+			for i in sub_sprites:
+				i.get_child(0).play("activate")
 
 func uninside_window():
 	if entity_type == entities.SchrodingerSwitch:
-		FlagManager.set_flag(flag, false)
+		if FlagManager.set_flag(flag, false):
+			for i in sub_sprites:
+				i.get_child(0).play("deactivate")
 
 # Flag Stuff!
 var prev_offset

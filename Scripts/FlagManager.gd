@@ -5,13 +5,14 @@ static var callable_holder:Array[Array] = []
 
 
 static func set_flag(index:int, value:bool):
+	if index == -1: return false
 	update_length(index)
-	if FlagManager.flags[index] == value: return
+	if FlagManager.flags[index] == value: return false
 	FlagManager.flags[index] = value
-	print(FlagManager.flags)
 	for i in FlagManager.callable_holder[index]:
 		if i[1] == value: continue
 		i[0].call()
+	return true
 
 static func get_flag(index:int):
 	if index < len(FlagManager.flags): return false

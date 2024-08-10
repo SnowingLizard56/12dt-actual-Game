@@ -106,6 +106,8 @@ func load_level_to_editor():
 		k.entity_type = e[2]
 		k.position = e[3]
 		k.rotat = e[4]
+		k.flag = e[5]
+		k.invert_flag = e[6]
 		entity_holder.add_child(k)
 		k.owner = owner
 		k.name = "Entity_" + str(i) + " - " + str(k.entity_type)
@@ -123,7 +125,7 @@ func load_level_to_editor():
 	for i in len(dir.get_files()):
 		if dir.get_files()[i] == "_.tres": continue
 		var pattern = ResourceLoader.load(dir.get_current_dir() +"/"+ dir.get_files()[i]) as TileMapPattern
-		tilemap.set_pattern(i, Vector2i.ZERO, pattern)
+		tilemap.set_pattern(i, Vector2i(0, data["TileOffsets"][i]), pattern)
 	
 	# data
 	level_above = data["Connections"][0]
@@ -177,9 +179,8 @@ func build_entities(data, offset:Vector2, level_index:int):
 		k.entity_type = e[2]
 		k.position = e[3] + offset
 		k.rotat = e[4]
-		if len(e) > 5:
-			k.flag = e[5]
-			k.invert_flag = e[6]
+		k.flag = e[5]
+		k.invert_flag = e[6]
 		entity_holder.add_child(k)
 		k.initialize()
 		built_levels[level_index].entities.append(k)
@@ -261,13 +262,17 @@ func save_level():
 	# create level directory
 	DirAccess.open("res://Levels/").make_dir(level_name)
 	var limbo_pos_set = []
+	var tileoffsets = []
 	for i in tilemap.get_layers_count():
 		# get layer tiles and polygons
 		# get non-decor tiles
 		var terrain_cells = []
+		tileoffsets.append(45)
 		for coord in tilemap.get_used_cells(i):
 			if tilemap.get_cell_tile_data(i, coord).get_custom_data("is_decor"): continue
 			terrain_cells.append(coord)
+			if tileoffsets[i] > coord.y:
+				tileoffsets[i] = coord.y
 		#move on. immediately dont use them
 		var pattern:TileMapPattern = tilemap.get_pattern(i, tilemap.get_used_cells(i))
 		var polygons = StaticbodyController.generate_static_body_polygons(tilemap, i)
@@ -288,13 +293,13 @@ func save_level():
 	var windows = []
 	for i in window_holder.get_children():
 		windows.append([Rect2(i.position, i.size), i.reveals_layer])
-	
 	# give data to meta
 	data.set_meta("_", {
 		"PlayerSpawn": player.position,
 		"Entities": entities,
 		"Connections": [level_above, level_below, level_left, level_right],
-		"Windows": windows
+		"Windows": windows,
+		"TileOffsets": tileoffsets
 	})
 	
 	# save data dict

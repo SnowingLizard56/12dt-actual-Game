@@ -14,7 +14,7 @@ func set_alt(value):
 	set__frame(own_frame)
 
 func set__frame(value):
-	if is_alt:
+	if is_alt and len(alt_frames) == len(frames):
 		texture = alt_frames[value]
 	else:
 		texture = frames[value]
