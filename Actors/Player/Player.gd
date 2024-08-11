@@ -1,17 +1,18 @@
 class_name Player extends CharacterBody2D
 
-const SPEED = 150.0
+const SPEED = 120.0
 const SLOW_SPEED = 50.0
 const JUMP_SPEED_HORIZONTAL = 200
 const AIR_MOVE_SPEED = 250.0
-const CLIMB_SPEED = 120.0
+const CLIMB_SPEED = 70.0
 const JUMP_SPEED = -300.0
-const CLIMB_FINISH_SPEED = 50.0
+const CLIMB_FINISH_SPEED = 120.0
 const MAX_STAMINA = 300.0
 const AIR_FRICTION = 25.0
 const WALL_JUMP_VELOCITY = Vector2(200.0, -280.0)
 const WALL_DROP_SPEED = 60.0
 const GRAVITY = 980
+const TERMINAL_VELOCITY = 350
 
 var direction: set=update_dir
 var last_dir = 1
@@ -44,6 +45,9 @@ func set_state(n):
 			climb_dir = 1
 		else:
 			climb_dir = -1
+		$Sprite.scale.x = abs($Sprite.scale.x) * climb_dir
+	elif n == states.Falling:
+		falling_down = false
 	state = n
 
 func _physics_process(delta):
@@ -55,6 +59,9 @@ func _physics_process(delta):
 		direction = locked_direction
 	else:
 		direction = Input.get_axis("Left", "Right")
+	# sprite direction
+	if direction != 0 and state != states.Climb:
+		$Sprite.scale.x = abs($Sprite.scale.x) * direction
 	if Input.is_action_just_pressed("Jump") or $JumpBuffer.time_left > 0:
 		jumping = true
 	else:
@@ -79,29 +86,31 @@ func _physics_process(delta):
 	real_position = position
 	position = round(position)
 
+var falling_down = false
 
 # Physics States
 func falling(delta):
 	# Gravity
-	velocity.y = move_toward(velocity.y, GRAVITY/2.0, GRAVITY * delta)
+	velocity.y = move_toward(velocity.y, TERMINAL_VELOCITY, GRAVITY * delta)
 	# Friction
 	velocity.x = move_toward(velocity.x, 0, AIR_FRICTION * delta)
 	
-	
 	velocity.x = lerp(velocity.x, direction * SPEED, delta*6)
+	
+	# Anims
+	if velocity.y > 0 and !falling_down:
+		falling_down = true
+		$Sprite.play("Fall_Start")
 	
 	if Input.is_action_just_pressed("Jump"):
 		$JumpBuffer.start()
-	
 	# Change statesd a
 	if is_on_floor():
+		$Sprite.play("Fall_Landing")
 		state = states.Grounded
-	else:
-		for i in [-1, 1]:
-			if test_move(transform, Vector2(i, 0)):
-				state = states.Climb
-				direction = i
-				break
+	elif test_move(transform, Vector2(abs(velocity.x)/velocity.x, 0)):
+			state = states.Climb
+			direction = abs(velocity.x)/velocity.x
 
 
 func grounded(delta):
@@ -109,12 +118,18 @@ func grounded(delta):
 	if jumping and (is_on_floor() or !$CoyoteTimer.is_stopped()):
 		velocity.y = JUMP_SPEED
 		state = states.Falling
+		$Sprite.play("Jump")
+	
+	if direction == 0 and !jumping:
+		$Sprite.play("Idle")
 	
 	# Change velocity
 	if Input.is_action_pressed("Down"):
 		velocity.x = lerp(velocity.x, direction * SLOW_SPEED, delta*30)
+		if direction != 0 and !jumping: $Sprite.play("Walk")
 	else:
 		velocity.x = lerp(velocity.x, direction * SPEED, delta*30)
+		if direction != 0 and !jumping: $Sprite.play("Walk", 2.0)
 	if abs(velocity.x) < 1.5:
 		velocity.x = 0
 	
@@ -128,13 +143,17 @@ func grounded(delta):
 
 func climb(delta):
 	var vdirection = Input.get_axis("Up", "Down")
+	
 	# No stamina? Fall.
 	if stamina < 0 and vdirection <= 0:
 		vdirection = 0.5
 	elif vdirection > 0:
 		vdirection = 1.5
+	# check 11 pixels up for idle. if not on wall 11 pixels up, then fall down a bit.
+	if vdirection >= 0:
+		if !test_move(transform.translated(Vector2(0, -11)), Vector2.RIGHT * climb_dir):
+			vdirection = 1
 		
-	
 	# Change Stamina
 	if vdirection < 0:
 		stamina -= 75 * delta
@@ -142,6 +161,13 @@ func climb(delta):
 		stamina -= 25 * delta
 	
 	velocity.y = vdirection * CLIMB_SPEED
+	
+	if velocity.y > 0:
+		$Sprite.play("Climb_Down")
+	elif  velocity.y < 0:
+		$Sprite.play("Climb_Up")
+	else:
+		$Sprite.play("Climb_Idle")
 	
 	# Wall Jump!
 	if jumping:
@@ -152,6 +178,7 @@ func climb(delta):
 			velocity = WALL_JUMP_VELOCITY
 			locked_direction = -climb_dir
 			$LockDirectionTimer.start()
+			$Sprite.play("Jump")
 		velocity.x *= -climb_dir
 	
 	# Leaving state
@@ -159,6 +186,7 @@ func climb(delta):
 		state = states.Falling
 		if direction == 0 and vdirection < 0:
 			velocity.x = CLIMB_FINISH_SPEED * climb_dir
+			$Sprite.play("Jump")
 		else:
 			velocity.x = CLIMB_FINISH_SPEED * direction
 			if vdirection < 0:
@@ -195,3 +223,8 @@ func crush_check():
 
 func _on_visible_notifier_screen_exited():
 	screen_exited.emit()
+
+
+func _on_sprite_animation_finished():
+	if state == states.Falling:
+		$Sprite.play("Fall_Loop")

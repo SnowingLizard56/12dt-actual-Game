@@ -4,18 +4,16 @@
 [ext_resource type="SpriteFrames" uid="uid://xqx7430frvoy" path="res://Graphics/Player/Player_Frames.tres" id="2_2top5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ggc0s"]
-size = Vector2(15, 23)
+size = Vector2(15, 20)
 
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 2147483649
 script = ExtResource("1_1lu34")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -12)
 sprite_frames = ExtResource("2_2top5")
-animation = &"Fall"
-frame = 5
-frame_progress = 1.0
+animation = &"Climb_Idle"
 
 [node name="CoyoteTimer" type="Timer" parent="."]
 wait_time = 0.1
@@ -30,7 +28,7 @@ wait_time = 0.12
 one_shot = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -12)
+position = Vector2(0, -10.5)
 shape = SubResource("RectangleShape2D_ggc0s")
 
 [node name="Particles" type="Node2D" parent="."]
@@ -40,4 +38,8 @@ position = Vector2(0, -8.25)
 scale = Vector2(0.125, 0.34375)
 rect = Rect2(-8, -24, 16, 48)
 
+[node name="Marker2D" type="Marker2D" parent="."]
+position = Vector2(8, -11)
+
+[connection signal="animation_finished" from="Sprite" to="." method="_on_sprite_animation_finished"]
 [connection signal="screen_exited" from="VisibleNotifier" to="." method="_on_visible_notifier_screen_exited"]
