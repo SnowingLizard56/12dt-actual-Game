@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=3 uid="uid://c78ej4entn0pw"]
+
+[sub_resource type="Gradient" id="Gradient_jpfsk"]
+offsets = PackedFloat32Array(0.676543, 0.839506, 0.958025)
+colors = PackedColorArray(1, 0.705882, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_57q5h"]
+gradient = SubResource("Gradient_jpfsk")
+
+[sub_resource type="Gradient" id="Gradient_22g7b"]
+offsets = PackedFloat32Array(0, 0.846914, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_2rmu3"]
+gradient = SubResource("Gradient_22g7b")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_5fktj"]
+particle_flag_disable_z = true
+spread = 180.0
+gravity = Vector3(0, 50, 0)
+initial_velocity_max = 40.0
+orbit_velocity_min = 0.0
+orbit_velocity_max = 0.0
+color_ramp = SubResource("GradientTexture1D_2rmu3")
+color_initial_ramp = SubResource("GradientTexture1D_57q5h")
+hue_variation_max = 0.3
+
+[node name="DeathCrushed" type="GPUParticles2D"]
+position = Vector2(0, -12)
+amount = 80
+process_material = SubResource("ParticleProcessMaterial_5fktj")
+lifetime = 1.5
+explosiveness = 1.0
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 1.5
+one_shot = true
+autostart = true
+
+[connection signal="tree_entered" from="." to="." method="set_emitting" binds= [true]]
+[connection signal="timeout" from="Timer" to="." method="queue_free"]

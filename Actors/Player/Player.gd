@@ -20,6 +20,7 @@ var stamina = MAX_STAMINA
 var climb_dir = 0
 var real_position:Vector2
 var jumping = false
+var crushed = false
 
 var locked_direction
 
@@ -30,6 +31,9 @@ signal screen_exited
 enum states {Grounded, Climb, Falling}
 var state = states.Falling: set=set_state
 
+enum particle {DeathNormal, DeathCrushed}
+@export var particle_scenes:Array[PackedScene] = []
+@export var respawn_gradient:Gradient
 # variable set functions
 func update_dir(d):
 	if d != 0:
@@ -51,10 +55,14 @@ func set_state(n):
 	state = n
 
 func _physics_process(delta):
+	# skip if respawning
+	if !$RespawnTimer.is_stopped(): return
+	# skip if screen transition
 	if $"../ActiveLevelFollower".moving: return
-	crush_check()
+	#get from pixel
 	if real_position:
 		position = real_position
+	# detect direction
 	if !$LockDirectionTimer.is_stopped():
 		direction = locked_direction
 	else:
@@ -62,17 +70,22 @@ func _physics_process(delta):
 	# sprite direction
 	if direction != 0 and state != states.Climb:
 		$Sprite.scale.x = abs($Sprite.scale.x) * direction
+	# detect jump
 	if Input.is_action_just_pressed("Jump") or $JumpBuffer.time_left > 0:
 		jumping = true
 	else:
 		jumping = false
+	# state machine
 	if state == states.Grounded or (jumping and !$CoyoteTimer.is_stopped()):
 		grounded(delta)
 	elif state == states.Falling:
 		falling(delta)
 	elif state == states.Climb:
 		climb(delta)
-	move_and_slide()
+	if test_move(transform, Vector2.ZERO):
+		crush_check()
+	else:
+		move_and_slide()
 	# keep on sides of screen
 	var current_level = get_node("../LevelConstructor").current_level
 	if position.x > current_level.offset.x + 632:
@@ -83,8 +96,13 @@ func _physics_process(delta):
 		if current_level.data["Connections"][2] == "":
 			position.x = current_level.offset.x + 8
 			velocity.x = 0
+	# return to pixel
 	real_position = position
 	position = round(position)
+
+func _process(delta):
+	if !$RespawnTimer.is_stopped():
+		$Sprite.modulate = respawn_gradient.sample(1-($RespawnTimer.time_left/$RespawnTimer.wait_time))
 
 var falling_down = false
 
@@ -115,7 +133,7 @@ func falling(delta):
 
 func grounded(delta):
 	# Handle Jump.
-	if jumping and (is_on_floor() or !$CoyoteTimer.is_stopped()):
+	if jumping:
 		velocity.y = JUMP_SPEED
 		state = states.Falling
 		$Sprite.play("Jump")
@@ -133,7 +151,7 @@ func grounded(delta):
 	if abs(velocity.x) < 1.5:
 		velocity.x = 0
 	
-	if !is_on_floor():
+	if !is_on_floor() and !jumping:
 		state = states.Falling
 		$CoyoteTimer.start()
 	elif test_move(transform, Vector2.RIGHT * direction) and Input.is_action_pressed("Up"):
@@ -151,7 +169,7 @@ func climb(delta):
 		vdirection = 1.5
 	# check 11 pixels up for idle. if not on wall 11 pixels up, then fall down a bit.
 	if vdirection >= 0:
-		if !test_move(transform.translated(Vector2(0, -11)), Vector2.RIGHT * climb_dir):
+		if !test_move(transform.translated(Vector2(0, -10)), Vector2.RIGHT * climb_dir):
 			vdirection = 1
 		
 	# Change Stamina
@@ -163,7 +181,8 @@ func climb(delta):
 	velocity.y = vdirection * CLIMB_SPEED
 	
 	if velocity.y > 0:
-		$Sprite.play("Climb_Down")
+		if vdirection != 1:
+			$Sprite.play("Climb_Down")
 	elif  velocity.y < 0:
 		$Sprite.play("Climb_Up")
 	else:
@@ -198,10 +217,21 @@ func climb(delta):
 
 
 func death():
+	var k
+	if crushed:
+		k = particle_scenes[particle.DeathCrushed].instantiate()
+	else:
+		k = particle_scenes[particle.DeathNormal].instantiate()
+		k.call_deferred("start", $Sprite.scale, velocity)
+	get_parent().call_deferred("add_child", k)
+	k.position += position
 	real_position = spawn_position
+	position = spawn_position
 	velocity = Vector2.ZERO
+	$RespawnTimer.start()
+	$Sprite.play("Idle")
 	state = states.Falling
-	get_node("../LevelConstructor").allow_switch = true
+	crushed = false
 	
 func entity_collision(ent):
 	if ent.entity_type == Entity.entities.Spike:
@@ -218,11 +248,13 @@ func crush_check():
 	for i in [Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT]:
 		if !test_move(transform.translated(i*2), Vector2.ZERO):
 			return false
+	crushed = true
 	death()
 	return true
 
 func _on_visible_notifier_screen_exited():
-	screen_exited.emit()
+	if visible:
+		screen_exited.emit()
 
 
 func _on_sprite_animation_finished():

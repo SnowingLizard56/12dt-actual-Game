@@ -1,0 +1,114 @@
+[gd_scene load_steps=7 format=3 uid="uid://brrmlbfctdpcs"]
+
+[ext_resource type="Script" path="res://Actors/Player/Particles/Deathbits.gd" id="1_80jat"]
+[ext_resource type="Texture2D" uid="uid://ctjcmu58donpd" path="res://Graphics/Player/DEATHBITS.png" id="2_olwr4"]
+
+[sub_resource type="Gradient" id="Gradient_3yu1w"]
+offsets = PackedFloat32Array(0, 0.88866, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.94433, 0.94433, 0.94433, 1, 1, 1, 1, 0)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qv2vy"]
+radius = 7.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pek8x"]
+radius = 3.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7tofp"]
+radius = 2.0
+
+[node name="DEATHBITS" type="Node2D" node_paths=PackedStringArray("bodyparts")]
+script = ExtResource("1_80jat")
+bodyparts = [NodePath("Head"), NodePath("Torso"), NodePath("LeftArm"), NodePath("RightArm"), NodePath("LeftLeg"), NodePath("RightLeg")]
+gradient = SubResource("Gradient_3yu1w")
+
+[node name="Head" type="RigidBody2D" parent="."]
+position = Vector2(0, -13)
+collision_layer = 0
+mass = 10.0
+
+[node name="Sprite" type="Sprite2D" parent="Head"]
+position = Vector2(0, 1)
+texture = ExtResource("2_olwr4")
+hframes = 3
+vframes = 2
+
+[node name="Collision" type="CollisionShape2D" parent="Head"]
+shape = SubResource("CircleShape2D_qv2vy")
+
+[node name="Torso" type="RigidBody2D" parent="."]
+position = Vector2(1, -5)
+collision_layer = 0
+mass = 5.0
+
+[node name="Sprite" type="Sprite2D" parent="Torso"]
+position = Vector2(-1, -7)
+texture = ExtResource("2_olwr4")
+hframes = 3
+vframes = 2
+frame = 5
+
+[node name="Collision" type="CollisionShape2D" parent="Torso"]
+shape = SubResource("CircleShape2D_pek8x")
+
+[node name="LeftArm" type="RigidBody2D" parent="."]
+position = Vector2(-4, -5)
+collision_layer = 0
+
+[node name="Sprite" type="Sprite2D" parent="LeftArm"]
+position = Vector2(4, -7)
+texture = ExtResource("2_olwr4")
+hframes = 3
+vframes = 2
+frame = 1
+
+[node name="Collision" type="CollisionShape2D" parent="LeftArm"]
+shape = SubResource("CircleShape2D_7tofp")
+
+[node name="RightArm" type="RigidBody2D" parent="."]
+position = Vector2(5, -5)
+collision_layer = 0
+
+[node name="Sprite" type="Sprite2D" parent="RightArm"]
+position = Vector2(-5, -7)
+texture = ExtResource("2_olwr4")
+hframes = 3
+vframes = 2
+frame = 2
+
+[node name="Collision" type="CollisionShape2D" parent="RightArm"]
+shape = SubResource("CircleShape2D_7tofp")
+
+[node name="LeftLeg" type="RigidBody2D" parent="."]
+position = Vector2(-1, -2)
+collision_layer = 0
+
+[node name="Sprite" type="Sprite2D" parent="LeftLeg"]
+position = Vector2(1, -10)
+texture = ExtResource("2_olwr4")
+hframes = 3
+vframes = 2
+frame = 3
+
+[node name="Collision" type="CollisionShape2D" parent="LeftLeg"]
+shape = SubResource("CircleShape2D_7tofp")
+
+[node name="RightLeg" type="RigidBody2D" parent="."]
+position = Vector2(-1, -2)
+collision_layer = 0
+
+[node name="Sprite" type="Sprite2D" parent="RightLeg"]
+position = Vector2(1, -10)
+texture = ExtResource("2_olwr4")
+hframes = 3
+vframes = 2
+frame = 4
+
+[node name="Collision" type="CollisionShape2D" parent="RightLeg"]
+position = Vector2(4, 0)
+shape = SubResource("CircleShape2D_7tofp")
+
+[node name="LastingTimer" type="Timer" parent="."]
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="LastingTimer" to="." method="queue_free"]
