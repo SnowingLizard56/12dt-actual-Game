@@ -9,3 +9,5 @@ collision_layer = 0
 collision_mask = 0
 script = ExtResource("1_v1jli")
 sprite_anims = Array[PackedScene]([ExtResource("2_gcfmv"), ExtResource("3_7rpbt")])
+
+[connection signal="area_entered" from="." to="." method="player_entered"]

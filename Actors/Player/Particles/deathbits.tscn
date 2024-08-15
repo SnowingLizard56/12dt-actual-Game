@@ -25,6 +25,8 @@ gradient = SubResource("Gradient_3yu1w")
 position = Vector2(0, -13)
 collision_layer = 0
 mass = 10.0
+gravity_scale = 0.75
+continuous_cd = 1
 
 [node name="Sprite" type="Sprite2D" parent="Head"]
 position = Vector2(0, 1)
@@ -39,6 +41,8 @@ shape = SubResource("CircleShape2D_qv2vy")
 position = Vector2(1, -5)
 collision_layer = 0
 mass = 5.0
+gravity_scale = 0.75
+continuous_cd = 1
 
 [node name="Sprite" type="Sprite2D" parent="Torso"]
 position = Vector2(-1, -7)
@@ -53,6 +57,8 @@ shape = SubResource("CircleShape2D_pek8x")
 [node name="LeftArm" type="RigidBody2D" parent="."]
 position = Vector2(-4, -5)
 collision_layer = 0
+gravity_scale = 0.75
+continuous_cd = 1
 
 [node name="Sprite" type="Sprite2D" parent="LeftArm"]
 position = Vector2(4, -7)
@@ -67,6 +73,8 @@ shape = SubResource("CircleShape2D_7tofp")
 [node name="RightArm" type="RigidBody2D" parent="."]
 position = Vector2(5, -5)
 collision_layer = 0
+gravity_scale = 0.75
+continuous_cd = 1
 
 [node name="Sprite" type="Sprite2D" parent="RightArm"]
 position = Vector2(-5, -7)
@@ -81,6 +89,8 @@ shape = SubResource("CircleShape2D_7tofp")
 [node name="LeftLeg" type="RigidBody2D" parent="."]
 position = Vector2(-1, -2)
 collision_layer = 0
+gravity_scale = 0.75
+continuous_cd = 1
 
 [node name="Sprite" type="Sprite2D" parent="LeftLeg"]
 position = Vector2(1, -10)
@@ -95,6 +105,8 @@ shape = SubResource("CircleShape2D_7tofp")
 [node name="RightLeg" type="RigidBody2D" parent="."]
 position = Vector2(-1, -2)
 collision_layer = 0
+gravity_scale = 0.75
+continuous_cd = 1
 
 [node name="Sprite" type="Sprite2D" parent="RightLeg"]
 position = Vector2(1, -10)

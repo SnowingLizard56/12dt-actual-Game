@@ -25,7 +25,6 @@ var stored_polygons = []
 func initialize():
 	if entity_type == entities.Spike:
 		size.y = 8
-		connect("body_entered", player_entered)
 	elif entity_type == entities.SchrodingerSwitch:
 		size = Vector2.ONE * 8
 		var found = false
@@ -82,8 +81,8 @@ func switch_to_outline():
 
 # Player Collision Stuff!
 func player_entered(body):
-	if body is Player:
-		body.entity_collision(self)
+	if body.get_parent() is Player:
+		body.get_parent().entity_collision(self)
 
 
 func inside_window():

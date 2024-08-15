@@ -246,7 +246,7 @@ func post_level_build(data, offset:Vector2, level_index:int, active:bool, limbo_
 	else:
 		built_levels[level_index].deactivate()
 	# build limbo area 
-	limbo_tmap.set_pattern(0, Vector2i(offset/8), limbo_pattern)
+	limbo_tmap.set_pattern(0, Vector2i(offset/8)+Vector2i(0, data["TileOffsets"].min()), limbo_pattern)
 	# outline entities
 	for i in built_levels[level_index].entities:
 		i.switch_to_outline()

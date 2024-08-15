@@ -41,6 +41,7 @@ func update_dir(d):
 	direction = d
 
 func set_state(n):
+	var continue_set = true
 	if n == states.Grounded:
 		stamina = MAX_STAMINA
 		velocity.y = 0
@@ -50,9 +51,13 @@ func set_state(n):
 		else:
 			climb_dir = -1
 		$Sprite.scale.x = abs($Sprite.scale.x) * climb_dir
+		
+		if !test_move(transform.translated(Vector2(0, 8)), Vector2.RIGHT * climb_dir):
+			continue_set = false
 	elif n == states.Falling:
 		falling_down = false
-	state = n
+	if continue_set:
+		state = n
 
 func _physics_process(delta):
 	# skip if respawning
@@ -201,7 +206,7 @@ func climb(delta):
 		velocity.x *= -climb_dir
 	
 	# Leaving state
-	elif !test_move(transform, Vector2.RIGHT * climb_dir):
+	elif !test_move(transform.translated(Vector2(0, 8)), Vector2.RIGHT * climb_dir):
 		state = states.Falling
 		if direction == 0 and vdirection < 0:
 			velocity.x = CLIMB_FINISH_SPEED * climb_dir
@@ -230,6 +235,7 @@ func death():
 	velocity = Vector2.ZERO
 	$RespawnTimer.start()
 	$Sprite.play("Idle")
+	$Sprite.scale.x = 1
 	state = states.Falling
 	crushed = false
 	
@@ -247,6 +253,7 @@ func entity_collision(ent):
 func crush_check():
 	for i in [Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT]:
 		if !test_move(transform.translated(i*2), Vector2.ZERO):
+			position += i*2
 			return false
 	crushed = true
 	death()

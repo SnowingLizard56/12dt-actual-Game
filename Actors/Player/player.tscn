@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://raujhngxvpl1"]
+[gd_scene load_steps=8 format=3 uid="uid://raujhngxvpl1"]
 
 [ext_resource type="Script" path="res://Actors/Player/Player.gd" id="1_1lu34"]
 [ext_resource type="SpriteFrames" uid="uid://xqx7430frvoy" path="res://Graphics/Player/Player_Frames.tres" id="2_2top5"]
@@ -10,10 +10,13 @@ offsets = PackedFloat32Array(0, 0.598698, 1)
 colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ggc0s"]
-size = Vector2(15, 20.5)
+size = Vector2(15, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_acsxo"]
+size = Vector2(8, 14)
 
 [node name="Player" type="CharacterBody2D"]
-collision_layer = 2147483650
+collision_layer = 2147483648
 script = ExtResource("1_1lu34")
 particle_scenes = Array[PackedScene]([ExtResource("2_swgdg"), ExtResource("3_4hq6l")])
 respawn_gradient = SubResource("Gradient_cw0ra")
@@ -24,7 +27,7 @@ sprite_frames = ExtResource("2_2top5")
 animation = &"Climb_Idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -10.25)
+position = Vector2(0, -10)
 shape = SubResource("RectangleShape2D_ggc0s")
 
 [node name="VisibleNotifier" type="VisibleOnScreenNotifier2D" parent="."]
@@ -47,6 +50,17 @@ one_shot = true
 [node name="RespawnTimer" type="Timer" parent="."]
 one_shot = true
 
+[node name="Marker2D" type="Marker2D" parent="."]
+position = Vector2(8, -9)
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -10)
+shape = SubResource("RectangleShape2D_acsxo")
+
 [connection signal="animation_finished" from="Sprite" to="." method="_on_sprite_animation_finished"]
 [connection signal="screen_exited" from="VisibleNotifier" to="." method="_on_visible_notifier_screen_exited"]
-[connection signal="timeout" from="RespawnTimer" to="." method="show"]
