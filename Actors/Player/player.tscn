@@ -24,7 +24,7 @@ respawn_gradient = SubResource("Gradient_cw0ra")
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -12)
 sprite_frames = ExtResource("2_2top5")
-animation = &"Climb_Idle"
+animation = &"Idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -10)
@@ -36,7 +36,7 @@ scale = Vector2(0.125, 0.34375)
 rect = Rect2(-8, -24, 16, 48)
 
 [node name="CoyoteTimer" type="Timer" parent="."]
-wait_time = 0.1
+wait_time = 0.05
 one_shot = true
 
 [node name="JumpBuffer" type="Timer" parent="."]

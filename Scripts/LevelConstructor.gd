@@ -319,7 +319,11 @@ func enter_new_screen():
 	elif player.position.y < current_level.offset.y: 
 		index = 0
 	#continue
-	if current_level.data["Connections"][index] == "": return
+	if current_level.data["Connections"][index] == "":
+		if index == 1:
+			player.crushed = true
+			player.death()
+		return
 	allow_switch = false
 	# Activate level
 	var level_obj

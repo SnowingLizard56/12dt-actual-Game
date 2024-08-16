@@ -2,6 +2,7 @@ extends Node2D
 
 @export var constructor:LevelConstructor
 @export var cam:Camera2D
+@export var player:Player
 
 signal target_met
 
@@ -14,6 +15,8 @@ func set_target(v):
 	prev_position = target_position
 	position = v
 	target_position = v
+	player.get_node("Sprite").pause()
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -25,3 +28,4 @@ func _process(delta):
 		cam.position = target_position
 		moving = false
 		target_met.emit()
+		player.get_node("Sprite").play()
