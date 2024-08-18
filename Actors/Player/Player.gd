@@ -7,7 +7,7 @@ const AIR_MOVE_SPEED = 250.0
 const CLIMB_SPEED = 70.0
 const JUMP_SPEED = -300.0
 const CLIMB_FINISH_SPEED = 120.0
-const MAX_STAMINA = 300.0
+const MAX_STAMINA = 350.0
 const AIR_FRICTION = 25.0
 const WALL_JUMP_VELOCITY = Vector2(200.0, -280.0)
 const WALL_DROP_SPEED = 60.0
@@ -179,7 +179,7 @@ func climb(delta):
 		
 	# Change Stamina
 	if vdirection < 0:
-		stamina -= 75 * delta
+		stamina -= 100 * delta
 	elif vdirection == 0:
 		stamina -= 25 * delta
 	
