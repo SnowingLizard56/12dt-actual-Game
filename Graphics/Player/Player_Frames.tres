@@ -1,10 +1,10 @@
-[gd_resource type="SpriteFrames" load_steps=42 format=3 uid="uid://xqx7430frvoy"]
+[gd_resource type="SpriteFrames" load_steps=43 format=3 uid="uid://xqx7430frvoy"]
 
 [ext_resource type="Texture2D" uid="uid://ctcwdyxmhqbso" path="res://Graphics/Player/jump.png" id="1_ab03w"]
 [ext_resource type="Texture2D" uid="uid://kxq055awl0em" path="res://Graphics/Player/falling.png" id="2_lbibm"]
 [ext_resource type="Texture2D" uid="uid://b1hmugigr54nl" path="res://Graphics/Player/climb_idle.png" id="2_m28w2"]
 [ext_resource type="Texture2D" uid="uid://bc2ogxudnhn5" path="res://Graphics/Player/climb.png" id="2_sdcy6"]
-[ext_resource type="Texture2D" uid="uid://cuoqeuv5hcm7d" path="res://Graphics/Player/idle.png" id="3_1qndp"]
+[ext_resource type="Texture2D" uid="uid://d1xqpe78pxvxo" path="res://Graphics/Player/idle.png" id="3_1qndp"]
 [ext_resource type="Texture2D" uid="uid://cg3tf3vtc0aeh" path="res://Graphics/Player/slide.png" id="4_1cjgp"]
 [ext_resource type="Texture2D" uid="uid://cocsn1yd6xr3i" path="res://Graphics/Player/walk.png" id="4_2hg7s"]
 
@@ -84,19 +84,23 @@ region = Rect2(32, 0, 16, 24)
 atlas = ExtResource("1_ab03w")
 region = Rect2(0, 24, 16, 24)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_fxmer"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_ee1vj"]
 atlas = ExtResource("3_1qndp")
 region = Rect2(0, 0, 16, 24)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_1ps6c"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_u75v7"]
 atlas = ExtResource("3_1qndp")
 region = Rect2(16, 0, 16, 24)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_v8ni4"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_xkf8k"]
+atlas = ExtResource("3_1qndp")
+region = Rect2(32, 0, 16, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eqcvb"]
 atlas = ExtResource("3_1qndp")
 region = Rect2(0, 24, 16, 24)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_0m127"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_e3p5o"]
 atlas = ExtResource("3_1qndp")
 region = Rect2(16, 24, 16, 24)
 
@@ -235,16 +239,19 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_fxmer")
+"texture": SubResource("AtlasTexture_ee1vj")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_1ps6c")
+"texture": SubResource("AtlasTexture_u75v7")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_v8ni4")
+"texture": SubResource("AtlasTexture_xkf8k")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_0m127")
+"texture": SubResource("AtlasTexture_eqcvb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e3p5o")
 }],
 "loop": true,
 "name": &"Idle",

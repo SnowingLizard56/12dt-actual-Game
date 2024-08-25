@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://bjlrw8kfw412t"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SplashScreen" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SaveSelect" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainMenu" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="StartGame" type="Button" parent="MainMenu"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+text = "START GAME"
+
+[node name="Quit" type="Button" parent="MainMenu"]
+layout_mode = 0
+offset_left = 180.0
+offset_top = 168.0
+offset_right = 227.0
+offset_bottom = 199.0
+text = "QUIT"
+
+[node name="Options" type="Button" parent="MainMenu"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 60.0
+offset_right = 83.0
+offset_bottom = 91.0
+text = "OPTIONS"
+
+[node name="Background" type="CanvasLayer" parent="."]

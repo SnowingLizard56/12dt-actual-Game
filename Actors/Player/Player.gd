@@ -164,6 +164,7 @@ func grounded(delta):
 		velocity += Vector2.UP * 4
 
 
+var ascend_lock = false
 func climb(delta):
 	var vdirection = Input.get_axis("Up", "Down")
 	
@@ -173,8 +174,10 @@ func climb(delta):
 	elif vdirection > 0:
 		vdirection = 1.5
 	# check 11 pixels up for idle. if not on wall 11 pixels up, then fall down a bit.
-	if vdirection >= 0:
-		if !test_move(transform.translated(Vector2(0, -10)), Vector2.RIGHT * climb_dir):
+	if !test_move(transform.translated(Vector2(0, -10)), Vector2.RIGHT * climb_dir):
+		if vdirection < 0 or ascend_lock:
+			ascend_lock = true
+		else:
 			vdirection = 1
 		
 	# Change Stamina
@@ -182,7 +185,9 @@ func climb(delta):
 		stamina -= 100 * delta
 	elif vdirection == 0:
 		stamina -= 25 * delta
-	
+	if ascend_lock:
+		vdirection = -1
+		
 	velocity.y = vdirection * CLIMB_SPEED
 	
 	if velocity.y > 0:
@@ -206,20 +211,14 @@ func climb(delta):
 		velocity.x *= -climb_dir
 	
 	# Leaving state
-	elif !test_move(transform.translated(Vector2(0, 8)), Vector2.RIGHT * climb_dir):
+	elif !test_move(transform, Vector2(climb_dir, 0)):
 		state = states.Falling
-		if direction == 0 and vdirection < 0:
-			velocity.x = CLIMB_FINISH_SPEED * climb_dir
+		ascend_lock = false
+		velocity.x = CLIMB_FINISH_SPEED * climb_dir
+		if vdirection < 0 or ascend_lock:
 			$Sprite.play("Jump")
-		else:
-			velocity.x = CLIMB_FINISH_SPEED * direction
-			if vdirection < 0:
-				stamina -= 40
-			if vdirection > 0 and direction:
-				velocity.y *= 0.5
 	elif is_on_floor():
 		state = states.Grounded
-
 
 func death():
 	var k
