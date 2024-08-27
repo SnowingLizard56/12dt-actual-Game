@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dyyclqnanqmah" path="res://Actors/DimensionalWindow.tscn" id="4_ff4i8"]
 [ext_resource type="Script" path="res://Scripts/LevelFollower.gd" id="4_wwiig"]
 [ext_resource type="TileSet" uid="uid://c0cg70lv5ie4o" path="res://Graphics/Tiles/TileSet.tres" id="5_iq517"]
-[ext_resource type="Script" path="res://PauseMenu.gd" id="7_ljq1v"]
+[ext_resource type="Script" path="res://UI/PauseMenu.gd" id="7_6lkul"]
 [ext_resource type="Shader" path="res://Graphics/UI/blur.gdshader" id="7_x8yb0"]
 
 [sub_resource type="Gradient" id="Gradient_yw64d"]
@@ -30,9 +30,10 @@ color_ramp = SubResource("GradientTexture1D_r1ksu")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ecko4"]
 shader = ExtResource("7_x8yb0")
-shader_parameter/lod = 0.0
+shader_parameter/lod = 1.0
 
 [node name="Main" type="Node2D"]
+process_mode = 1
 
 [node name="LevelConstructor" type="Node2D" parent="." node_paths=PackedStringArray("player", "tilemap", "limbo_tmap", "statics_holder", "window_holder", "entity_holder")]
 script = ExtResource("1_067a3")
@@ -125,18 +126,21 @@ position = Vector2(320, 180)
 amount = 100
 process_material = SubResource("ParticleProcessMaterial_ubeqo")
 lifetime = 4.0
+preprocess = 4.0
 
 [node name="UI" type="CanvasLayer" parent="."]
 layer = 128
 
 [node name="PauseMenu" type="Control" parent="UI"]
+process_mode = 3
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("7_ljq1v")
+script = ExtResource("7_6lkul")
 
 [node name="Blur" type="ColorRect" parent="UI/PauseMenu"]
 material = SubResource("ShaderMaterial_ecko4")

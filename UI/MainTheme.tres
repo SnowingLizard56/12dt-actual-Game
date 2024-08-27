@@ -1,0 +1,14 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://bo5ulq7pp4npf"]
+
+[ext_resource type="FontFile" uid="uid://b603jiva6bko0" path="res://UI/AGENCYB.TTF" id="1_j7k3o"]
+
+[resource]
+default_font = ExtResource("1_j7k3o")
+default_font_size = 37
+Button/colors/font_color = Color(0.643137, 0.643137, 0.643137, 1)
+Button/colors/font_focus_color = Color(0.643137, 0.643137, 0.643137, 1)
+Button/colors/font_hover_color = Color(0.768627, 0.768627, 0.768627, 1)
+Button/colors/font_hover_pressed_color = Color(0.768627, 0.768627, 0.768627, 1)
+Button/colors/font_outline_color = Color(0, 0, 0, 0)
+Button/colors/font_pressed_color = Color(0.517647, 0.517647, 0.517647, 1)
+Label/font_sizes/font_size = 152
