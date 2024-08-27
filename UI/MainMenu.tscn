@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://bjlrw8kfw412t"]
 
 [ext_resource type="Script" path="res://UI/MainMenu.gd" id="1_8in8d"]
-[ext_resource type="Theme" uid="uid://bo5ulq7pp4npf" path="res://UI/MainTheme.tres" id="1_swegd"]
+[ext_resource type="Theme" uid="uid://bo5ulq7pp4npf" path="res://Graphics/UI/MainTheme.tres" id="1_swegd"]
 
 [sub_resource type="Gradient" id="Gradient_7tsrn"]
 offsets = PackedFloat32Array(0, 0.720988, 1)
@@ -115,9 +115,6 @@ focus_mode = 0
 theme = ExtResource("1_swegd")
 text = "QUIT"
 flat = true
-
-[node name="Marker2D" type="Marker2D" parent="."]
-position = Vector2(10, 310)
 
 [connection signal="timeout" from="TitleFadeInTimer" to="SplashScreenTimer" method="start"]
 [connection signal="timeout" from="SplashScreenTimer" to="MenuAppearTimer" method="start"]

@@ -1,6 +1,6 @@
 [gd_resource type="Theme" load_steps=2 format=3 uid="uid://bo5ulq7pp4npf"]
 
-[ext_resource type="FontFile" uid="uid://b603jiva6bko0" path="res://UI/AGENCYB.TTF" id="1_j7k3o"]
+[ext_resource type="FontFile" uid="uid://b603jiva6bko0" path="res://Graphics/UI/AGENCYB.TTF" id="1_j7k3o"]
 
 [resource]
 default_font = ExtResource("1_j7k3o")

@@ -42,7 +42,7 @@ tile_set = ExtResource("2_cruy2")
 format = 2
 
 [node name="Outline" type="Line2D" parent="."]
-z_index = -1
+z_index = 1
 width = 1.0
 default_color = Color(0.831373, 0.8, 0.364706, 1)
 

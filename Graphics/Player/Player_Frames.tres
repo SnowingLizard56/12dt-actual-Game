@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=43 format=3 uid="uid://xqx7430frvoy"]
+[gd_resource type="SpriteFrames" load_steps=42 format=3 uid="uid://xqx7430frvoy"]
 
 [ext_resource type="Texture2D" uid="uid://ctcwdyxmhqbso" path="res://Graphics/Player/jump.png" id="1_ab03w"]
 [ext_resource type="Texture2D" uid="uid://kxq055awl0em" path="res://Graphics/Player/falling.png" id="2_lbibm"]
@@ -103,10 +103,6 @@ region = Rect2(0, 24, 16, 24)
 [sub_resource type="AtlasTexture" id="AtlasTexture_e3p5o"]
 atlas = ExtResource("3_1qndp")
 region = Rect2(16, 24, 16, 24)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ijb46"]
-atlas = ExtResource("1_ab03w")
-region = Rect2(0, 0, 16, 24)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ucysr"]
 atlas = ExtResource("1_ab03w")
@@ -259,14 +255,11 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_ijb46")
-}, {
-"duration": 1.0,
 "texture": SubResource("AtlasTexture_ucysr")
 }],
 "loop": false,
 "name": &"Jump",
-"speed": 5.0
+"speed": 20.0
 }, {
 "frames": [{
 "duration": 1.0,

@@ -13,6 +13,8 @@ extends Control
 @onready var title_initial_pos = title.position
 @onready var title_final_pos = end_marker.position
 
+var skip = false
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if !fade_timer.is_stopped():
@@ -21,10 +23,11 @@ func _process(delta):
 			time = 0
 			fade_timer.stop()
 			splash_timer.start()
+			skip = true
 		title.modulate = title_visibility.sample(time/fade_timer.wait_time)
 	elif !splash_timer.is_stopped():
 		var time = splash_timer.time_left
-		if Input.is_action_just_pressed("Skip"):
+		if Input.is_action_just_pressed("Skip") or skip:
 			time = 0
 			splash_timer.stop()
 			menu_timer.start()
@@ -33,9 +36,6 @@ func _process(delta):
 		title.scale = lerp(Vector2(2, 2), Vector2.ONE, ratio)
 	elif !menu_timer.is_stopped():
 		var time = menu_timer.time_left
-		if Input.is_action_just_pressed("Skip"):
-			time = 0
-			menu_timer.stop()
 		menu_holder.modulate = menu_visibility.sample(time/menu_timer.wait_time)
 
 

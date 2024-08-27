@@ -3,12 +3,12 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://b603jiva6bko0"
-path="res://.godot/imported/AGENCYB.TTF-e2c5a4853c6700ec307fec7b0cbd53b8.fontdata"
+path="res://.godot/imported/AGENCYB.TTF-0b3d50d33b07ac2616c679a34ec673b8.fontdata"
 
 [deps]
 
-source_file="res://UI/AGENCYB.TTF"
-dest_files=["res://.godot/imported/AGENCYB.TTF-e2c5a4853c6700ec307fec7b0cbd53b8.fontdata"]
+source_file="res://Graphics/UI/AGENCYB.TTF"
+dest_files=["res://.godot/imported/AGENCYB.TTF-0b3d50d33b07ac2616c679a34ec673b8.fontdata"]
 
 [params]
 

@@ -120,6 +120,7 @@ func falling(delta):
 	
 	velocity.x = lerp(velocity.x, direction * SPEED, delta*6)
 	
+	
 	# Anims
 	if velocity.y > 0 and !falling_down:
 		falling_down = true
@@ -128,7 +129,7 @@ func falling(delta):
 	if Input.is_action_just_pressed("Jump"):
 		$JumpBuffer.start()
 	# Change statesd a
-	if is_on_floor():
+	if is_on_floor() and velocity.y >= 0:
 		$Sprite.play("Fall_Landing")
 		state = states.Grounded
 	elif test_move(transform, Vector2(abs(velocity.x)/velocity.x, 0)):
@@ -165,6 +166,9 @@ func grounded(delta):
 
 
 var ascend_lock = false
+var check_trans:Transform2D
+
+var descend_lock = false
 func climb(delta):
 	var vdirection = Input.get_axis("Up", "Down")
 	
@@ -174,19 +178,39 @@ func climb(delta):
 	elif vdirection > 0:
 		vdirection = 1.5
 	# check 11 pixels up for idle. if not on wall 11 pixels up, then fall down a bit.
-	if !test_move(transform.translated(Vector2(0, -10)), Vector2.RIGHT * climb_dir):
+	if !ascend_lock and !descend_lock:
+		check_trans = transform.translated(Vector2(0, -10))
+		
+	if !test_move(check_trans, Vector2.RIGHT * climb_dir):
 		if vdirection < 0 or ascend_lock:
 			ascend_lock = true
 		else:
 			vdirection = 1
+	elif ascend_lock:
+		ascend_lock = false
+	
+	#check 9 pixels down. if not on wall, force fall.
+	if !ascend_lock and !descend_lock:
+		check_trans = transform.translated(Vector2(0, 11))
+	
+	if !test_move(check_trans, Vector2.RIGHT * climb_dir):
+		if vdirection > 0 or descend_lock:
+			descend_lock = true
+		else:
+			vdirection = -1
+	elif descend_lock:
+		descend_lock = false
 		
 	# Change Stamina
 	if vdirection < 0:
 		stamina -= 100 * delta
 	elif vdirection == 0:
 		stamina -= 25 * delta
+	
 	if ascend_lock:
 		vdirection = -1
+	if descend_lock:
+		vdirection = 1
 		
 	velocity.y = vdirection * CLIMB_SPEED
 	
@@ -214,8 +238,9 @@ func climb(delta):
 	elif !test_move(transform, Vector2(climb_dir, 0)):
 		state = states.Falling
 		ascend_lock = false
-		velocity.x = CLIMB_FINISH_SPEED * climb_dir
+		descend_lock = false
 		if vdirection < 0 or ascend_lock:
+			velocity.x = CLIMB_FINISH_SPEED * climb_dir
 			$Sprite.play("Jump")
 	elif is_on_floor():
 		state = states.Grounded
@@ -264,5 +289,5 @@ func _on_visible_notifier_screen_exited():
 
 
 func _on_sprite_animation_finished():
-	if state == states.Falling:
+	if state == states.Falling and $Sprite.animation != "Jump":
 		$Sprite.play("Fall_Loop")
