@@ -31,6 +31,7 @@ func _process(delta):
 			time = 0
 			splash_timer.stop()
 			menu_timer.start()
+			menu_holder.show()
 		var ratio = ease(1-(time/splash_timer.wait_time), -5)
 		title.position = lerp(title_initial_pos, title_final_pos, ratio)
 		title.scale = lerp(Vector2(2, 2), Vector2.ONE, ratio)

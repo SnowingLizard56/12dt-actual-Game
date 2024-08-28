@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://bjlrw8kfw412t"]
+[gd_scene load_steps=6 format=3 uid="uid://bjlrw8kfw412t"]
 
 [ext_resource type="Script" path="res://UI/MainMenu.gd" id="1_8in8d"]
 [ext_resource type="Theme" uid="uid://bo5ulq7pp4npf" path="res://Graphics/UI/MainTheme.tres" id="1_swegd"]
@@ -9,6 +9,17 @@ colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)
 
 [sub_resource type="Gradient" id="Gradient_ys8h7"]
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_shw8h"]
+particle_flag_disable_z = true
+spread = 0.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 100.0
+initial_velocity_max = 100.0
+orbit_velocity_min = 0.2
+orbit_velocity_max = 0.2
+scale_min = 4.0
+scale_max = 4.0
 
 [node name="MainMenu" type="Control" node_paths=PackedStringArray("splash_timer", "fade_timer", "menu_timer", "title", "end_marker", "menu_holder")]
 layout_mode = 3
@@ -63,6 +74,7 @@ horizontal_alignment = 1
 position = Vector2(160, 0)
 
 [node name="MainMenu" type="Control" parent="."]
+visible = false
 modulate = Color(1, 1, 1, 0)
 layout_mode = 1
 anchors_preset = 15
@@ -116,7 +128,20 @@ theme = ExtResource("1_swegd")
 text = "QUIT"
 flat = true
 
+[node name="CIRCLEPARTICLESTEST" type="GPUParticles2D" parent="."]
+visible = false
+position = Vector2(320, 260)
+amount = 2
+process_material = SubResource("ParticleProcessMaterial_shw8h")
+lifetime = 5.0
+fixed_fps = 60
+visibility_rect = Rect2(-82.2494, -160.132, 161.166, 161.132)
+
+[node name="Marker2D" type="Marker2D" parent="CIRCLEPARTICLESTEST"]
+position = Vector2(0, -160)
+
 [connection signal="timeout" from="TitleFadeInTimer" to="SplashScreenTimer" method="start"]
 [connection signal="timeout" from="SplashScreenTimer" to="MenuAppearTimer" method="start"]
+[connection signal="timeout" from="SplashScreenTimer" to="MainMenu" method="show"]
 [connection signal="pressed" from="MainMenu/StartGame" to="." method="start_game"]
 [connection signal="pressed" from="MainMenu/Quit" to="." method="quit"]

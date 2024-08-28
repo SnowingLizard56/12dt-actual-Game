@@ -17,6 +17,7 @@ var allow_switch = false
 @export_category("Relevant Scenes")
 @export var dimensional_window_scene:PackedScene
 @export var entity_scene:PackedScene
+@export var one_offs:Dictionary
 
 @export_category("Relevant Nodes")
 @export var player:Player
@@ -185,6 +186,13 @@ func build_entities(data, offset:Vector2, level_index:int):
 		k.initialize()
 		built_levels[level_index].entities.append(k)
 		k.name = "Entity - " + str(k.entity_type)
+	
+	var one_off = one_offs.get(built_levels[level_index].level_name)
+	if one_off:
+		var k = one_off.instantiate()
+		k.position += offset
+		entity_holder.add_child(k)
+		built_levels[level_index].one_off = k
 
 
 func build_collision(dir, offset:Vector2, level_index:int):
@@ -350,6 +358,7 @@ class Level:
 	var offset:Vector2
 	var constructor:LevelConstructor
 	var counter
+	var one_off
 	
 	func deactivate():
 		for i in entities:
@@ -380,6 +389,8 @@ class Level:
 		
 	func unload():
 		constructor.born_to_die.append_array(entities + statics + windows)
+		if one_off:
+			constructor.born_to_die.append(one_off)
 		constructor.built_levels.erase(self)
 	
 	func load_surroundings():
@@ -397,9 +408,16 @@ class Level:
 			var build_callable = constructor.build_level.bind(l, offset + OFFSETS[i], false)
 			constructor.build_queue.append(build_callable)
 
-
+	func graphics_start():
+		if one_off:
+			if one_off is AnimatedSprite2D:
+				one_off.play()
+		
+		
 func _on_active_level_follower_target_met():
 	for i in born_to_die:
 		i.queue_free()
 	born_to_die = []
+	
+	current_level.graphics_start()
 	

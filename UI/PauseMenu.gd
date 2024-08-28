@@ -11,4 +11,5 @@ func pause():
 
 func quit():
 	# save current level etc etc
+	get_tree().paused = false
 	get_tree().change_scene_to_file("res://UI/MainMenu.tscn")
