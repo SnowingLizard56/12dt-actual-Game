@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://blvsemmq5a6ek"
-path="res://.godot/imported/Door_Open.wav-e36f832d58821176e180fdf5646778d7.sample"
+uid="uid://dkil2te2oplha"
+path="res://.godot/imported/MenuSelect.wav-c5b47ab7eb9f9c54767d97fbe7c8d6e2.sample"
 
 [deps]
 
-source_file="res://SFX/Door_Open.wav"
-dest_files=["res://.godot/imported/Door_Open.wav-e36f832d58821176e180fdf5646778d7.sample"]
+source_file="res://SFX/MenuSelect.wav"
+dest_files=["res://.godot/imported/MenuSelect.wav-c5b47ab7eb9f9c54767d97fbe7c8d6e2.sample"]
 
 [params]
 

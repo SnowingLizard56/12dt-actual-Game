@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://bjlrw8kfw412t"]
+[gd_scene load_steps=7 format=3 uid="uid://bjlrw8kfw412t"]
 
 [ext_resource type="Script" path="res://UI/MainMenu.gd" id="1_8in8d"]
 [ext_resource type="Theme" uid="uid://bo5ulq7pp4npf" path="res://Graphics/UI/MainTheme.tres" id="1_swegd"]
+[ext_resource type="AudioStream" uid="uid://dkil2te2oplha" path="res://SFX/MenuSelect.wav" id="3_lu1km"]
 
 [sub_resource type="Gradient" id="Gradient_7tsrn"]
 offsets = PackedFloat32Array(0, 0.720988, 1)
@@ -128,6 +129,30 @@ theme = ExtResource("1_swegd")
 text = "QUIT"
 flat = true
 
+[node name="FadeToBlack" type="Control" parent="."]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Timer" type="Timer" parent="FadeToBlack"]
+wait_time = 0.5
+one_shot = true
+
+[node name="ColorRect" type="ColorRect" parent="FadeToBlack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
 [node name="CIRCLEPARTICLESTEST" type="GPUParticles2D" parent="."]
 visible = false
 position = Vector2(320, 260)
@@ -140,8 +165,15 @@ visibility_rect = Rect2(-82.2494, -160.132, 161.166, 161.132)
 [node name="Marker2D" type="Marker2D" parent="CIRCLEPARTICLESTEST"]
 position = Vector2(0, -160)
 
+[node name="Sfx_Button" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_lu1km")
+max_polyphony = 4
+
 [connection signal="timeout" from="TitleFadeInTimer" to="SplashScreenTimer" method="start"]
 [connection signal="timeout" from="SplashScreenTimer" to="MenuAppearTimer" method="start"]
 [connection signal="timeout" from="SplashScreenTimer" to="MainMenu" method="show"]
-[connection signal="pressed" from="MainMenu/StartGame" to="." method="start_game"]
-[connection signal="pressed" from="MainMenu/Quit" to="." method="quit"]
+[connection signal="button_down" from="MainMenu/StartGame" to="Sfx_Button" method="play"]
+[connection signal="pressed" from="MainMenu/StartGame" to="." method="start_clicked"]
+[connection signal="button_down" from="MainMenu/Options" to="Sfx_Button" method="play"]
+[connection signal="button_down" from="MainMenu/Quit" to="Sfx_Button" method="play"]
+[connection signal="pressed" from="MainMenu/Quit" to="." method="quit_clicked"]

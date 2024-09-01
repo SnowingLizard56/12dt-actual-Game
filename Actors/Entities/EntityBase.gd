@@ -125,8 +125,3 @@ func flag_off():
 			i.get_child(0).play("extend")
 		monitoring = true
 		monitorable = true
-
-
-func _process(delta):
-	if entity_type == entities.Spike:
-		pass

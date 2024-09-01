@@ -13,7 +13,11 @@ extends Control
 @onready var title_initial_pos = title.position
 @onready var title_final_pos = end_marker.position
 
+var button_sound = preload("res://SFX/MenuSelect.wav")
 var skip = false
+
+func _ready():
+	ResourceLoader.load_threaded_request("res://Main.tscn")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -38,10 +42,21 @@ func _process(delta):
 	elif !menu_timer.is_stopped():
 		var time = menu_timer.time_left
 		menu_holder.modulate = menu_visibility.sample(time/menu_timer.wait_time)
+	
+	if !$FadeToBlack/Timer.is_stopped():
+		var time = $FadeToBlack/Timer.time_left
+		$FadeToBlack.modulate = menu_visibility.sample(time/menu_timer.wait_time)
 
+func start_clicked():
+	$FadeToBlack/Timer.start()
+	$FadeToBlack/Timer.connect("timeout", start_game)
 
+func quit_clicked():
+	$FadeToBlack/Timer.start()
+	$FadeToBlack/Timer.connect("timeout", quit)
+	
 func start_game():
-	get_tree().change_scene_to_file("res://Main.tscn")
+	get_tree().change_scene_to_packed(ResourceLoader.load_threaded_get("res://Main.tscn"))
 
 func quit():
 	get_tree().quit()

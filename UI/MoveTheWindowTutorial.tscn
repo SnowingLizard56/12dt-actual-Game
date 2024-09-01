@@ -4,6 +4,6 @@
 
 [node name="MoveTheWindowTutorial" type="AnimatedSprite2D"]
 modulate = Color(1, 1, 1, 0.678431)
-position = Vector2(568, 56)
+position = Vector2(568, 112)
 sprite_frames = ExtResource("1_rrq46")
 frame_progress = 0.389834

@@ -132,7 +132,10 @@ func falling(delta):
 	if is_on_floor() and velocity.y >= 0:
 		$Sprite.play("Fall_Landing")
 		state = states.Grounded
-	elif test_move(transform, Vector2(abs(velocity.x)/velocity.x, 0)):
+	else:
+		var t = transform.translated(Vector2(0, 11))
+		var m = Vector2(abs(velocity.x)/velocity.x, 0)
+		if test_move(t, m) and test_move(t.translated(Vector2(0, -22)), m):
 			state = states.Climb
 			direction = abs(velocity.x)/velocity.x
 
@@ -168,7 +171,6 @@ func grounded(delta):
 var ascend_lock = false
 var check_trans:Transform2D
 
-var descend_lock = false
 func climb(delta):
 	var vdirection = Input.get_axis("Up", "Down")
 	
@@ -178,7 +180,7 @@ func climb(delta):
 	elif vdirection > 0:
 		vdirection = 1.5
 	# check 11 pixels up for idle. if not on wall 11 pixels up, then fall down a bit.
-	if !ascend_lock and !descend_lock:
+	if !ascend_lock:
 		check_trans = transform.translated(Vector2(0, -10))
 		
 	if !test_move(check_trans, Vector2.RIGHT * climb_dir):
@@ -189,17 +191,11 @@ func climb(delta):
 	elif ascend_lock:
 		ascend_lock = false
 	
-	#check 9 pixels down. if not on wall, force fall.
-	if !ascend_lock and !descend_lock:
-		check_trans = transform.translated(Vector2(0, 11))
-	
-	if !test_move(check_trans, Vector2.RIGHT * climb_dir):
-		if vdirection > 0 or descend_lock:
-			descend_lock = true
-		else:
-			vdirection = -1
-	elif descend_lock:
-		descend_lock = false
+	#check 11 pixels down. if not on wall, force fall.
+	if !test_move(transform.translated(Vector2(0, 11)), Vector2.RIGHT * climb_dir):
+		if vdirection > 0:
+			state = states.Falling
+			return
 		
 	# Change Stamina
 	if vdirection < 0:
@@ -209,8 +205,6 @@ func climb(delta):
 	
 	if ascend_lock:
 		vdirection = -1
-	if descend_lock:
-		vdirection = 1
 		
 	velocity.y = vdirection * CLIMB_SPEED
 	
@@ -238,7 +232,6 @@ func climb(delta):
 	elif !test_move(transform, Vector2(climb_dir, 0)):
 		state = states.Falling
 		ascend_lock = false
-		descend_lock = false
 		if vdirection < 0 or ascend_lock:
 			velocity.x = CLIMB_FINISH_SPEED * climb_dir
 			$Sprite.play("Jump")
@@ -262,6 +255,7 @@ func death():
 	$Sprite.scale.x = 1
 	state = states.Falling
 	crushed = false
+	get_node("/root/PersistentData").deaths += 1
 	
 func entity_collision(ent):
 	if ent.entity_type == Entity.entities.Spike:
