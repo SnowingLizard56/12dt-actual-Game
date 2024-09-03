@@ -35,7 +35,7 @@ color_ramp = SubResource("GradientTexture1D_r1ksu")
 offsets = PackedFloat32Array(0.165217, 0.808696)
 colors = PackedColorArray(0, 0, 0, 0, 1, 1, 1, 1)
 
-[node name="Main" type="Node2D" groups=["Game_Scene"]]
+[node name="Main" type="Node2D"]
 process_mode = 1
 
 [node name="LevelConstructor" type="Node2D" parent="." node_paths=PackedStringArray("player", "tilemap", "limbo_tmap", "statics_holder", "window_holder", "entity_holder")]

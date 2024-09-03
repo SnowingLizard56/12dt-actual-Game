@@ -10,16 +10,7 @@ var start_in_room = ""
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	var err = config.load("user://save.cfg")
-	
-	# Save Data
-	time = config.get_value("SaveData", "time", 0.0)
-	deaths = config.get_value("SaveData", "deaths", 0)
-	deaths = config.get_value("SaveData", "room", "")
-	
-	# Settings
-	showtimer = config.get_value("Settings", "showtimer", showtimer)
-
+	update_data()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -28,8 +19,30 @@ func _process(delta):
 
 func save_config():
 	config.set_value("Settings", "showtimer", showtimer)
+	for i in ["Jump", "Left", "Right", "Up", "Down"]:
+		config.set_value("Settings/Controls", i, InputMap.action_get_events(i))
+	update_data()
 	
 func save_game():
 	config.set_value("SaveData", "time", time)
-	config.set_value("SaveData", "room", get_node_or_null("/root/Main/LevelConstructor").current_level.level_name)
+	config.set_value("SaveData", "room", get_node("/root/Main/LevelConstructor").current_level.level_name)
 	config.set_value("SaveData", "deaths", deaths)
+	
+	config.save("user://save.cfg")
+	update_data()
+
+func update_data():
+	var _err = config.load("user://save.cfg")
+	
+	# Save Data
+	time = config.get_value("SaveData", "time", 0.0)
+	deaths = config.get_value("SaveData", "deaths", 0)
+	start_in_room = config.get_value("SaveData", "room", "")
+	
+	# Settings
+	showtimer = config.get_value("Settings", "showtimer", false)
+	if config.get_value("Settings/Controls", "Jump"):
+		for i in ["Jump", "Left", "Right", "Up", "Down"]:
+			InputMap.action_erase_events(i)
+			for evnt in config.get_value("Settings/Controls", i):
+				InputMap.action_add_event(i, evnt)

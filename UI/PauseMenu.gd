@@ -21,6 +21,6 @@ func pause():
 
 func quit():
 	# save current level etc etc
-	get_node("/root/PersistentData").save_game()
+	PersistentData.save_game()
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://UI/MainMenu.tscn")

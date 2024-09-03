@@ -54,7 +54,11 @@ func _ready():
 				c.queue_free()
 		
 		limbo_tmap.clear()
-		build_level(start_game_level_name, Vector2.ZERO, true)
+		var loaded_room = PersistentData.start_in_room
+		if loaded_room:
+			build_level(loaded_room, Vector2.ZERO, true)
+		else:
+			build_level(start_game_level_name, Vector2.ZERO, true)
 		tilemap.hide()
 		limbo_tmap.show()
 
@@ -385,6 +389,8 @@ class Level:
 				if w.layer == i:
 					w.call_deferred("call_clip")
 		active = true
+		if !constructor.get_node("../ActiveLevelFollower").moving:
+			graphics_start()
 			
 		
 	func unload():

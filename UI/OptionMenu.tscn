@@ -1,0 +1,161 @@
+[gd_scene load_steps=3 format=3 uid="uid://bojkxeynvogeb"]
+
+[ext_resource type="Theme" uid="uid://bo5ulq7pp4npf" path="res://Graphics/UI/MainTheme.tres" id="1_5ngli"]
+[ext_resource type="Script" path="res://UI/OptionMenu.gd" id="1_o2ar2"]
+
+[node name="OptionMenu" type="Control" node_paths=PackedStringArray("timer_button", "jump_button", "left_button", "right_button", "down_button", "up_button")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("1_5ngli")
+script = ExtResource("1_o2ar2")
+timer_button = NodePath("Speedrun Timer")
+jump_button = NodePath("Jump")
+left_button = NodePath("Left")
+right_button = NodePath("Right")
+down_button = NodePath("Down")
+up_button = NodePath("Up")
+
+[node name="Speedrun Timer" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.5
+offset_top = -175.0
+offset_right = 85.5
+offset_bottom = -122.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme = ExtResource("1_5ngli")
+text = "Timer:"
+flat = true
+
+[node name="Jump" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.5
+offset_top = -126.0
+offset_right = 85.5
+offset_bottom = -73.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme = ExtResource("1_5ngli")
+button_mask = 3
+text = "Timer:"
+flat = true
+
+[node name="Left" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.5
+offset_top = -83.0
+offset_right = 85.5
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme = ExtResource("1_5ngli")
+button_mask = 3
+text = "Timer:"
+flat = true
+
+[node name="Right" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.5
+offset_top = -43.0
+offset_right = 85.5
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme = ExtResource("1_5ngli")
+button_mask = 3
+text = "Timer:"
+flat = true
+
+[node name="Up" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.5
+offset_top = 2.0
+offset_right = 85.5
+offset_bottom = 55.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme = ExtResource("1_5ngli")
+button_mask = 3
+text = "Timer:"
+flat = true
+
+[node name="Down" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.5
+offset_top = 50.0
+offset_right = 85.5
+offset_bottom = 103.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme = ExtResource("1_5ngli")
+button_mask = 3
+text = "Timer:"
+flat = true
+
+[node name="Exit" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.5
+offset_top = 123.0
+offset_right = 85.5
+offset_bottom = 176.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme = ExtResource("1_5ngli")
+button_mask = 3
+text = "Back"
+flat = true
+
+[connection signal="pressed" from="Speedrun Timer" to="." method="timer_toggled"]
+[connection signal="pressed" from="Jump" to="." method="change_input" binds= ["Jump"]]
+[connection signal="pressed" from="Left" to="." method="change_input" binds= ["Left"]]
+[connection signal="pressed" from="Right" to="." method="change_input" binds= ["Right"]]
+[connection signal="pressed" from="Up" to="." method="change_input" binds= ["Up"]]
+[connection signal="pressed" from="Down" to="." method="change_input" binds= ["Down"]]
+[connection signal="pressed" from="Exit" to="." method="exit"]

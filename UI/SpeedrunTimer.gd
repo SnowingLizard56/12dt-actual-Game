@@ -3,7 +3,7 @@ extends Control
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	visible = get_node("/root/PersistentData").showtimer
+	update_visibility()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -29,5 +29,6 @@ func _process(delta):
 		$Time.text += "0"
 	$Time.text += str(seconds) + "."
 	$Ms.text = str(floorf(ms*1000))
-	
- 
+
+func update_visibility():
+	visible = PersistentData.showtimer
