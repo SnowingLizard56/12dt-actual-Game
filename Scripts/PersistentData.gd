@@ -1,5 +1,7 @@
 extends Node
 
+signal data_updated
+
 var config = ConfigFile.new()
 
 var time:float = 0
@@ -21,6 +23,8 @@ func save_config():
 	config.set_value("Settings", "showtimer", showtimer)
 	for i in ["Jump", "Left", "Right", "Up", "Down"]:
 		config.set_value("Settings/Controls", i, InputMap.action_get_events(i))
+		
+	config.save("user://save.cfg")
 	update_data()
 	
 func save_game():
@@ -46,3 +50,4 @@ func update_data():
 			InputMap.action_erase_events(i)
 			for evnt in config.get_value("Settings/Controls", i):
 				InputMap.action_add_event(i, evnt)
+	data_updated.emit()

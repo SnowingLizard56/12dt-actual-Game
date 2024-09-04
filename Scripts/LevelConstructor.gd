@@ -350,6 +350,8 @@ func enter_new_screen():
 	get_node("../ActiveLevelFollower").moving = true
 	# Reset player spawn
 	get_node("../Player").spawn_position = level_obj.data["PlayerSpawn"] + level_obj.offset
+	# Save the screen change.
+	PersistentData.save_game()
 	
 
 class Level:

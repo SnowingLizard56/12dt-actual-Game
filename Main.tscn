@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://c41lerf86ba75"]
+[gd_scene load_steps=17 format=3 uid="uid://c41lerf86ba75"]
 
 [ext_resource type="PackedScene" uid="uid://raujhngxvpl1" path="res://Actors/Player/Player.tscn" id="1_2p50b"]
 [ext_resource type="Script" path="res://Scripts/LevelConstructor.gd" id="1_067a3"]
@@ -11,6 +11,7 @@
 [ext_resource type="Theme" uid="uid://bo5ulq7pp4npf" path="res://Graphics/UI/MainTheme.tres" id="8_optnu"]
 [ext_resource type="Script" path="res://UI/SpeedrunTimer.gd" id="9_6xc4y"]
 [ext_resource type="AudioStream" uid="uid://dkil2te2oplha" path="res://SFX/MenuSelect.wav" id="10_3wmt5"]
+[ext_resource type="PackedScene" uid="uid://bojkxeynvogeb" path="res://UI/OptionMenu.tscn" id="11_17wun"]
 
 [sub_resource type="Gradient" id="Gradient_yw64d"]
 offsets = PackedFloat32Array(0, 0.25, 0.75, 1)
@@ -31,8 +32,7 @@ orbit_velocity_min = 0.0
 orbit_velocity_max = 0.0
 color_ramp = SubResource("GradientTexture1D_r1ksu")
 
-[sub_resource type="Gradient" id="Gradient_7gqat"]
-offsets = PackedFloat32Array(0.165217, 0.808696)
+[sub_resource type="Gradient" id="Gradient_ygcpc"]
 colors = PackedColorArray(0, 0, 0, 0, 1, 1, 1, 1)
 
 [node name="Main" type="Node2D"]
@@ -176,7 +176,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("7_6lkul")
 screenwipetimer = NodePath("../ScreenWipeTimer")
-screenwipe = SubResource("Gradient_7gqat")
+screenwipe = SubResource("Gradient_ygcpc")
 screenwipenode = NodePath("../ScreenWipe")
 
 [node name="Blur" type="ColorRect" parent="UI/PauseMenu"]
@@ -188,7 +188,16 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.564706)
 
-[node name="Title" type="Label" parent="UI/PauseMenu"]
+[node name="OptionMenu" parent="UI/PauseMenu" instance=ExtResource("11_17wun")]
+visible = false
+layout_mode = 1
+
+[node name="MenuItems" type="Control" parent="UI/PauseMenu"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Title" type="Label" parent="UI/PauseMenu/MenuItems"]
 layout_mode = 0
 offset_left = 160.0
 offset_top = -8.0
@@ -198,17 +207,17 @@ theme = ExtResource("8_optnu")
 text = "DIM"
 horizontal_alignment = 1
 
-[node name="Resume" type="Button" parent="UI/PauseMenu"]
+[node name="Resume" type="Button" parent="UI/PauseMenu/MenuItems"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -36.0
-offset_top = -147.0
-offset_right = 36.0
-offset_bottom = -110.0
+offset_left = 264.0
+offset_top = 173.0
+offset_right = 336.0
+offset_bottom = 210.0
 grow_horizontal = 2
 grow_vertical = 0
 focus_mode = 0
@@ -217,17 +226,17 @@ theme_override_font_sizes/font_size = 24
 text = "RESUME"
 flat = true
 
-[node name="Options" type="Button" parent="UI/PauseMenu"]
+[node name="Options" type="Button" parent="UI/PauseMenu/MenuItems"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -39.0
-offset_top = -97.0
-offset_right = 39.0
-offset_bottom = -60.0
+offset_left = 261.0
+offset_top = 223.0
+offset_right = 339.0
+offset_bottom = 260.0
 grow_horizontal = 2
 grow_vertical = 0
 focus_mode = 0
@@ -236,17 +245,17 @@ theme_override_font_sizes/font_size = 24
 text = "OPTIONS"
 flat = true
 
-[node name="Quit" type="Button" parent="UI/PauseMenu"]
+[node name="Quit" type="Button" parent="UI/PauseMenu/MenuItems"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -54.5
-offset_top = -47.0
-offset_right = 54.5
-offset_bottom = -10.0
+offset_left = 245.5
+offset_top = 273.0
+offset_right = 354.5
+offset_bottom = 310.0
 grow_horizontal = 2
 grow_vertical = 0
 focus_mode = 0
@@ -278,9 +287,13 @@ position = Vector2(640, 360)
 
 [connection signal="target_met" from="ActiveLevelFollower" to="LevelConstructor" method="_on_active_level_follower_target_met"]
 [connection signal="screen_exited" from="Player" to="LevelConstructor" method="enter_new_screen"]
-[connection signal="pressed" from="UI/PauseMenu/Resume" to="UI/PauseMenu" method="pause"]
-[connection signal="pressed" from="UI/PauseMenu/Resume" to="UI/PauseMenu/Sfx_Button" method="play"]
-[connection signal="pressed" from="UI/PauseMenu/Options" to="UI/PauseMenu/Sfx_Button" method="play"]
-[connection signal="pressed" from="UI/PauseMenu/Quit" to="UI/PauseMenu" method="quit"]
-[connection signal="pressed" from="UI/PauseMenu/Quit" to="UI/PauseMenu/Sfx_Button" method="play"]
+[connection signal="pause_exited" from="UI/PauseMenu/OptionMenu" to="UI/PauseMenu/OptionMenu" method="hide"]
+[connection signal="pause_exited" from="UI/PauseMenu/OptionMenu" to="UI/PauseMenu/MenuItems" method="show"]
+[connection signal="pressed" from="UI/PauseMenu/MenuItems/Resume" to="UI/PauseMenu" method="pause"]
+[connection signal="pressed" from="UI/PauseMenu/MenuItems/Resume" to="UI/PauseMenu/Sfx_Button" method="play"]
+[connection signal="pressed" from="UI/PauseMenu/MenuItems/Options" to="UI/PauseMenu/OptionMenu" method="show"]
+[connection signal="pressed" from="UI/PauseMenu/MenuItems/Options" to="UI/PauseMenu/MenuItems" method="hide"]
+[connection signal="pressed" from="UI/PauseMenu/MenuItems/Options" to="UI/PauseMenu/Sfx_Button" method="play"]
+[connection signal="pressed" from="UI/PauseMenu/MenuItems/Quit" to="UI/PauseMenu" method="quit"]
+[connection signal="pressed" from="UI/PauseMenu/MenuItems/Quit" to="UI/PauseMenu/Sfx_Button" method="play"]
 [connection signal="timeout" from="UI/ScreenWipeTimer" to="UI/ScreenWipe" method="hide"]

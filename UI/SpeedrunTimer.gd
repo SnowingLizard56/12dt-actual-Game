@@ -3,6 +3,7 @@ extends Control
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	PersistentData.connect("data_updated", update_visibility)
 	update_visibility()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
