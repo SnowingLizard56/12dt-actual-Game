@@ -46,14 +46,8 @@ func set_state(n):
 		stamina = MAX_STAMINA
 		velocity.y = 0
 	elif n == states.Climb:
-		if test_move(transform, Vector2(4, 0)):
-			climb_dir = 1
-		else:
-			climb_dir = -1
+		climb_dir = direction
 		$Sprite.scale.x = abs($Sprite.scale.x) * climb_dir
-		
-		if !test_move(transform.translated(Vector2(0, 8)), Vector2.RIGHT * climb_dir):
-			continue_set = false
 	elif n == states.Falling:
 		falling_down = false
 	if continue_set:
@@ -63,7 +57,7 @@ func _physics_process(delta):
 	# skip if respawning
 	if !$RespawnTimer.is_stopped(): return
 	# skip if screen transition
-	if $"../ActiveLevelFollower".moving: return
+	if $"/root/Main/ActiveLevelFollower".moving: return
 	#get from pixel
 	if real_position:
 		position = real_position
@@ -133,11 +127,11 @@ func falling(delta):
 		$Sprite.play("Fall_Landing")
 		state = states.Grounded
 	else:
-		var t = transform.translated(Vector2(0, 11))
+		var t = transform
 		var m = Vector2(abs(velocity.x)/velocity.x, 0)
-		if test_move(t, m) and test_move(t.translated(Vector2(0, -22)), m):
-			state = states.Climb
+		if test_move(t, m) and !(!test_move(t.translated(Vector2(0, -10)), m) or !test_move(t.translated(Vector2(0, 11)), m)):
 			direction = abs(velocity.x)/velocity.x
+			state = states.Climb
 
 
 func grounded(delta):
@@ -165,7 +159,7 @@ func grounded(delta):
 		$CoyoteTimer.start()
 	elif test_move(transform, Vector2.RIGHT * direction) and Input.is_action_pressed("Up"):
 		state = states.Climb
-		velocity += Vector2.UP * 4
+		velocity = Vector2.UP*4
 
 
 var ascend_lock = false
@@ -182,7 +176,8 @@ func climb(delta):
 	# check 11 pixels up for idle. if not on wall 11 pixels up, then fall down a bit.
 	if !ascend_lock:
 		check_trans = transform.translated(Vector2(0, -10))
-		
+	
+	
 	if !test_move(check_trans, Vector2.RIGHT * climb_dir):
 		if vdirection < 0 or ascend_lock:
 			ascend_lock = true
@@ -259,14 +254,7 @@ func death():
 	
 func entity_collision(ent):
 	if ent.entity_type == Entity.entities.Spike:
-		if ent.rotat == 0 and velocity.y >= 0:
-			death()
-		elif ent.rotat == 90 and velocity.x <= 0:
-			death()
-		elif ent.rotat == 270 and velocity.x >= 0:
-			death()
-		elif ent.rotat == 180 and velocity.y <= 0:
-			death()
+		death()
 
 func crush_check():
 	for i in [Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT]:

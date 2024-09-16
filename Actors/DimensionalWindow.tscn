@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Actors/DimensionalWindow.gd" id="1_4n7ny"]
 [ext_resource type="TileSet" uid="uid://c0cg70lv5ie4o" path="res://Graphics/Tiles/TileSet.tres" id="2_cruy2"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_tiljt"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yba56"]
 
 [node name="DimensionalWindow" type="Control" node_paths=PackedStringArray("tilemap", "outline")]
 custom_minimum_size = Vector2(16, 16)
@@ -23,10 +23,10 @@ collision_mask = 0
 monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area"]
-shape = SubResource("RectangleShape2D_tiljt")
+shape = SubResource("RectangleShape2D_yba56")
 
 [node name="Clip" type="ColorRect" parent="."]
-clip_children = 2
+clip_children = 1
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

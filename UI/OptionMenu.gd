@@ -1,6 +1,7 @@
 extends Control
 
 signal pause_exited
+signal any_button_pressed
 
 @export var timer_button:Button
 @export var jump_button:Button
@@ -19,7 +20,7 @@ func timer_toggled():
 var input_target:String
 var waiting_for_input = false
 func change_input(input:String):
-	if !Input.is_action_just_released("Click"):
+	if !Input.is_action_just_pressed("Click"):
 		InputMap.action_erase_events(input)
 		update_vis()
 	else:
@@ -47,4 +48,16 @@ func _input(event):
 		if event.pressed:
 			InputMap.action_add_event(input_target, event)
 			update_vis()
-		
+
+func button_press():
+	any_button_pressed.emit()
+
+var save_reset_countdown = 5
+func reset_save():
+	if save_reset_countdown == 0:
+		# continue with save reset
+		PersistentData.save_reset()
+		get_tree().reload_current_scene()
+	else:
+		$Clear.text = "Are you sure? (" + str(save_reset_countdown) + ")"
+		save_reset_countdown -= 1

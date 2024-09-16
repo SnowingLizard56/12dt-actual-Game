@@ -18,12 +18,14 @@ var skip = false
 
 func _ready():
 	ResourceLoader.load_threaded_request("res://Main.tscn")
+	menu_holder.get_child(0).disabled = true
+	menu_holder.get_child(1).disabled = true
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if !fade_timer.is_stopped():
 		var time = fade_timer.time_left
-		if Input.is_action_just_pressed("Skip"):
+		if Input.is_action_just_pressed("Skip") and $BlockSkipTimer.is_stopped():
 			time = 0
 			fade_timer.stop()
 			splash_timer.start()
@@ -55,6 +57,10 @@ func quit_clicked():
 	$FadeToBlack/Timer.start()
 	$FadeToBlack/Timer.connect("timeout", quit)
 	
+func menu_activate():
+	menu_holder.get_child(0).disabled = false
+	menu_holder.get_child(1).disabled = false
+
 func start_game():
 	get_tree().change_scene_to_packed(ResourceLoader.load_threaded_get("res://Main.tscn"))
 

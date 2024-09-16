@@ -14,15 +14,19 @@ var current_level:Level
 
 var allow_switch = false
 
+@export_category("One Offs and Poems")
+@export_multiline var poems:Dictionary
+@export var one_offs:Dictionary
+
 @export_category("Relevant Scenes")
 @export var dimensional_window_scene:PackedScene
 @export var entity_scene:PackedScene
-@export var one_offs:Dictionary
 
 @export_category("Relevant Nodes")
 @export var player:Player
 @export var tilemap:TileMap
 @export var limbo_tmap:TileMap
+@export var lore:Control
 
 @export_category("Holders")
 @export var statics_holder:Node2D
@@ -143,7 +147,6 @@ func load_level_to_editor():
 
 
 func build_level(level:String, offset:Vector2, active:bool):
-	# TODO - split level construction over multiple frames.
 	# Prepare level class
 	var level_obj = Level.new()
 	level_obj.level_name = level
@@ -352,6 +355,8 @@ func enter_new_screen():
 	get_node("../Player").spawn_position = level_obj.data["PlayerSpawn"] + level_obj.offset
 	# Save the screen change.
 	PersistentData.save_game()
+	# Reset lore vis
+	lore.screen_switched_midway()
 	
 
 class Level:
@@ -391,8 +396,6 @@ class Level:
 				if w.layer == i:
 					w.call_deferred("call_clip")
 		active = true
-		if !constructor.get_node("../ActiveLevelFollower").moving:
-			graphics_start()
 			
 		
 	func unload():
@@ -417,6 +420,7 @@ class Level:
 			constructor.build_queue.append(build_callable)
 
 	func graphics_start():
+		constructor.lore.write(constructor.poems[level_name])
 		if one_off:
 			if one_off is AnimatedSprite2D:
 				one_off.play()

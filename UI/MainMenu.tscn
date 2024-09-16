@@ -40,6 +40,11 @@ menu_holder = NodePath("MainMenu")
 title_visibility = SubResource("Gradient_7tsrn")
 menu_visibility = SubResource("Gradient_ys8h7")
 
+[node name="BlockSkipTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+autostart = true
+
 [node name="TitleFadeInTimer" type="Timer" parent="."]
 wait_time = 3.0
 one_shot = true
@@ -64,12 +69,13 @@ color = Color(0.105882, 0.105882, 0.105882, 1)
 
 [node name="Title" type="Label" parent="."]
 layout_mode = 0
-offset_top = -8.0
+offset_left = 20.0
+offset_top = 68.0
 offset_right = 320.0
-offset_bottom = 178.0
+offset_bottom = 180.0
 scale = Vector2(2, 2)
 theme = ExtResource("1_swegd")
-text = "DIM"
+text = "EURYDICE"
 horizontal_alignment = 1
 
 [node name="TitleEnd" type="Marker2D" parent="."]
@@ -79,8 +85,25 @@ position = Vector2(160, 0)
 visible = false
 layout_mode = 1
 
+[node name="Clear" type="Button" parent="OptionMenu"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = -67.0
+offset_right = 130.0
+offset_bottom = -30.0
+grow_vertical = 0
+focus_mode = 0
+theme = ExtResource("1_swegd")
+theme_override_font_sizes/font_size = 24
+action_mode = 0
+button_mask = 3
+text = "Reset Save"
+flat = true
+
 [node name="MainMenu" type="Control" parent="."]
-visible = false
 modulate = Color(1, 1, 1, 0)
 layout_mode = 1
 anchors_preset = 15
@@ -101,6 +124,7 @@ offset_bottom = -104.0
 grow_vertical = 0
 focus_mode = 0
 theme = ExtResource("1_swegd")
+action_mode = 0
 text = "START GAME"
 flat = true
 
@@ -116,6 +140,7 @@ offset_bottom = -51.0
 grow_vertical = 0
 focus_mode = 0
 theme = ExtResource("1_swegd")
+action_mode = 0
 text = "OPTIONS"
 flat = true
 
@@ -131,6 +156,7 @@ offset_bottom = 2.0
 grow_vertical = 0
 focus_mode = 0
 theme = ExtResource("1_swegd")
+action_mode = 0
 text = "QUIT"
 flat = true
 
@@ -177,14 +203,18 @@ max_polyphony = 4
 [connection signal="timeout" from="TitleFadeInTimer" to="SplashScreenTimer" method="start"]
 [connection signal="timeout" from="SplashScreenTimer" to="MenuAppearTimer" method="start"]
 [connection signal="timeout" from="SplashScreenTimer" to="MainMenu" method="show"]
+[connection signal="timeout" from="MenuAppearTimer" to="." method="menu_activate"]
+[connection signal="any_button_pressed" from="OptionMenu" to="Sfx_Button" method="play"]
 [connection signal="pause_exited" from="OptionMenu" to="Title" method="show"]
 [connection signal="pause_exited" from="OptionMenu" to="OptionMenu" method="hide"]
 [connection signal="pause_exited" from="OptionMenu" to="MainMenu" method="show"]
-[connection signal="button_down" from="MainMenu/StartGame" to="Sfx_Button" method="play"]
+[connection signal="pressed" from="OptionMenu/Clear" to="OptionMenu" method="reset_save"]
+[connection signal="pressed" from="OptionMenu/Clear" to="Sfx_Button" method="play"]
 [connection signal="pressed" from="MainMenu/StartGame" to="." method="start_clicked"]
-[connection signal="button_down" from="MainMenu/Options" to="Sfx_Button" method="play"]
+[connection signal="pressed" from="MainMenu/StartGame" to="Sfx_Button" method="play"]
 [connection signal="pressed" from="MainMenu/Options" to="Title" method="hide"]
 [connection signal="pressed" from="MainMenu/Options" to="OptionMenu" method="show"]
 [connection signal="pressed" from="MainMenu/Options" to="MainMenu" method="hide"]
-[connection signal="button_down" from="MainMenu/Quit" to="Sfx_Button" method="play"]
+[connection signal="pressed" from="MainMenu/Options" to="Sfx_Button" method="play"]
 [connection signal="pressed" from="MainMenu/Quit" to="." method="quit_clicked"]
+[connection signal="pressed" from="MainMenu/Quit" to="Sfx_Button" method="play"]

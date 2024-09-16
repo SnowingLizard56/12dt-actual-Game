@@ -18,6 +18,9 @@ func set_target(v):
 	player.get_node("Sprite").pause()
 	
 
+func _ready():
+	target_met.emit()
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if !moving: return

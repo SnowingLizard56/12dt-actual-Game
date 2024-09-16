@@ -16,11 +16,20 @@ func _process(delta):
 		screenwipenode.modulate = screenwipe.sample(screenwipetimer.time_left/screenwipetimer.wait_time)
 		
 func pause():
-	visible = !visible
-	get_tree().paused = !get_tree().paused
+	visible = true
+	get_tree().paused = true
+
+func resume():
+	visible = false
+	get_tree().paused = false
 
 func quit():
 	# save current level etc etc
 	PersistentData.save_game()
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://UI/MainMenu.tscn")
+
+
+func _on_resume_pressed():
+	# made this function by accident but i cant be bothered to change it
+	resume()

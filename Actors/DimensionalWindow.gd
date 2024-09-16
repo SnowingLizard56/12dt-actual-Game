@@ -97,20 +97,22 @@ func call_clip():
 	for body in level_obj.statics:
 		if body.get_meta("layer") == layer: continue
 		running_polygons = body.get_meta('stored_polygons')
-	for e in level_obj.entities:
-		if e.exists[layer]: continue
-		e.reset_polygon()
 	# iterate over windows and clip
 	for dw in level_obj.windows:
 		if dw.layer == layer:
 			running_polygons = dw.clip(running_polygons)
 	# apply polygons for sb and entities
-	for e in level_obj.entities:
-		if e.exists[layer]: continue
-		e.apply_polygons()
 	for body in level_obj.statics:
 		if body.get_meta("layer") == layer: continue
 		StaticbodyController.add_polygons_as_children(running_polygons, body)
+	# do entity polygons seperately
+	for e in level_obj.entities:
+		e.reset_polygon()
+	for dw in level_obj.windows:
+		dw.entity_clip()
+	for e in level_obj.entities:
+		e.apply_polygons()
+	
 
 
 func clip(polygons):
@@ -124,11 +126,16 @@ func clip(polygons):
 		if layer != body.get_meta("layer"):
 			new_polygons = StaticbodyController.clip_polygons_with_rect(polygons, 
 				Rect2(position - offset, rect.size))
+	return new_polygons
+
+
+func entity_clip():
 	for entity in level_obj.entities:
 		#if exists on this layer; skip
 		if entity.exists[layer]: continue
+		var rect = get_rect()
+		rect.size.y += 0.0001
 		entity.clip_polygon(rect)
-	return new_polygons
 
 
 func _on_mouse_entered():

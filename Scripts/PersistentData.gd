@@ -51,3 +51,7 @@ func update_data():
 			for evnt in config.get_value("Settings/Controls", i):
 				InputMap.action_add_event(i, evnt)
 	data_updated.emit()
+
+func save_reset():
+	config.erase_section("SaveData")
+	config.save("user://save.cfg")
