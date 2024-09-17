@@ -7,6 +7,7 @@ const WINDOW_TILE_SIZE = Vector2i(32, 16)
 @export_category("References")
 @export var tilemap:TileMap
 @export var outline:Line2D
+@export var background_sprites:Array[Texture2D]
 @export_category("Window Settings")
 @export var reveals_layer:int
 
@@ -39,13 +40,21 @@ func load_branch(pattern:TileMapPattern, level):
 	level_obj = level
 	outline.hide()
 	$Area.position = get_rect().size / 2
+	$Area/CollisionShape2D.shape = $Area/CollisionShape2D.shape.duplicate()
 	$Area/CollisionShape2D.shape.size = get_rect().size
+	# background selection
+	$Clip/Background.texture = background_sprites[layer]
+	$Clip/Background.scale = Vector2.ONE * (640 / $Clip/Background.texture.get_width())
+	
 	hide()
 
 # Window Movement And Drag
 func _process(delta):
 	if Engine.is_editor_hint(): return
 	# this ^ needs to be here bc if its not then i get an error every frame while in the editor i do NOT understand
+	# coming back to this comment like 3 months later. i think im an idiot
+	# or maybe i've just learned things 
+	# i'll go with that its much more encouraging
 	if dragging or hovered:
 		mouse_position = get_global_mouse_position()
 	if Input.is_action_just_pressed("Click") and hovered:
@@ -118,6 +127,7 @@ func call_clip():
 func clip(polygons):
 	# get rect and adjust for errors
 	$Clip/TileMap.global_position = offset
+	$Clip/Background.global_position = offset
 	var rect = get_rect()
 	rect.size.y += 0.0001
 	var new_polygons

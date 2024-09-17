@@ -4,6 +4,7 @@ signal pause_exited
 signal any_button_pressed
 
 @export var timer_button:Button
+@export var volume_button:Button
 @export var jump_button:Button
 @export var left_button:Button
 @export var right_button:Button
@@ -30,6 +31,7 @@ func change_input(input:String):
 func update_vis():
 	waiting_for_input = false
 	timer_button.text = "Timer: " + ["Off", "On"][int(PersistentData.showtimer)]
+	volume_button.text = "Volume: " + str(PersistentData.volume)
 	for i in 5:
 		var b = [jump_button, left_button, right_button, down_button, up_button][i]
 		var t = ["Jump", "Left", "Right", "Down", "Up"][i]
@@ -37,6 +39,7 @@ func update_vis():
 		for inp in InputMap.action_get_events(t):
 			b.text += inp.as_text().substr(0, inp.as_text().find(" ")) + ", "
 		b.text = b.text.substr(0, len(b.text) - 2)
+	
 
 func exit():
 	PersistentData.save_config()
@@ -61,3 +64,19 @@ func reset_save():
 	else:
 		$Clear.text = "Are you sure? (" + str(save_reset_countdown) + ")"
 		save_reset_countdown -= 1
+
+func volume_change():
+	# increment / decrement
+	if Input.is_action_just_pressed("Click"):
+		PersistentData.volume += 1
+	else:
+		PersistentData.volume -= 1
+	# wrap
+	if PersistentData.volume > 10:
+		PersistentData.volume = 0
+	elif PersistentData.volume < 0:
+		PersistentData.volume = 10
+	PersistentData.apply_volume()
+	# display
+	update_vis()
+	

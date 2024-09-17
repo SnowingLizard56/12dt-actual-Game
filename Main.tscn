@@ -124,6 +124,7 @@ offset_left = 152.0
 offset_top = 144.0
 offset_right = 208.0
 offset_bottom = 200.0
+background_sprites = Array[Texture2D]([])
 
 [node name="window - layer 2" parent="WindowHolder" node_paths=PackedStringArray("tilemap", "outline") instance=ExtResource("4_ff4i8")]
 offset_left = 480.0
@@ -132,6 +133,7 @@ offset_right = 576.0
 offset_bottom = 288.0
 tilemap = NodePath("../window - layer 1/Clip/TileMap")
 outline = NodePath("../window - layer 1/Outline")
+background_sprites = Array[Texture2D]([])
 reveals_layer = 1
 
 [node name="Camera2D" type="Camera2D" parent="."]
@@ -286,7 +288,7 @@ wait_time = 0.2
 wait_time = 10.0
 one_shot = true
 
-[node name="PauseMenu" type="Control" parent="UI" node_paths=PackedStringArray("screenwipetimer", "screenwipenode")]
+[node name="PauseMenu" type="Control" parent="UI" node_paths=PackedStringArray("screenwipetimer", "quitfadetimer", "screenwipenode")]
 process_mode = 3
 visible = false
 layout_mode = 3
@@ -296,7 +298,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("7_6lkul")
-screenwipetimer = NodePath("../ScreenWipeTimer")
+screenwipetimer = NodePath("MenuItems/ScreenWipeTimer")
+quitfadetimer = NodePath("MenuItems/QuitFadeTimer")
 screenwipe = SubResource("Gradient_ygcpc")
 screenwipenode = NodePath("../ScreenWipe")
 
@@ -344,6 +347,7 @@ grow_vertical = 0
 focus_mode = 0
 theme = ExtResource("8_optnu")
 theme_override_font_sizes/font_size = 24
+action_mode = 0
 text = "RESUME"
 flat = true
 
@@ -363,6 +367,7 @@ grow_vertical = 0
 focus_mode = 0
 theme = ExtResource("8_optnu")
 theme_override_font_sizes/font_size = 24
+action_mode = 0
 text = "OPTIONS"
 flat = true
 
@@ -382,8 +387,16 @@ grow_vertical = 0
 focus_mode = 0
 theme = ExtResource("8_optnu")
 theme_override_font_sizes/font_size = 24
+action_mode = 0
 text = "SAVE & QUIT"
 flat = true
+
+[node name="ScreenWipeTimer" type="Timer" parent="UI/PauseMenu/MenuItems"]
+one_shot = true
+autostart = true
+
+[node name="QuitFadeTimer" type="Timer" parent="UI/PauseMenu/MenuItems"]
+one_shot = true
 
 [node name="Sfx_Button" type="AudioStreamPlayer" parent="UI/PauseMenu"]
 stream = ExtResource("10_3wmt5")
@@ -399,10 +412,6 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 1)
 
-[node name="ScreenWipeTimer" type="Timer" parent="UI"]
-one_shot = true
-autostart = true
-
 [node name="BottomRightMarker" type="Marker2D" parent="."]
 position = Vector2(640, 360)
 
@@ -411,6 +420,7 @@ position = Vector2(640, 360)
 [connection signal="timeout" from="UI/Lore/TextExtensionTimer" to="UI/Lore" method="_on_timer_timeout"]
 [connection signal="timeout" from="UI/Lore/FontTimer" to="UI/Lore" method="_on_font_timer_timeout"]
 [connection signal="timeout" from="UI/Lore/RAHG !!! ITS GHONE" to="UI/Lore" method="_on_rahg__its_ghone_timeout"]
+[connection signal="any_button_pressed" from="UI/PauseMenu/OptionMenu" to="UI/PauseMenu/Sfx_Button" method="play"]
 [connection signal="pause_exited" from="UI/PauseMenu/OptionMenu" to="UI/PauseMenu/OptionMenu" method="hide"]
 [connection signal="pause_exited" from="UI/PauseMenu/OptionMenu" to="UI/PauseMenu/MenuItems" method="show"]
 [connection signal="pressed" from="UI/PauseMenu/MenuItems/Resume" to="UI/PauseMenu" method="_on_resume_pressed"]
@@ -420,4 +430,5 @@ position = Vector2(640, 360)
 [connection signal="pressed" from="UI/PauseMenu/MenuItems/Options" to="UI/PauseMenu/Sfx_Button" method="play"]
 [connection signal="pressed" from="UI/PauseMenu/MenuItems/Quit" to="UI/PauseMenu" method="quit"]
 [connection signal="pressed" from="UI/PauseMenu/MenuItems/Quit" to="UI/PauseMenu/Sfx_Button" method="play"]
-[connection signal="timeout" from="UI/ScreenWipeTimer" to="UI/ScreenWipe" method="hide"]
+[connection signal="timeout" from="UI/PauseMenu/MenuItems/ScreenWipeTimer" to="UI/PauseMenu" method="hide_wipe"]
+[connection signal="timeout" from="UI/PauseMenu/MenuItems/QuitFadeTimer" to="UI/PauseMenu" method="quit_finish"]
