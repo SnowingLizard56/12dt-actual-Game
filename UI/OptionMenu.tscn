@@ -177,7 +177,7 @@ flat = true
 [connection signal="pressed" from="Up" to="." method="change_input" binds= ["Up"]]
 [connection signal="pressed" from="Down" to="." method="button_press"]
 [connection signal="pressed" from="Down" to="." method="change_input" binds= ["Down"]]
-[connection signal="pressed" from="Volume" to="." method="volume_change"]
 [connection signal="pressed" from="Volume" to="." method="button_press"]
+[connection signal="pressed" from="Volume" to="." method="volume_change"]
 [connection signal="pressed" from="Exit" to="." method="exit"]
 [connection signal="pressed" from="Exit" to="." method="button_press"]

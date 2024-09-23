@@ -196,7 +196,7 @@ func climb(delta):
 	if vdirection < 0:
 		stamina -= 100 * delta
 	elif vdirection == 0:
-		stamina -= 25 * delta
+		stamina -= 10 * delta
 	
 	if ascend_lock:
 		vdirection = -1
