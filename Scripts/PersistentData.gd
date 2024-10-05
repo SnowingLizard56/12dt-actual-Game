@@ -62,3 +62,4 @@ func apply_volume():
 func save_reset():
 	config.erase_section("SaveData")
 	config.save("user://save.cfg")
+	update_data()

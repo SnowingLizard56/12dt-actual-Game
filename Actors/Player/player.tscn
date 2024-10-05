@@ -51,7 +51,7 @@ one_shot = true
 one_shot = true
 
 [node name="Marker2D" type="Marker2D" parent="."]
-position = Vector2(8, -9)
+position = Vector2(8, -19)
 
 [node name="Hurtbox" type="Area2D" parent="."]
 collision_layer = 2

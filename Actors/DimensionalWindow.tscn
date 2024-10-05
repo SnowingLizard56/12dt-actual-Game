@@ -39,6 +39,8 @@ mouse_filter = 1
 color = Color(0.380392, 0.380392, 0.380392, 1)
 
 [node name="Background" type="Sprite2D" parent="Clip"]
+scale = Vector2(4, 4)
+texture = ExtResource("2_g0bpi")
 centered = false
 
 [node name="TileMap" type="TileMap" parent="Clip"]

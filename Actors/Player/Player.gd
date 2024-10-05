@@ -95,6 +95,12 @@ func _physics_process(delta):
 		if current_level.data["Connections"][2] == "":
 			position.x = current_level.offset.x + 8
 			velocity.x = 0
+	if position.y < current_level.offset.y + 19 :
+		if current_level.data["Connections"][0] == "": 
+			position.y = current_level.offset.y + 19
+			if velocity.y < 0:
+				velocity.y = 0
+		
 	# return to pixel
 	real_position = position
 	position = round(position)

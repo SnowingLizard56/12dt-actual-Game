@@ -337,6 +337,7 @@ func enter_new_screen():
 	if current_level.data["Connections"][index] == "":
 		if index == 1:
 			player.crushed = true
+			player.position.y = current_level.offset.y + 375
 			player.death()
 		return
 	allow_switch = false
@@ -396,14 +397,13 @@ class Level:
 				if w.layer == i:
 					w.call_deferred("call_clip")
 		active = true
-			
-		
+
 	func unload():
 		constructor.born_to_die.append_array(entities + statics + windows)
 		if one_off:
 			constructor.born_to_die.append(one_off)
 		constructor.built_levels.erase(self)
-	
+
 	func load_surroundings():
 		# Unload
 		var kill_list = []
@@ -424,8 +424,8 @@ class Level:
 		if one_off:
 			if one_off is AnimatedSprite2D:
 				one_off.play()
-		
-		
+
+
 func _on_active_level_follower_target_met():
 	for i in born_to_die:
 		i.queue_free()
