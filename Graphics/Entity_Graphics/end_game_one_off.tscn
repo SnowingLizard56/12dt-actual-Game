@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://dd1wsw6egrsmu"]
+
+[ext_resource type="Texture2D" uid="uid://bv2ngpgtbijjk" path="res://Graphics/Entity_Graphics/dimensional_stabiliser_thanks_for_playing.png" id="1_5n8hb"]
+[ext_resource type="Script" path="res://game_over.gd" id="1_7arl2"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_utv2r"]
+size = Vector2(54, 49)
+
+[node name="dwindow_stable" type="Sprite2D"]
+position = Vector2(320, 296)
+texture = ExtResource("1_5n8hb")
+script = ExtResource("1_7arl2")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0, 7.5)
+shape = SubResource("RectangleShape2D_utv2r")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]

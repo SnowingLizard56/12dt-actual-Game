@@ -27,6 +27,7 @@ var allow_switch = false
 @export var tilemap:TileMap
 @export var limbo_tmap:TileMap
 @export var lore:Control
+@export var credits:Control
 
 @export_category("Holders")
 @export var statics_holder:Node2D
@@ -200,6 +201,8 @@ func build_entities(data, offset:Vector2, level_index:int):
 		k.position += offset
 		entity_holder.add_child(k)
 		built_levels[level_index].one_off = k
+		if k is DimensionalStabiliser:
+			k.connect("game_over", credits.game_over)
 
 
 func build_collision(dir, offset:Vector2, level_index:int):
@@ -403,6 +406,7 @@ class Level:
 		if one_off:
 			constructor.born_to_die.append(one_off)
 		constructor.built_levels.erase(self)
+
 
 	func load_surroundings():
 		# Unload

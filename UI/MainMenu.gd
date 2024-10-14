@@ -53,6 +53,9 @@ func _process(delta):
 func start_clicked():
 	$FadeToBlack/Timer.start()
 	$FadeToBlack/Timer.connect("timeout", start_game)
+	menu_holder.get_child(0).disabled = true
+	menu_holder.get_child(1).disabled = true
+	menu_holder.get_child(2).disabled = true
 
 func quit_clicked():
 	$FadeToBlack/Timer.start()

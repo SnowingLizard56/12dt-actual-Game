@@ -16,7 +16,7 @@ size = Vector2(15, 20)
 size = Vector2(8, 14)
 
 [node name="Player" type="CharacterBody2D"]
-collision_layer = 2147483648
+collision_layer = 2147483650
 script = ExtResource("1_1lu34")
 particle_scenes = Array[PackedScene]([ExtResource("2_swgdg"), ExtResource("3_4hq6l")])
 respawn_gradient = SubResource("Gradient_cw0ra")
