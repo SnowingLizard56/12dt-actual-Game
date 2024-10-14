@@ -10,6 +10,8 @@ const WINDOW_TILE_SIZE = Vector2i(32, 16)
 @export var background_sprites:Array[Texture2D]
 @export_category("Window Settings")
 @export var reveals_layer:int
+@export_category("Other")
+@export var shadow_colour:Color
 
 var hovered:bool = false
 var drag_offset:Vector2 = Vector2.ZERO
@@ -35,7 +37,7 @@ func load_branch(pattern:TileMapPattern, level):
 		var k = i.sprite.duplicate(8)
 		i.sub_sprites.append(k)
 		k.position -= offset
-		$Clip/TileMap.add_child(k)
+		$Clip/Moving/TileMap.add_child(k)
 		i.hide()
 	level_obj = level
 	outline.hide()
@@ -45,7 +47,13 @@ func load_branch(pattern:TileMapPattern, level):
 	# background selection
 	$Clip/Background.texture = background_sprites[layer]
 	$Clip/Background.scale = Vector2.ONE * (640 / $Clip/Background.texture.get_width())
-	
+	# add backdrop!! SHDOW
+	if layer == 0:
+		var k = tilemap.duplicate()
+		$Clip/Moving.add_child(k)
+		$Clip/Moving.move_child(k, 0)
+		k.modulate = shadow_colour
+		k.position.y += 2
 	hide()
 
 # Window Movement And Drag
@@ -126,7 +134,7 @@ func call_clip():
 
 func clip(polygons):
 	# get rect and adjust for errors
-	$Clip/TileMap.global_position = offset
+	$Clip/Moving.global_position = offset
 	$Clip/Background.global_position = offset
 	var rect = get_rect()
 	rect.size.y += 0.0001

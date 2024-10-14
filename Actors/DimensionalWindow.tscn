@@ -1,8 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://dyyclqnanqmah"]
+[gd_scene load_steps=7 format=3 uid="uid://dyyclqnanqmah"]
 
 [ext_resource type="Script" path="res://Actors/DimensionalWindow.gd" id="1_4n7ny"]
 [ext_resource type="TileSet" uid="uid://c0cg70lv5ie4o" path="res://Graphics/Tiles/TileSet.tres" id="2_cruy2"]
 [ext_resource type="Texture2D" uid="uid://m8yjy4fvsdu4" path="res://Graphics/Backgrounds/teehee temp background.png" id="2_g0bpi"]
+[ext_resource type="Texture2D" uid="uid://dhmhsufwrdfie" path="res://Graphics/Backgrounds/New Background.png" id="2_r438f"]
+[ext_resource type="Texture2D" uid="uid://b3t7nbdgayst1" path="res://Graphics/Backgrounds/Old Background.jpeg" id="3_bt8te"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yba56"]
 
@@ -14,9 +16,10 @@ anchors_preset = 0
 offset_right = 256.0
 offset_bottom = 128.0
 script = ExtResource("1_4n7ny")
-tilemap = NodePath("Clip/TileMap")
+tilemap = NodePath("Clip/Moving/TileMap")
 outline = NodePath("Outline")
-background_sprites = Array[Texture2D]([ExtResource("2_g0bpi"), ExtResource("2_g0bpi")])
+background_sprites = Array[Texture2D]([ExtResource("2_r438f"), ExtResource("3_bt8te")])
+shadow_colour = Color(0, 0, 0.207843, 0.4)
 
 [node name="Area" type="Area2D" parent="."]
 position = Vector2(16, 16)
@@ -43,8 +46,12 @@ scale = Vector2(4, 4)
 texture = ExtResource("2_g0bpi")
 centered = false
 
-[node name="TileMap" type="TileMap" parent="Clip"]
+[node name="Moving" type="Node2D" parent="Clip"]
+scale = Vector2(4, 4)
+
+[node name="TileMap" type="TileMap" parent="Clip/Moving"]
 clip_children = 2
+scale = Vector2(0.25, 0.25)
 tile_set = ExtResource("2_cruy2")
 format = 2
 
