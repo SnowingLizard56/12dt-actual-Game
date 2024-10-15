@@ -1,3 +1,5 @@
+# Didn't end up using any of this. Oh well.
+
 class_name FlagManager extends Object
 
 static var flags:Array[bool] = []

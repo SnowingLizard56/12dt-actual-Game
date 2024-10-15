@@ -1,10 +1,12 @@
-# https://gist.github.com/afk-mario/15b5855ccce145516d1b458acfe29a28
+# Inspiration taken from https://gist.github.com/afk-mario/15b5855ccce145516d1b458acfe29a28
 class_name StaticbodyController extends RefCounted
 
 const CELL_SIZE = Vector2(8,8)
 const DELTA = 0.001
-# please for the love of god rename this function later
-# this is VERY O(n^2) so. figure that out future me
+
+# Please for the love of god rename this function later
+# This is VERY O(n^2) so. figure that out future me
+# Future me talking: I Did Not
 static func generate_static_body_polygons(tilemap:TileMap, layer:int, static_body_parent:Node = null):
 	# Static body will hold all the collision polygons!
 	var collision_holder
@@ -24,21 +26,21 @@ static func generate_static_body_polygons(tilemap:TileMap, layer:int, static_bod
 		var deathrow_polygons = []
 		var deathrow_index = {}
 		for i in polygons.size():
-			# if already on deathrow, skip it
+			# If already on deathrow, skip it
 			if deathrow_index.get(i, false):
 				continue
 			
 			var polygon_1 = polygons[i]
 			
-			# here comes the squared.
-			# nested loops make me feel sick. this is 3 deep now!! ew!!!!!
+			# Here comes the squared.
+			# Nested loops make me feel sick. this is 3 deep now!! ew!!!!!
 			for j in i:
-				# if on deathrow!
+				# If on deathrow!
 				if deathrow_index.get(i, false):
 					continue
 				
 				var polygon_2 = polygons[j]
-				# this gives a list for whatever reason
+				# This gives a list for whatever reason
 				var new_polygon = Geometry2D.merge_polygons(polygon_1, polygon_2)
 				
 				if len(new_polygon) != 1:
@@ -52,19 +54,19 @@ static func generate_static_body_polygons(tilemap:TileMap, layer:int, static_bod
 				deathrow_index[i] = true
 				break
 		# Outside of the squared!d
-		# thank goodness i was getting worried
+		# Thank goodness i was getting worried
 		
 		if len(deathrow_polygons) == 0:
-			# the world is free of criminals!
-			# you could also frame it as though 
-			# they have all undergone cognitive behavioural therapy
-			# but the way i have named my variables may make that difficult
+			# The world is free of criminals!
+			# You could also frame it as though 
+			# They have all undergone cognitive behavioural therapy
+			# But the way i have named my variables may make that difficult
 			break
 		
 		# MURDERRRR
 		for poly in deathrow_polygons:
 			polygons.erase(poly)
-	# outside of ALL the loops thank god
+	# Outside of ALL the loops thank god
 	if static_body_parent:
 		for poly in polygons:
 			var poly_node = CollisionPolygon2D.new()
@@ -75,10 +77,11 @@ static func generate_static_body_polygons(tilemap:TileMap, layer:int, static_bod
 	return polygons
 
 
-# i makea all da points on da tile from da one point on da tile
+# I makea all da points on da tile from da one point on da tile
+# Future me talking again: what
 static func get_points(pos):
-	#01
-	#23
+	# 01
+	# 23
 	return [
 		Vector2(pos.x * CELL_SIZE.x, (pos.y + 1) * CELL_SIZE.y), #2
 		Vector2(pos.x * CELL_SIZE.x, pos.y * CELL_SIZE.y), #0
@@ -86,23 +89,23 @@ static func get_points(pos):
 		Vector2((pos.x + 1) * CELL_SIZE.x, (pos.y + 1) * CELL_SIZE.y) #3
 	]
 
-# i makea da polygon from the places on da tile 
+# I makea da polygon from the places on da tile 
 # (directly following from prev function)
 static func get_tile_polygon(points):
 	return [points[0], points[1], points[1], points[2], points[2], points[3], points[3], points[0]]
 
 
 static func clip_polygons_with_rect(polygons:Array, rect:Rect2, output_parent:Node=null):
-	#01
-	#32
+	# 01
+	# 32
 	var rect_polygon = [
-		rect.position, #0
-		rect.position + Vector2(rect.size.x, 0), #1
-		rect.position + rect.size, #2
-		rect.position + Vector2(0, rect.size.y) #3
+		rect.position,
+		rect.position + Vector2(rect.size.x, 0),
+		rect.position + rect.size,
+		rect.position + Vector2(0, rect.size.y)
 		]
 	
-	# check for what type of clip to run
+	# Check for what type of clip to run
 	var contained
 	for i in len(polygons):
 		var p = polygons[i]
@@ -113,7 +116,7 @@ static func clip_polygons_with_rect(polygons:Array, rect:Rect2, output_parent:No
 	var clip_polygons = []
 	clip_polygons.append_array(polygons)
 	if contained is int:
-		# extents
+		# Extents
 		var polyline = [
 			Vector2(rect.position.x, 0),
 			Vector2(rect.position.x, 360)
@@ -125,7 +128,7 @@ static func clip_polygons_with_rect(polygons:Array, rect:Rect2, output_parent:No
 	var new_polygons = []
 	for i in clip_polygons:
 		new_polygons.append_array(Geometry2D.clip_polygons(i, rect_polygon))
-	# poof
+	# Poof
 	if output_parent:
 		add_polygons_as_children(polygons, output_parent)
 	return new_polygons
@@ -139,12 +142,12 @@ static func rotate_polygon(polygon:PackedVector2Array, pivot:Vector2, rotation_d
 	
 	
 static func add_polygons_as_children(polygons:Array, output_parent:Node):
-	# out with the old
+	# Out with the old
 	for i in output_parent.get_children():
 		if i is CollisionPolygon2D:
 			i.queue_free()
 		
-	# in with the new
+	# In with the new
 	for i in polygons:
 		var k = CollisionPolygon2D.new()
 		output_parent.add_child(k)

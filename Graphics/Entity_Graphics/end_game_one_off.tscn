@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://dd1wsw6egrsmu"]
 
 [ext_resource type="Texture2D" uid="uid://bv2ngpgtbijjk" path="res://Graphics/Entity_Graphics/dimensional_stabiliser_thanks_for_playing.png" id="1_5n8hb"]
-[ext_resource type="Script" path="res://game_over.gd" id="1_7arl2"]
+[ext_resource type="Script" path="res://Scripts/GameOver.gd" id="2_j8au6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_utv2r"]
 size = Vector2(54, 49)
@@ -9,7 +9,7 @@ size = Vector2(54, 49)
 [node name="dwindow_stable" type="Sprite2D"]
 position = Vector2(320, 296)
 texture = ExtResource("1_5n8hb")
-script = ExtResource("1_7arl2")
+script = ExtResource("2_j8au6")
 
 [node name="Area2D" type="Area2D" parent="."]
 collision_layer = 0

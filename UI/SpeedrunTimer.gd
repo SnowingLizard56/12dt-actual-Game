@@ -6,6 +6,7 @@ func _ready():
 	PersistentData.connect("data_updated", update_visibility)
 	update_visibility()
 
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	var time = get_node("/root/PersistentData").time
@@ -30,6 +31,7 @@ func _process(delta):
 		$Time.text += "0"
 	$Time.text += str(seconds) + "."
 	$Ms.text = str(floorf(ms*1000))
+
 
 func update_visibility():
 	visible = PersistentData.showtimer

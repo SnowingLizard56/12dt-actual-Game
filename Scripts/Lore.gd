@@ -5,6 +5,9 @@ extends Control
 @export var font_timer:Timer
 @export var gradient:Gradient
 
+var time_diff = 0
+
+
 func write(text):
 	label.text = text
 	label.visible_ratio = 0
@@ -15,22 +18,25 @@ func write(text):
 	modulate = gradient.sample(1)
 	$"RAHG !!! ITS GHONE".stop()
 
+
 func _on_timer_timeout():
 	label.visible_ratio += 1.0/len(label.text)
 	if label.visible_ratio == 1:
 		vis_timer.stop()
 		$"RAHG !!! ITS GHONE".start()
 
+
 func _on_font_timer_timeout():
 	label.label_settings.font_size += 1
 	if label.label_settings.font_size == 12:
 		font_timer.stop()
 
-var time_diff = 0
+
 func _process(delta):
 	if  !$"RAHG !!! ITS GHONE".is_stopped():
 		var r = ($"RAHG !!! ITS GHONE".time_left+time_diff)/$"RAHG !!! ITS GHONE".wait_time
 		modulate = gradient.sample(r)
+
 
 func screen_switched_midway():
 	if !vis_timer.is_stopped():

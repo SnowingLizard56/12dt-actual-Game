@@ -34,11 +34,19 @@ var state = states.Falling: set=set_state
 enum particle {DeathNormal, DeathCrushed}
 @export var particle_scenes:Array[PackedScene] = []
 @export var respawn_gradient:Gradient
-# variable set functions
+
+var ascend_lock = false
+var check_trans:Transform2D
+
+var falling_down = false
+
+
+# Variable set functions
 func update_dir(d):
 	if d != 0:
 		last_dir = d
 	direction = d
+
 
 func set_state(n):
 	var continue_set = true
@@ -53,28 +61,29 @@ func set_state(n):
 	if continue_set:
 		state = n
 
+
 func _physics_process(delta):
-	# skip if respawning
+	# Skip if respawning
 	if !$RespawnTimer.is_stopped(): return
-	# skip if screen transition
+	# Skip if screen transition
 	if $"/root/Main/ActiveLevelFollower".moving: return
-	#get from pixel
+	# Get from pixel
 	if real_position:
 		position = real_position
-	# detect direction
+	# Detect direction
 	if !$LockDirectionTimer.is_stopped():
 		direction = locked_direction
 	else:
 		direction = Input.get_axis("Left", "Right")
-	# sprite direction
+	# Sprite direction
 	if direction != 0 and state != states.Climb:
 		$Sprite.scale.x = abs($Sprite.scale.x) * direction
-	# detect jump
+	# Detect jump
 	if Input.is_action_just_pressed("Jump") or $JumpBuffer.time_left > 0:
 		jumping = true
 	else:
 		jumping = false
-	# state machine
+	# State machine
 	if state == states.Grounded or (jumping and !$CoyoteTimer.is_stopped()):
 		grounded(delta)
 	elif state == states.Falling:
@@ -85,7 +94,7 @@ func _physics_process(delta):
 		crush_check()
 	else:
 		move_and_slide()
-	# keep on sides of screen
+	# Keep on sides of screen
 	var current_level = get_node("../LevelConstructor").current_level
 	if position.x > current_level.offset.x + 632:
 		if current_level.data["Connections"][3] == "": 
@@ -101,15 +110,15 @@ func _physics_process(delta):
 			if velocity.y < 0:
 				velocity.y = 0
 		
-	# return to pixel
+	# Return to pixel
 	real_position = position
 	position = round(position)
+
 
 func _process(delta):
 	if !$RespawnTimer.is_stopped():
 		$Sprite.modulate = respawn_gradient.sample(1-($RespawnTimer.time_left/$RespawnTimer.wait_time))
 
-var falling_down = false
 
 # Physics States
 func falling(delta):
@@ -128,7 +137,7 @@ func falling(delta):
 	
 	if Input.is_action_just_pressed("Jump"):
 		$JumpBuffer.start()
-	# Change statesd a
+	# Change states
 	if is_on_floor() and velocity.y >= 0:
 		$Sprite.play("Fall_Landing")
 		state = states.Grounded
@@ -168,9 +177,6 @@ func grounded(delta):
 		velocity = Vector2.UP*4
 
 
-var ascend_lock = false
-var check_trans:Transform2D
-
 func climb(delta):
 	var vdirection = Input.get_axis("Up", "Down")
 	
@@ -179,10 +185,9 @@ func climb(delta):
 		vdirection = 0.5
 	elif vdirection > 0:
 		vdirection = 1.5
-	# check 11 pixels up for idle. if not on wall 11 pixels up, then fall down a bit.
+	# Check 11 pixels up for idle. if not on wall 11 pixels up, then fall down a bit.
 	if !ascend_lock:
 		check_trans = transform.translated(Vector2(0, -10))
-	
 	
 	if !test_move(check_trans, Vector2.RIGHT * climb_dir):
 		if vdirection < 0 or ascend_lock:
@@ -192,7 +197,7 @@ func climb(delta):
 	elif ascend_lock:
 		ascend_lock = false
 	
-	#check 11 pixels down. if not on wall, force fall.
+	# Check 11 pixels down. if not on wall, force fall.
 	if !test_move(transform.translated(Vector2(0, 11)), Vector2.RIGHT * climb_dir):
 		if vdirection > 0:
 			state = states.Falling
@@ -239,6 +244,7 @@ func climb(delta):
 	elif is_on_floor():
 		state = states.Grounded
 
+
 func death():
 	var k
 	if crushed:
@@ -258,9 +264,11 @@ func death():
 	crushed = false
 	get_node("/root/PersistentData").deaths += 1
 	
+	
 func entity_collision(ent):
 	if ent.entity_type == Entity.entities.Spike:
 		death()
+
 
 func crush_check():
 	for i in [Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT]:
@@ -270,6 +278,7 @@ func crush_check():
 	crushed = true
 	death()
 	return true
+
 
 func _on_visible_notifier_screen_exited():
 	if visible:

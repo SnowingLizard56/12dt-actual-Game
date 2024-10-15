@@ -22,6 +22,12 @@ var sprite:Sprite2D
 @export var sprite_anims:Array[PackedScene]
 var stored_polygons = []
 
+# Flag Stuff!
+var prev_offset
+var target_offset = Vector2.ZERO
+var timer:SceneTreeTimer
+
+
 func initialize():
 	if entity_type == entities.Spike:
 		size.y = 8
@@ -64,8 +70,10 @@ func get_polygon():
 func reset_polygon():
 	stored_polygons = [get_polygon()]
 
+
 func clip_polygon(rect:Rect2):
 	stored_polygons = StaticbodyController.clip_polygons_with_rect(stored_polygons, rect)
+
 
 func apply_polygons():
 	StaticbodyController.add_polygons_as_children(stored_polygons, self)
@@ -73,11 +81,13 @@ func apply_polygons():
 		inside_window()
 	else:
 		uninside_window()
-	
+
+
 func switch_to_outline():
 	get_child(0).is_alt = true
 	get_child(0).is_alt = true
 	show()
+
 
 # Player Collision Stuff!
 func player_entered(body):
@@ -91,16 +101,12 @@ func inside_window():
 			for i in sub_sprites:
 				i.get_child(0).play("activate")
 
+
 func uninside_window():
 	if entity_type == entities.SchrodingerSwitch:
 		if FlagManager.set_flag(flag, false):
 			for i in sub_sprites:
 				i.get_child(0).play("deactivate")
-
-# Flag Stuff!
-var prev_offset
-var target_offset = Vector2.ZERO
-var timer:SceneTreeTimer
 
 
 func activate():
@@ -109,7 +115,7 @@ func activate():
 		FlagManager.on_flag(flag, flag_off, !invert_flag)
 		if invert_flag:
 			flag_on()
-			
+
 
 func flag_on():
 	if entity_type == entities.Spike:

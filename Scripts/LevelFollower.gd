@@ -10,6 +10,7 @@ var target_position = Vector2.ZERO:set=set_target
 var prev_position = Vector2.ZERO
 var moving = false
 
+
 func set_target(v):
 	$CameraMoveTimer.start()
 	prev_position = target_position
@@ -20,6 +21,7 @@ func set_target(v):
 
 func _ready():
 	target_met.emit()
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

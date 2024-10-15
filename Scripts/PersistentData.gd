@@ -11,14 +11,17 @@ var volume = 7
 
 var start_in_room = ""
 
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	update_data()
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if get_node_or_null("/root/Main") is Node2D:
 		time += delta
+
 
 func save_config():
 	config.set_value("Settings", "showtimer", showtimer)
@@ -29,13 +32,16 @@ func save_config():
 	config.save("user://save.cfg")
 	update_data()
 	
+	
 func save_game():
 	config.set_value("SaveData", "time", time)
-	config.set_value("SaveData", "room", get_node("/root/Main/LevelConstructor").current_level.level_name)
+	config.set_value("SaveData", "room", 
+			get_node("/root/Main/LevelConstructor").current_level.level_name)
 	config.set_value("SaveData", "deaths", deaths)
 	
 	config.save("user://save.cfg")
 	update_data()
+
 
 func update_data():
 	var _err = config.load("user://save.cfg")
@@ -56,8 +62,10 @@ func update_data():
 				InputMap.action_add_event(i, evnt)
 	data_updated.emit()
 
+
 func apply_volume():
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), linear_to_db(volume/10.0))
+
 
 func save_reset():
 	config.erase_section("SaveData")

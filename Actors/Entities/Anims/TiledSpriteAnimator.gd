@@ -6,12 +6,15 @@ extends Sprite2D
 
 var is_alt:bool:set=set_alt
 
+
 func _ready():
 	own_frame = 0
+
 
 func set_alt(value):
 	is_alt = value
 	set__frame(own_frame)
+
 
 func set__frame(value):
 	if is_alt and len(alt_frames) == len(frames):

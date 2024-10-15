@@ -15,7 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://bojkxeynvogeb" path="res://UI/OptionMenu.tscn" id="11_17wun"]
 [ext_resource type="Script" path="res://Scripts/Lore.gd" id="11_cge5f"]
 [ext_resource type="FontFile" uid="uid://cgkqud4ed1vxo" path="res://Graphics/UI/Garet-Book.ttf" id="14_yower"]
-[ext_resource type="Script" path="res://Credits.gd" id="16_mm68i"]
+[ext_resource type="Script" path="res://Scripts/Credits.gd" id="16_cu5r0"]
 [ext_resource type="Texture2D" uid="uid://r6qkdfgd0dey" path="res://icon.svg" id="17_ysgbc"]
 
 [sub_resource type="Gradient" id="Gradient_yw64d"]
@@ -441,7 +441,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("16_mm68i")
+script = ExtResource("16_cu5r0")
+messages = Array[String](["Stabiliser Proximity Detected.", "Automatic control returned to us.", "We knew you could do it.", "It has been an honour", "to remember you.", "Connection Severed.", "We Love You."])
 
 [node name="ColorRect" type="ColorRect" parent="UI/Credits"]
 layout_mode = 1
@@ -453,19 +454,31 @@ grow_vertical = 2
 color = Color(0, 0, 0, 1)
 
 [node name="Message" type="Label" parent="UI/Credits"]
-visible = false
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-text = "Stabiliser Proximity Detected. 
-Automatic control returned to us.
-We knew you could do it.
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -130.0
+offset_top = -91.0
+offset_right = 130.0
+offset_bottom = 91.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("8_optnu")
+theme_override_font_sizes/font_size = 20
+text = " 
+
+
 
 It has been an honour
 
 to remember you."
+horizontal_alignment = 1
 
 [node name="Credits" type="Label" parent="UI/Credits"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -498,6 +511,17 @@ texture = ExtResource("17_ysgbc")
 expand_mode = 1
 stretch_mode = 4
 
+[node name="MessageVisibilityTimer" type="Timer" parent="UI/Credits"]
+one_shot = true
+
+[node name="MessageLingerTimer" type="Timer" parent="UI/Credits"]
+wait_time = 2.0
+one_shot = true
+
+[node name="MessageTransitionTimer" type="Timer" parent="UI/Credits"]
+wait_time = 2.0
+one_shot = true
+
 [node name="ScreenWipe" type="ColorRect" parent="UI"]
 visible = false
 anchors_preset = 15
@@ -525,3 +549,5 @@ color = Color(0, 0, 0, 1)
 [connection signal="pressed" from="UI/PauseMenu/MenuItems/Quit" to="UI/PauseMenu/Sfx_Button" method="play"]
 [connection signal="timeout" from="UI/PauseMenu/MenuItems/ScreenWipeTimer" to="UI/PauseMenu" method="hide_wipe"]
 [connection signal="timeout" from="UI/PauseMenu/MenuItems/QuitFadeTimer" to="UI/PauseMenu" method="quit_finish"]
+[connection signal="timeout" from="UI/Credits/MessageVisibilityTimer" to="UI/Credits/MessageLingerTimer" method="start"]
+[connection signal="timeout" from="UI/Credits/MessageLingerTimer" to="UI/Credits" method="_on_message_linger_timer_timeout"]

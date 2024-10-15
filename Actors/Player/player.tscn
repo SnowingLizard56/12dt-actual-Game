@@ -10,7 +10,7 @@ offsets = PackedFloat32Array(0, 0.598698, 1)
 colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ggc0s"]
-size = Vector2(15, 20)
+size = Vector2(13, 19)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_acsxo"]
 size = Vector2(8, 14)
@@ -27,7 +27,7 @@ sprite_frames = ExtResource("2_2top5")
 animation = &"Jump"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -10)
+position = Vector2(0, -9.5)
 shape = SubResource("RectangleShape2D_ggc0s")
 
 [node name="VisibleNotifier" type="VisibleOnScreenNotifier2D" parent="."]

@@ -16,11 +16,13 @@ extends Control
 var button_sound = preload("res://SFX/MenuSelect.wav")
 var skip = false
 
+
 func _ready():
 	ResourceLoader.load_threaded_request("res://Main.tscn")
 	title.modulate.a = 0
 	menu_holder.get_child(0).disabled = true
 	menu_holder.get_child(1).disabled = true
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -50,6 +52,7 @@ func _process(delta):
 		var time = $FadeToBlack/Timer.time_left
 		$FadeToBlack.modulate = menu_visibility.sample(time/menu_timer.wait_time)
 
+
 func start_clicked():
 	$FadeToBlack/Timer.start()
 	$FadeToBlack/Timer.connect("timeout", start_game)
@@ -57,16 +60,20 @@ func start_clicked():
 	menu_holder.get_child(1).disabled = true
 	menu_holder.get_child(2).disabled = true
 
+
 func quit_clicked():
 	$FadeToBlack/Timer.start()
 	$FadeToBlack/Timer.connect("timeout", quit)
 	
+
 func menu_activate():
 	menu_holder.get_child(0).disabled = false
 	menu_holder.get_child(1).disabled = false
 
+
 func start_game():
 	get_tree().change_scene_to_packed(ResourceLoader.load_threaded_get("res://Main.tscn"))
+
 
 func quit():
 	get_tree().quit()
