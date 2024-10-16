@@ -11,7 +11,8 @@ const WINDOW_TILE_SIZE = Vector2i(32, 16)
 @export_category("Window Settings")
 @export var reveals_layer:int
 @export_category("Other")
-@export var shadow_colour:Color
+@export var shadow_colour_new = Color(0.1, 0.1, 0, 0.4)
+@export var shadow_colour_old = Color(0.1, 0, 0.1, 0.4)
 
 var hovered:bool = false
 var drag_offset:Vector2 = Vector2.ZERO
@@ -47,12 +48,14 @@ func load_branch(pattern:TileMapPattern, level):
 	$Clip/Background.texture = background_sprites[layer]
 	$Clip/Background.scale = Vector2.ONE * (640 / $Clip/Background.texture.get_width())
 	# Add backdrop!! SHADOW
+	var k = tilemap.duplicate()
+	$Clip/Moving.add_child(k)
+	$Clip/Moving.move_child(k, 0)
+	k.position.y += 2
 	if layer == 0:
-		var k = tilemap.duplicate()
-		$Clip/Moving.add_child(k)
-		$Clip/Moving.move_child(k, 0)
-		k.modulate = shadow_colour
-		k.position.y += 2
+		k.modulate = shadow_colour_new
+	else:
+		k.modulate = shadow_colour_old
 	hide()
 
 

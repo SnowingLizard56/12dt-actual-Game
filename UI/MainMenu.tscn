@@ -24,6 +24,7 @@ scale_min = 4.0
 scale_max = 4.0
 
 [node name="MainMenu" type="Control" node_paths=PackedStringArray("splash_timer", "fade_timer", "menu_timer", "title", "end_marker", "menu_holder")]
+process_mode = 3
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

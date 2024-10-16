@@ -127,7 +127,7 @@ credits = NodePath("../UI/Credits")
 statics_holder = NodePath("../StaticsHolder")
 window_holder = NodePath("../WindowHolder")
 entity_holder = NodePath("../EntityHolder")
-level_name = "crevasse_entry"
+level_name = "facility_balcony"
 level_below = "crevasse_outpost"
 start_game_level_name = "intro_platforming"
 
@@ -160,6 +160,8 @@ offset_left = 360.0
 offset_top = 216.0
 offset_right = 416.0
 offset_bottom = 272.0
+shadow_colour_new = null
+shadow_colour_old = null
 
 [node name="Camera2D" type="Camera2D" parent="."]
 anchor_mode = 0
@@ -219,6 +221,7 @@ visibility_rect = Rect2(-353.788, -180.143, 757.815, 361.828)
 layer = 128
 
 [node name="SpeedrunTimer" type="Control" parent="UI"]
+z_index = 255
 layout_mode = 3
 anchors_preset = 1
 anchor_left = 1.0
@@ -434,7 +437,7 @@ max_polyphony = 4
 [node name="Credits" type="Control" parent="UI"]
 process_mode = 3
 visible = false
-z_index = 255
+z_index = 254
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -493,12 +496,11 @@ Thank you Joe and Evelyn Mitchell,
 For doing the amazing art of the backgrounds, tilesets, and the character.
 Thank you to Braden Robins, John Hagen, Emma Pearce-Hagen, 
 and Genevieve McClean for your constant support while I developed EURYDICE.
-Thank you to Michael Xue and Fearghal Reid for showing me that my code could
-always be messier.
+Thank you to Michael Xue and Fearghal Reid for reminding me that my code
+could always be messier.
 And, of course, a big thanks to you for playing. Because that's why there's a game 
 in the first place.
-
-and ofc I, Sylvia Hagen did most of the work."
+yeah"
 horizontal_alignment = 1
 
 [node name="TextureRect" type="TextureRect" parent="UI/Credits/Credits"]
@@ -519,6 +521,10 @@ wait_time = 2.0
 one_shot = true
 
 [node name="MessageTransitionTimer" type="Timer" parent="UI/Credits"]
+wait_time = 2.0
+one_shot = true
+
+[node name="StayOnBlackTimer" type="Timer" parent="UI/Credits"]
 wait_time = 2.0
 one_shot = true
 
@@ -551,3 +557,5 @@ color = Color(0, 0, 0, 1)
 [connection signal="timeout" from="UI/PauseMenu/MenuItems/QuitFadeTimer" to="UI/PauseMenu" method="quit_finish"]
 [connection signal="timeout" from="UI/Credits/MessageVisibilityTimer" to="UI/Credits/MessageLingerTimer" method="start"]
 [connection signal="timeout" from="UI/Credits/MessageLingerTimer" to="UI/Credits" method="_on_message_linger_timer_timeout"]
+[connection signal="timeout" from="UI/Credits/MessageTransitionTimer" to="UI/Credits" method="_on_message_transition_timer_timeout"]
+[connection signal="timeout" from="UI/Credits/StayOnBlackTimer" to="UI/Credits" method="start_credits"]

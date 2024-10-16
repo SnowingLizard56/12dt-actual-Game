@@ -18,6 +18,7 @@ var skip = false
 
 
 func _ready():
+	get_tree().paused = false
 	ResourceLoader.load_threaded_request("res://Main.tscn")
 	title.modulate.a = 0
 	menu_holder.get_child(0).disabled = true
