@@ -1,9 +1,9 @@
 extends Control
 
-@export var screenwipetimer:Timer
-@export var quitfadetimer:Timer
-@export var screenwipe:Gradient
-@export var screenwipenode:Node
+@export var screen_wipe_timer:Timer
+@export var quit_fade_timer:Timer
+@export var screen_wipe:Gradient
+@export var screen_wipe_node:Node
 
 
 func _ready():
@@ -15,12 +15,12 @@ func _process(delta):
 	if Input.is_action_just_pressed("Pause"):
 		pause()
 	
-	if !quitfadetimer.is_stopped():
-		screenwipenode.modulate = screenwipe.sample(
-				1 - (quitfadetimer.time_left / quitfadetimer.wait_time))
-	elif !screenwipetimer.is_stopped():
-		screenwipenode.modulate = screenwipe.sample(
-				screenwipetimer.time_left / screenwipetimer.wait_time)
+	if !quit_fade_timer.is_stopped():
+		screen_wipe_node.modulate = screen_wipe.sample(
+				1 - (quit_fade_timer.time_left / quit_fade_timer.wait_time))
+	elif !screen_wipe_timer.is_stopped():
+		screen_wipe_node.modulate = screen_wipe.sample(
+				screen_wipe_timer.time_left / screen_wipe_timer.wait_time)
 
 
 func pause():
@@ -36,9 +36,8 @@ func resume():
 func quit():
 	# Save current level etc etc
 	PersistentData.save_game()
-	get_tree().paused = false
-	screenwipenode.show()
-	quitfadetimer.start()
+	screen_wipe_node.show()
+	quit_fade_timer.start()
 
 	
 func quit_finish():
@@ -51,5 +50,5 @@ func _on_resume_pressed():
 
 
 func hide_wipe():
-	if quitfadetimer.is_stopped():
-		screenwipenode.hide()
+	if quit_fade_timer.is_stopped():
+		screen_wipe_node.hide()

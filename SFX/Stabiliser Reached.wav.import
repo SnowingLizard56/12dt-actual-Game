@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://b43bh41xtmu4n"
+path="res://.godot/imported/Stabiliser Reached.wav-3330c5ee502840ef0489b48716650987.sample"
+
+[deps]
+
+source_file="res://SFX/Stabiliser Reached.wav"
+dest_files=["res://.godot/imported/Stabiliser Reached.wav-3330c5ee502840ef0489b48716650987.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0
