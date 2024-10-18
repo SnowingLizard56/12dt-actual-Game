@@ -66,12 +66,15 @@ default_color = Color(0.831373, 0.8, 0.364706, 1)
 
 [node name="Move" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_obuwm")
+bus = &"SFX"
 
 [node name="MoveFail" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("7_8xwxs")
+bus = &"SFX"
 
 [node name="PickUp" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("8_dipg4")
+bus = &"SFX"
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

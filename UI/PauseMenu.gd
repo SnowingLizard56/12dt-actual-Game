@@ -4,6 +4,7 @@ extends Control
 @export var quit_fade_timer:Timer
 @export var screen_wipe:Gradient
 @export var screen_wipe_node:Node
+@export var music_node:Node
 
 
 func _ready():
@@ -25,11 +26,13 @@ func _process(delta):
 
 func pause():
 	visible = true
+	music_node.volume_db = -10
 	get_tree().paused = true
 
 
 func resume():
 	visible = false
+	music_node.volume_db = 0
 	get_tree().paused = false
 
 

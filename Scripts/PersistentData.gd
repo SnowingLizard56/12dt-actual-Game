@@ -55,8 +55,8 @@ func update_data():
 	
 	# Settings
 	showtimer = config.get_value("Settings", "showtimer", false)
-	volume = config.get_value("Settings", "volume", 7)
-	volume = config.get_value("Settings", "music_volume", 7)
+	volume = config.get_value("Settings", "volume", 3)
+	music_volume = config.get_value("Settings", "music_volume", 7)
 	apply_volume()
 	if config.get_value("Settings/Controls", "Jump"):
 		for i in ["Jump", "Left", "Right", "Up", "Down"]:
