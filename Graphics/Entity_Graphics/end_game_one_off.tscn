@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dd1wsw6egrsmu"]
+[gd_scene load_steps=5 format=3 uid="uid://dd1wsw6egrsmu"]
 
 [ext_resource type="Texture2D" uid="uid://bv2ngpgtbijjk" path="res://Graphics/Entity_Graphics/dimensional_stabiliser_thanks_for_playing.png" id="1_5n8hb"]
 [ext_resource type="Script" path="res://Scripts/GameOver.gd" id="2_j8au6"]
+[ext_resource type="AudioStream" uid="uid://pwgt0pds8p0u" path="res://SFX/Not Useful but Cool Sound.wav" id="3_7vmd4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_utv2r"]
 size = Vector2(54, 49)
@@ -19,5 +20,9 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 position = Vector2(0, 7.5)
 shape = SubResource("RectangleShape2D_utv2r")
+
+[node name="GameOverSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_7vmd4")
+pitch_scale = 0.5
 
 [connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]

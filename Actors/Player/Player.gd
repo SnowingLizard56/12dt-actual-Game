@@ -21,6 +21,7 @@ var climb_dir = 0
 var real_position:Vector2
 var jumping = false
 var crushed = false
+var last_velocity = Vector2.ZERO
 
 var locked_direction
 
@@ -123,11 +124,13 @@ func _process(delta):
 # Physics States
 func falling(delta):
 	# Gravity
+	if velocity.y != 0:
+		last_velocity = velocity
 	velocity.y = move_toward(velocity.y, TERMINAL_VELOCITY, GRAVITY * delta)
 	# Friction
 	velocity.x = move_toward(velocity.x, 0, AIR_FRICTION * delta)
 	
-	velocity.x = lerp(velocity.x, direction * SPEED, delta*6)
+	velocity.x = lerp(velocity.x, direction * SPEED, delta * 6)
 	
 	
 	# Anims
@@ -140,6 +143,9 @@ func falling(delta):
 	# Change states
 	if is_on_floor() and velocity.y >= 0:
 		$Sprite.play("Fall_Landing")
+		
+		if last_velocity.y >= TERMINAL_VELOCITY / 2:
+			$Land.play()
 		state = states.Grounded
 	else:
 		var t = transform
@@ -155,6 +161,7 @@ func grounded(delta):
 		velocity.y = JUMP_SPEED
 		state = states.Falling
 		$Sprite.play("Jump")
+		$Jump.play()
 	
 	if direction == 0 and !jumping:
 		$Sprite.play("Idle")
@@ -228,6 +235,7 @@ func climb(delta):
 		if vdirection > 0:
 			velocity = Vector2(WALL_DROP_SPEED, 0)
 		else:
+			$Jump.play()
 			velocity = WALL_JUMP_VELOCITY
 			locked_direction = -climb_dir
 			$LockDirectionTimer.start()
@@ -249,8 +257,10 @@ func death():
 	var k
 	if crushed:
 		k = particle_scenes[particle.DeathCrushed].instantiate()
+		$Crush.play()
 	else:
 		k = particle_scenes[particle.DeathNormal].instantiate()
+		$Disintegrate.play()
 		k.call_deferred("start", $Sprite.scale, velocity)
 	get_parent().call_deferred("add_child", k)
 	k.position += position

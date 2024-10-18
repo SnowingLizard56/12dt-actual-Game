@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://c41lerf86ba75"]
+[gd_scene load_steps=25 format=3 uid="uid://c41lerf86ba75"]
 
 [ext_resource type="PackedScene" uid="uid://raujhngxvpl1" path="res://Actors/Player/Player.tscn" id="1_2p50b"]
 [ext_resource type="Script" path="res://Scripts/LevelConstructor.gd" id="1_067a3"]
@@ -17,6 +17,7 @@
 [ext_resource type="FontFile" uid="uid://cgkqud4ed1vxo" path="res://Graphics/UI/Garet-Book.ttf" id="14_yower"]
 [ext_resource type="Script" path="res://Scripts/Credits.gd" id="16_cu5r0"]
 [ext_resource type="Texture2D" uid="uid://r6qkdfgd0dey" path="res://icon.svg" id="17_ysgbc"]
+[ext_resource type="AudioStream" uid="uid://vpbarspswm1l" path="res://ThankYouBen/Eurydice.ogg" id="18_gyah6"]
 
 [sub_resource type="Gradient" id="Gradient_yw64d"]
 offsets = PackedFloat32Array(0, 0.25, 0.75, 1)
@@ -507,6 +508,7 @@ the game is done now
 time for thankings and like. people and stuff
 Thank you Joe and Evelyn Mitchell,
 For doing the amazing art of the backgrounds, tilesets, and the character.
+Thank you Benjamin Whaley for the fantastic music for the menu and gameplay.
 Thank you to Braden Robins, John Hagen, Emma Pearce-Hagen, 
 and Genevieve McClean for your constant support while I developed EURYDICE.
 Thank you to Michael Xue and Fearghal Reid for reminding me that my code
@@ -550,6 +552,13 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 1)
+
+[node name="PauseMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("18_gyah6")
+
+[node name="GameplayMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("18_gyah6")
+autoplay = true
 
 [connection signal="target_met" from="ActiveLevelFollower" to="LevelConstructor" method="_on_active_level_follower_target_met"]
 [connection signal="screen_exited" from="Player" to="LevelConstructor" method="enter_new_screen"]

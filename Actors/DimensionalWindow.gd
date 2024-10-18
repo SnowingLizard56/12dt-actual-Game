@@ -69,6 +69,11 @@ func _process(delta):
 	if dragging or hovered:
 		mouse_position = get_global_mouse_position()
 	if Input.is_action_just_pressed("Click") and hovered:
+		if get_node("../../ActiveLevelFollower").moving: return
+		
+		# SOUND
+		$PickUp.play()
+		
 		# Outline start
 		outline.clear_points()
 		for i in [Vector2.ONE, Vector2(get_rect().size.x, 1),get_rect().size, 
@@ -90,6 +95,7 @@ func _process(delta):
 		
 		if get_node("../../ActiveLevelFollower").moving:
 			dragging = false
+			$MoveFail.play()
 			return
 		
 		if Input.is_action_just_released("Click"):
@@ -106,7 +112,10 @@ func _process(delta):
 					intersects = true
 					break
 			# Clip
-			if !intersects:
+			if intersects:
+				$MoveFail.play()
+			else:
+				$Move.play()
 				position += outline.position
 				call_clip()
 			outline.hide()

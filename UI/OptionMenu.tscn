@@ -3,7 +3,7 @@
 [ext_resource type="Theme" uid="uid://bo5ulq7pp4npf" path="res://Graphics/UI/MainTheme.tres" id="1_5ngli"]
 [ext_resource type="Script" path="res://UI/OptionMenu.gd" id="1_o2ar2"]
 
-[node name="OptionMenu" type="Control" node_paths=PackedStringArray("timer_button", "volume_button", "jump_button", "left_button", "right_button", "down_button", "up_button")]
+[node name="OptionMenu" type="Control" node_paths=PackedStringArray("timer_button", "volume_button", "jump_button", "left_button", "right_button", "down_button", "up_button", "volume2_button")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,12 +14,13 @@ mouse_filter = 2
 theme = ExtResource("1_5ngli")
 script = ExtResource("1_o2ar2")
 timer_button = NodePath("Speedrun Timer")
-volume_button = NodePath("Volume")
+volume_button = NodePath("SFXVolume")
 jump_button = NodePath("Jump")
 left_button = NodePath("Left")
 right_button = NodePath("Right")
 down_button = NodePath("Down")
 up_button = NodePath("Up")
+volume2_button = NodePath("MusicVolume")
 
 [node name="Speedrun Timer" type="Button" parent="."]
 layout_mode = 1
@@ -34,7 +35,7 @@ focus_mode = 0
 theme = ExtResource("1_5ngli")
 theme_override_font_sizes/font_size = 24
 action_mode = 0
-text = "Timer:"
+text = "Error: something went wrong lol"
 flat = true
 
 [node name="Jump" type="Button" parent="."]
@@ -52,7 +53,7 @@ theme = ExtResource("1_5ngli")
 theme_override_font_sizes/font_size = 24
 action_mode = 0
 button_mask = 3
-text = "Timer:"
+text = "This in theory is only visible in the editor"
 flat = true
 
 [node name="Left" type="Button" parent="."]
@@ -70,7 +71,7 @@ theme = ExtResource("1_5ngli")
 theme_override_font_sizes/font_size = 24
 action_mode = 0
 button_mask = 3
-text = "Timer:"
+text = "So if youre seeing this then something has gone horribly wrong"
 flat = true
 
 [node name="Right" type="Button" parent="."]
@@ -88,7 +89,7 @@ theme = ExtResource("1_5ngli")
 theme_override_font_sizes/font_size = 24
 action_mode = 0
 button_mask = 3
-text = "Timer:"
+text = "Perhaps a fatal error. Perhaps not."
 flat = true
 
 [node name="Up" type="Button" parent="."]
@@ -106,7 +107,7 @@ theme = ExtResource("1_5ngli")
 theme_override_font_sizes/font_size = 24
 action_mode = 0
 button_mask = 3
-text = "Timer:"
+text = "Or perhaps youre just like opening the project or something."
 flat = true
 
 [node name="Down" type="Button" parent="."]
@@ -124,10 +125,10 @@ theme = ExtResource("1_5ngli")
 theme_override_font_sizes/font_size = 24
 action_mode = 0
 button_mask = 3
-text = "Timer:"
+text = "Thats cool too."
 flat = true
 
-[node name="Volume" type="Button" parent="."]
+[node name="SFXVolume" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -142,7 +143,26 @@ theme = ExtResource("1_5ngli")
 theme_override_font_sizes/font_size = 24
 action_mode = 0
 button_mask = 3
-text = "Timer:"
+text = "Hi Mr. Robins! Good to see you're being thorough."
+flat = true
+
+[node name="MusicVolume" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -30.0
+offset_top = 210.0
+offset_right = 30.0
+offset_bottom = 247.0
+grow_horizontal = 2
+focus_mode = 0
+theme = ExtResource("1_5ngli")
+theme_override_font_sizes/font_size = 24
+action_mode = 0
+button_mask = 3
+text = "
+ (this one's empty)"
 flat = true
 
 [node name="Exit" type="Button" parent="."]
@@ -165,8 +185,8 @@ button_mask = 3
 text = "Back"
 flat = true
 
-[connection signal="pressed" from="Speedrun Timer" to="." method="timer_toggled"]
 [connection signal="pressed" from="Speedrun Timer" to="." method="button_press"]
+[connection signal="pressed" from="Speedrun Timer" to="." method="timer_toggled"]
 [connection signal="pressed" from="Jump" to="." method="button_press"]
 [connection signal="pressed" from="Jump" to="." method="change_input" binds= ["Jump"]]
 [connection signal="pressed" from="Left" to="." method="button_press"]
@@ -177,7 +197,9 @@ flat = true
 [connection signal="pressed" from="Up" to="." method="change_input" binds= ["Up"]]
 [connection signal="pressed" from="Down" to="." method="button_press"]
 [connection signal="pressed" from="Down" to="." method="change_input" binds= ["Down"]]
-[connection signal="pressed" from="Volume" to="." method="button_press"]
-[connection signal="pressed" from="Volume" to="." method="volume_change"]
+[connection signal="pressed" from="SFXVolume" to="." method="button_press"]
+[connection signal="pressed" from="SFXVolume" to="." method="volume_change" binds= ["sfx"]]
+[connection signal="pressed" from="MusicVolume" to="." method="button_press"]
+[connection signal="pressed" from="MusicVolume" to="." method="volume_change" binds= ["music"]]
 [connection signal="pressed" from="Exit" to="." method="exit"]
 [connection signal="pressed" from="Exit" to="." method="button_press"]

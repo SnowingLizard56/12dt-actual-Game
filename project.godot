@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 
 BetterTerrain="*res://addons/better-terrain/BetterTerrain.gd"
 PersistentData="*res://Scripts/PersistentData.gd"
+SoundPlayer="*res://sound_player.gd"
 
 [debug]
 

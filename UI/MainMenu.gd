@@ -34,7 +34,7 @@ func _process(delta):
 			fade_timer.stop()
 			splash_timer.start()
 			skip = true
-		title.modulate = title_visibility.sample(time/fade_timer.wait_time)
+		title.modulate = title_visibility.sample(time / fade_timer.wait_time)
 	elif !splash_timer.is_stopped():
 		var time = splash_timer.time_left
 		if Input.is_action_just_pressed("Skip") or skip:
@@ -42,16 +42,16 @@ func _process(delta):
 			splash_timer.stop()
 			menu_timer.start()
 			menu_holder.show()
-		var ratio = ease(1-(time/splash_timer.wait_time), -5)
+		var ratio = ease(1 - (time / splash_timer.wait_time), -5)
 		title.position = lerp(title_initial_pos, title_final_pos, ratio)
 		title.scale = lerp(Vector2(2, 2), Vector2.ONE, ratio)
 	elif !menu_timer.is_stopped():
 		var time = menu_timer.time_left
-		menu_holder.modulate = menu_visibility.sample(time/menu_timer.wait_time)
+		menu_holder.modulate = menu_visibility.sample(time / menu_timer.wait_time)
 	
 	if !$FadeToBlack/Timer.is_stopped():
 		var time = $FadeToBlack/Timer.time_left
-		$FadeToBlack.modulate = menu_visibility.sample(time/menu_timer.wait_time)
+		$FadeToBlack.modulate = menu_visibility.sample(time / menu_timer.wait_time)
 
 
 func start_clicked():

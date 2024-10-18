@@ -10,6 +10,7 @@ signal any_button_pressed
 @export var right_button:Button
 @export var down_button:Button
 @export var up_button:Button
+@export var volume2_button:Button
 
 var save_reset_countdown = 5
 var input_target:String
@@ -37,7 +38,8 @@ func change_input(input:String):
 func update_vis():
 	waiting_for_input = false
 	timer_button.text = "Timer: " + ["Off", "On"][int(PersistentData.showtimer)]
-	volume_button.text = "Volume: " + str(PersistentData.volume)
+	volume_button.text = "SFX: " + str(PersistentData.volume)
+	volume2_button.text = "MUSIC: " + str(PersistentData.music_volume)
 	for i in 5:
 		var b = [jump_button, left_button, right_button, down_button, up_button][i]
 		var t = ["Jump", "Left", "Right", "Down", "Up"][i]
@@ -74,17 +76,30 @@ func reset_save():
 		save_reset_countdown -= 1
 
 
-func volume_change():
+func volume_change(type:String):
+	# type = "sfx" or "mus"
 	# Increment / decrement
 	if Input.is_action_just_pressed("Click"):
-		PersistentData.volume += 1
+		if type == "sfx":
+			PersistentData.volume += 1
+		else:
+			PersistentData.music_volume += 1
 	else:
-		PersistentData.volume -= 1
+		if type == "sfx":
+			PersistentData.volume -= 1
+		else:
+			PersistentData.music_volume -= 1
 	# Wrap
 	if PersistentData.volume > 10:
 		PersistentData.volume = 0
 	elif PersistentData.volume < 0:
 		PersistentData.volume = 10
+	
+	if PersistentData.music_volume > 10:
+		PersistentData.music_volume = 0
+	elif PersistentData.music_volume < 0:
+		PersistentData.music_volume = 10
+	
 	PersistentData.apply_volume()
 	# Display
 	update_vis()

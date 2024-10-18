@@ -8,6 +8,7 @@ var time:float = 0
 var deaths = 0
 var showtimer = true
 var volume = 7
+var music_volume = 7
 
 var start_in_room = ""
 
@@ -26,6 +27,7 @@ func _process(delta):
 func save_config():
 	config.set_value("Settings", "showtimer", showtimer)
 	config.set_value("Settings", "volume", volume)
+	config.set_value("Settings", "music_volume", music_volume)
 	for i in ["Jump", "Left", "Right", "Up", "Down"]:
 		config.set_value("Settings/Controls", i, InputMap.action_get_events(i))
 		
@@ -54,6 +56,7 @@ func update_data():
 	# Settings
 	showtimer = config.get_value("Settings", "showtimer", false)
 	volume = config.get_value("Settings", "volume", 7)
+	volume = config.get_value("Settings", "music_volume", 7)
 	apply_volume()
 	if config.get_value("Settings/Controls", "Jump"):
 		for i in ["Jump", "Left", "Right", "Up", "Down"]:
@@ -64,7 +67,8 @@ func update_data():
 
 
 func apply_volume():
-	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), linear_to_db(volume/10.0))
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("SFX"), linear_to_db(volume / 10.0))
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Music"), linear_to_db(music_volume / 10.0))
 
 
 func save_reset():

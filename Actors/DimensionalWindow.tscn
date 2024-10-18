@@ -1,10 +1,13 @@
-[gd_scene load_steps=7 format=3 uid="uid://dyyclqnanqmah"]
+[gd_scene load_steps=10 format=3 uid="uid://dyyclqnanqmah"]
 
 [ext_resource type="Script" path="res://Actors/DimensionalWindow.gd" id="1_4n7ny"]
 [ext_resource type="TileSet" uid="uid://c0cg70lv5ie4o" path="res://Graphics/Tiles/TileSet.tres" id="2_cruy2"]
 [ext_resource type="Texture2D" uid="uid://m8yjy4fvsdu4" path="res://Graphics/Backgrounds/teehee temp background.png" id="2_g0bpi"]
 [ext_resource type="Texture2D" uid="uid://dhmhsufwrdfie" path="res://Graphics/Backgrounds/New Background.png" id="2_r438f"]
 [ext_resource type="Texture2D" uid="uid://cha1xv3j8gwqb" path="res://Graphics/Backgrounds/Old_Background_2.png" id="3_pdm17"]
+[ext_resource type="AudioStream" uid="uid://davsjyjc6sjjk" path="res://SFX/Window Down.wav" id="6_obuwm"]
+[ext_resource type="AudioStream" uid="uid://cdhxnpgqng6l1" path="res://SFX/Window Move Fail.wav" id="7_8xwxs"]
+[ext_resource type="AudioStream" uid="uid://roi78ogcqvxi" path="res://SFX/Window Up.wav" id="8_dipg4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yba56"]
 
@@ -60,6 +63,15 @@ format = 2
 z_index = 1
 width = 1.0
 default_color = Color(0.831373, 0.8, 0.364706, 1)
+
+[node name="Move" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_obuwm")
+
+[node name="MoveFail" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_8xwxs")
+
+[node name="PickUp" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_dipg4")
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
