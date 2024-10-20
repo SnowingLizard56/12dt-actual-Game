@@ -14,7 +14,10 @@ config/name="12DT Game (Epic Name That Is a NAME right there. hlle yeah)"
 run/main_scene="res://UI/MainMenu.tscn"
 config/features=PackedStringArray("4.1", "Forward Plus")
 run/max_fps=60
-config/icon="res://icon.svg"
+boot_splash/bg_color=Color(0.105882, 0.105882, 0.105882, 1)
+boot_splash/show_image=false
+config/icon="res://Graphics/Icons/icon.png"
+config/windows_native_icon="res://Graphics/Icons/normal hi-res icon.ico"
 
 [autoload]
 
