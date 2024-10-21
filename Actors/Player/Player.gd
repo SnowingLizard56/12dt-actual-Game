@@ -50,11 +50,14 @@ func update_dir(d):
 
 
 func set_state(n):
+	# Changing state
 	var continue_set = true
 	if n == states.Grounded:
+		# If on ground: Reset stamina, velocity.y = 0
 		stamina = MAX_STAMINA
 		velocity.y = 0
 	elif n == states.Climb:
+		# If on wall: Save direction, ensure climb_dir is the direction the player is facing.
 		climb_dir = direction
 		$Sprite.scale.x = abs($Sprite.scale.x) * climb_dir
 	elif n == states.Falling:
@@ -117,8 +120,10 @@ func _physics_process(delta):
 
 
 func _process(delta):
+	# Respawn fade in
 	if !$RespawnTimer.is_stopped():
-		$Sprite.modulate = respawn_gradient.sample(1-($RespawnTimer.time_left/$RespawnTimer.wait_time))
+		$Sprite.modulate = respawn_gradient.sample(
+				1 - ($RespawnTimer.time_left / $RespawnTimer.wait_time))
 
 
 # Physics States
@@ -133,7 +138,7 @@ func falling(delta):
 	velocity.x = lerp(velocity.x, direction * SPEED, delta * 6)
 	
 	
-	# Anims
+	# Animations
 	if velocity.y > 0 and !falling_down:
 		falling_down = true
 		$Sprite.play("Fall_Start")
@@ -149,8 +154,10 @@ func falling(delta):
 		state = states.Grounded
 	else:
 		var t = transform
-		var m = Vector2(abs(velocity.x)/velocity.x, 0)
-		if test_move(t, m) and !(!test_move(t.translated(Vector2(0, -10)), m) or !test_move(t.translated(Vector2(0, 11)), m)):
+		var m = Vector2(abs(velocity.x) / velocity.x, 0)
+		# If the graphic doesn't match, fall or ascend_lock
+		if test_move(t, m) and !(!test_move(t.translated(Vector2(0, -10)), m) 
+				or !test_move(t.translated(Vector2(0, 11)), m)):
 			direction = abs(velocity.x)/velocity.x
 			state = states.Climb
 
@@ -168,20 +175,22 @@ func grounded(delta):
 	
 	# Change velocity
 	if Input.is_action_pressed("Down"):
-		velocity.x = lerp(velocity.x, direction * SLOW_SPEED, delta*30)
+		velocity.x = lerp(velocity.x, direction * SLOW_SPEED, delta * 30)
 		if direction != 0 and !jumping: $Sprite.play("Walk")
 	else:
-		velocity.x = lerp(velocity.x, direction * SPEED, delta*30)
+		velocity.x = lerp(velocity.x, direction * SPEED, delta * 30)
 		if direction != 0 and !jumping: $Sprite.play("Walk", 2.0)
 	if abs(velocity.x) < 1.5:
 		velocity.x = 0
 	
 	if !is_on_floor() and !jumping:
+		# Walked off
 		state = states.Falling
 		$CoyoteTimer.start()
 	elif test_move(transform, Vector2.RIGHT * direction) and Input.is_action_pressed("Up"):
+		# Began climbing
 		state = states.Climb
-		velocity = Vector2.UP*4
+		velocity = Vector2.UP * 4
 
 
 func climb(delta):
@@ -221,6 +230,7 @@ func climb(delta):
 		
 	velocity.y = vdirection * CLIMB_SPEED
 	
+	# Pick animation by direction or lack thereof
 	if velocity.y > 0:
 		if vdirection != 1:
 			$Sprite.play("Climb_Down")
@@ -229,12 +239,13 @@ func climb(delta):
 	else:
 		$Sprite.play("Climb_Idle")
 	
-	# Wall Jump!
 	if jumping:
 		state = states.Falling
 		if vdirection > 0:
+			# Wall drop!
 			velocity = Vector2(WALL_DROP_SPEED, 0)
 		else:
+			# Wall Jump!
 			$Jump.play()
 			velocity = WALL_JUMP_VELOCITY
 			locked_direction = -climb_dir
@@ -255,6 +266,7 @@ func climb(delta):
 
 func death():
 	var k
+	# Select particle
 	if crushed:
 		k = particle_scenes[particle.DeathCrushed].instantiate()
 		$Crush.play()
@@ -262,28 +274,35 @@ func death():
 		k = particle_scenes[particle.DeathNormal].instantiate()
 		$Disintegrate.play()
 		k.call_deferred("start", $Sprite.scale, velocity)
+	# Position and parent particle scene
 	get_parent().call_deferred("add_child", k)
 	k.position += position
+	# Position self, start timer
 	real_position = spawn_position
 	position = spawn_position
 	velocity = Vector2.ZERO
 	$RespawnTimer.start()
 	$Sprite.play("Idle")
+	# Force direction, state
 	$Sprite.scale.x = 1
 	state = states.Falling
 	crushed = false
+	# Increment deaths
 	get_node("/root/PersistentData").deaths += 1
 	
 	
 func entity_collision(ent):
+	# There could be more here, but it's only ever spikes at this point.
 	if ent.entity_type == Entity.entities.Spike:
+		# Deadly spikes
 		death()
 
 
 func crush_check():
+	# Be a little nice. Give them a couple pixels of wiggle room.
 	for i in [Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT]:
-		if !test_move(transform.translated(i*2), Vector2.ZERO):
-			position += i*2
+		if !test_move(transform.translated(i * 2), Vector2.ZERO):
+			position += i * 2
 			return false
 	crushed = true
 	death()
@@ -291,6 +310,7 @@ func crush_check():
 
 
 func _on_visible_notifier_screen_exited():
+	# Ensure player actually left screen
 	if visible:
 		screen_exited.emit()
 

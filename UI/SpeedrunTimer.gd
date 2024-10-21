@@ -1,22 +1,25 @@
 extends Control
 
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	PersistentData.connect("data_updated", update_visibility)
 	update_visibility()
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	var time = get_node("/root/PersistentData").time
+	# Get time: is in seconds
 	var seconds = floorf(time)
-	var ms = time - seconds
-	var minutes = floorf(seconds/60.0)
-	seconds -= minutes*60
-	var hours = floorf(minutes/60.0)
-	minutes -= hours*60
+	# find diff in floor
+	var ms = (time - seconds) * 1000
+	# Divide, find diff in floor
+	var minutes = floorf(seconds / 60.0)
+	seconds -= minutes * 60
+	# Divide, find diff in floor
+	var hours = floorf(minutes / 60.0)
+	minutes -= hours * 60
 	
+	# Display
 	$Time.text = ""
 	if hours:
 		$Time.text += str(hours) + ":"
@@ -30,7 +33,7 @@ func _process(delta):
 	if len(str(seconds)) == 1:
 		$Time.text += "0"
 	$Time.text += str(seconds) + "."
-	$Ms.text = str(floorf(ms*1000))
+	$Ms.text = str(floorf(ms))
 
 
 func update_visibility():

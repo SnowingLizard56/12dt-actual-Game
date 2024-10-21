@@ -13,18 +13,17 @@ var music_volume = 7
 var start_in_room = ""
 
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	update_data()
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if get_node_or_null("/root/Main") is Node2D:
 		time += delta
 
 
 func save_config():
+	# Save settings to config.
 	config.set_value("Settings", "showtimer", showtimer)
 	config.set_value("Settings", "volume", volume)
 	config.set_value("Settings", "music_volume", music_volume)
@@ -36,6 +35,7 @@ func save_config():
 	
 	
 func save_game():
+	# Save game state to config file.
 	config.set_value("SaveData", "time", time)
 	config.set_value("SaveData", "room", 
 			get_node("/root/Main/LevelConstructor").current_level.level_name)
@@ -46,6 +46,7 @@ func save_game():
 
 
 func update_data():
+	# Load Data from config file.
 	var _err = config.load("user://save.cfg")
 	
 	# Save Data
@@ -67,11 +68,15 @@ func update_data():
 
 
 func apply_volume():
-	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("SFX"), linear_to_db(volume / 10.0))
-	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Music"), linear_to_db(music_volume / 10.0))
+	# Apply volume variables to respective busses
+	AudioServer.set_bus_volume_db(
+		AudioServer.get_bus_index("SFX"), linear_to_db(volume / 10.0))
+	AudioServer.set_bus_volume_db(
+		AudioServer.get_bus_index("Music"), linear_to_db(music_volume / 10.0))
 
 
 func save_reset():
+	# Delete save
 	config.erase_section("SaveData")
 	config.save("user://save.cfg")
 	update_data()

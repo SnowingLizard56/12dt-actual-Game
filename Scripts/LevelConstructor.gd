@@ -6,6 +6,7 @@ const OFFSETS = [Vector2(0, -VIEWPORT_SIZE.y),
 		Vector2(0, VIEWPORT_SIZE.y),
 		Vector2(-VIEWPORT_SIZE.x, 0), 
 		Vector2(VIEWPORT_SIZE.x, 0)]
+const SCREEN_TRANS_OFFSET = 375
 
 var build_queue:Array[Callable] = []
 var born_to_die: Array[Node] = []
@@ -50,6 +51,7 @@ enum save_states {File, Save, Load, Clear}
 @export var start_game_level_name = ""
 
 
+# Storagen class for all info about a level.
 class Level:
 	var level_name:String
 	var entities = []
@@ -119,14 +121,17 @@ class Level:
 
 func _ready():
 	if Engine.is_editor_hint():
+		# Editor
 		tilemap.show()
 		limbo_tmap.hide()
 	else:
+		# Remove all children from editor
 		for i in [statics_holder, window_holder, entity_holder]:
 			for c in i.get_children():
 				c.queue_free()
 		
 		limbo_tmap.clear()
+		# Load starting room
 		var loaded_room = PersistentData.start_in_room
 		if loaded_room:
 			build_level(loaded_room, Vector2.ZERO, true)
@@ -138,6 +143,7 @@ func _ready():
 
 func _process(_delta):
 	if Engine.is_editor_hint():
+		# Saving UI for the editor
 		if save == save_states.Save:
 			save_level()
 			save = save_states.File
@@ -149,6 +155,7 @@ func _process(_delta):
 			clear_editor()
 			save = save_states.File
 	elif build_queue != []:
+		# Call first in build queue.
 		build_queue[0].call()
 		build_queue.remove_at(0)
 
@@ -171,7 +178,7 @@ func clear_editor():
 func load_level_to_editor():
 	if !Engine.is_editor_hint(): return
 	# Navigate to level directory
-	var dir = DirAccess.open("res://Levels/"+level_name+"/")
+	var dir = DirAccess.open("res://Levels/" + level_name + "/")
 	# Extract data dict
 	var limbo_pattern = ResourceLoader.load(dir.get_current_dir() + "/_.tres") as TileMapPattern
 	var data = limbo_pattern.get_meta("_")
@@ -203,7 +210,7 @@ func load_level_to_editor():
 	for i in len(dir.get_files()):
 		if dir.get_files()[i] == "_.tres": continue
 		var pattern = ResourceLoader.load(
-				dir.get_current_dir() +"/"+ dir.get_files()[i]) as TileMapPattern
+				dir.get_current_dir() + "/" + dir.get_files()[i]) as TileMapPattern
 		tilemap.set_pattern(i, Vector2i(0, data["TileOffsets"][i]), pattern)
 	
 	# Data
@@ -226,7 +233,7 @@ func build_level(level:String, offset:Vector2, active:bool):
 	built_levels.append(level_obj)
 	
 	# Navigate to level directory
-	var dir = DirAccess.open("res://Levels/"+level+"/")
+	var dir = DirAccess.open("res://Levels/" + level + "/")
 	
 	# Extract data dict
 	var limbo_pattern = ResourceLoader.load(dir.get_current_dir() + "/_.tres") as TileMapPattern
@@ -252,6 +259,7 @@ func build_level(level:String, offset:Vector2, active:bool):
 func build_entities(data, offset:Vector2, level_index:int):
 	for e in data['Entities']:
 		var k:Entity = entity_scene.instantiate()
+		# Apply entity settings
 		k.size = e[0]
 		k.exists = e[1]
 		k.entity_type = e[2]
@@ -267,9 +275,11 @@ func build_entities(data, offset:Vector2, level_index:int):
 	var one_off = one_offs.get(built_levels[level_index].level_name)
 	if one_off:
 		var k = one_off.instantiate()
+		# Align with camera
 		k.position += offset
 		entity_holder.add_child(k)
 		built_levels[level_index].one_off = k
+		# Connect game_over signal
 		if k is DimensionalStabiliser:
 			k.connect("game_over", credits.game_over)
 
@@ -280,7 +290,7 @@ func build_collision(dir, offset:Vector2, level_index:int):
 		# Make static bodies
 		var sb = StaticBody2D.new()
 		statics_holder.add_child(sb)
-		var pattern = ResourceLoader.load(dir.get_current_dir() +"/"+ dir.get_files()[i]) as TileMapPattern
+		var pattern = ResourceLoader.load(dir.get_current_dir() + "/" + dir.get_files()[i]) as TileMapPattern
 		var polygons = pattern.get_meta("stored_polygons", [])
 		for poly in polygons:
 			# Generate collision polys
@@ -314,7 +324,7 @@ func build_windows(dir, data, offset:Vector2, level_index:int):
 		
 		built_levels[level_index].windows.append(dw)
 		# Apply pattern
-		var pattern = ResourceLoader.load(dir.get_current_dir() +"/"+ str(i[1]) + ".tres") as TileMapPattern
+		var pattern = ResourceLoader.load(dir.get_current_dir() + "/" + str(i[1]) + ".tres") as TileMapPattern
 		dw.load_branch(pattern, built_levels[level_index])
 
 
@@ -333,7 +343,8 @@ func post_level_build(data, offset:Vector2, level_index:int, active:bool, limbo_
 	else:
 		built_levels[level_index].deactivate()
 	# Build limbo area 
-	limbo_tmap.set_pattern(0, Vector2i(offset/8)+Vector2i(0, data["TileOffsets"].min()), limbo_pattern)
+	limbo_tmap.set_pattern(0, 
+			Vector2i(offset/8) + Vector2i(0, data["TileOffsets"].min()), limbo_pattern)
 	# Outline entities
 	for i in built_levels[level_index].entities:
 		i.switch_to_outline()
@@ -345,7 +356,8 @@ func save_level():
 	var entities = []
 	
 	for i in entity_holder.get_children():
-		entities.append([i.size, i.exists, i.entity_type, i.position, i.rotat, i.flag, i.invert_flag])
+		entities.append([i.size, i.exists, i.entity_type, 
+				i.position, i.rotat, i.flag, i.invert_flag])
 	# Create level directory
 	DirAccess.open("res://Levels/").make_dir(level_name)
 	var limbo_pos_set = []
@@ -354,7 +366,6 @@ func save_level():
 		# Get layer tiles and polygons
 		# Get non-decor tiles
 		var terrain_cells = []
-		tileoffsets.append(45)
 		for coord in tilemap.get_used_cells(i):
 			if tilemap.get_cell_tile_data(i, coord).get_custom_data("is_decor"): continue
 			terrain_cells.append(coord)
@@ -409,7 +420,7 @@ func enter_new_screen():
 	if current_level.data["Connections"][index] == "":
 		if index == 1:
 			player.crushed = true
-			player.position.y = current_level.offset.y + 375
+			player.position.y = current_level.offset.y + SCREEN_TRANS_OFFSET
 			player.death()
 		return
 	allow_switch = false

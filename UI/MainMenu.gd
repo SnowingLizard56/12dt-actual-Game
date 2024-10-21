@@ -18,17 +18,20 @@ var skip = false
 
 
 func _ready():
+	# Unpause
 	get_tree().paused = false
+	# Load main in thread
 	ResourceLoader.load_threaded_request("res://Main.tscn")
 	title.modulate.a = 0
 	menu_holder.get_child(0).disabled = true
 	menu_holder.get_child(1).disabled = true
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if !fade_timer.is_stopped():
+		# Title fade in
 		var time = fade_timer.time_left
+		# Skip
 		if Input.is_action_just_pressed("Skip") and $BlockSkipTimer.is_stopped():
 			time = 0
 			fade_timer.stop()
@@ -36,7 +39,9 @@ func _process(delta):
 			skip = true
 		title.modulate = title_visibility.sample(time / fade_timer.wait_time)
 	elif !splash_timer.is_stopped():
+		# Title slide and scale
 		var time = splash_timer.time_left
+		# Skip
 		if Input.is_action_just_pressed("Skip") or skip:
 			time = 0
 			splash_timer.stop()
@@ -47,14 +52,17 @@ func _process(delta):
 		title.scale = lerp(Vector2(2, 2), Vector2.ONE, ratio)
 	elif !menu_timer.is_stopped():
 		var time = menu_timer.time_left
+		# Menu fade in
 		menu_holder.modulate = menu_visibility.sample(time / menu_timer.wait_time)
 	
 	if !$FadeToBlack/Timer.is_stopped():
+		# Fade to black: quit/start
 		var time = $FadeToBlack/Timer.time_left
 		$FadeToBlack.modulate = menu_visibility.sample(time / menu_timer.wait_time)
 
 
 func start_clicked():
+	# fade timer, disable menu
 	$FadeToBlack/Timer.start()
 	$FadeToBlack/Timer.connect("timeout", start_game)
 	menu_holder.get_child(0).disabled = true
@@ -63,6 +71,10 @@ func start_clicked():
 
 
 func quit_clicked():
+	# Fade timer, disable menu
+	menu_holder.get_child(0).disabled = true
+	menu_holder.get_child(1).disabled = true
+	menu_holder.get_child(2).disabled = true
 	$FadeToBlack/Timer.start()
 	$FadeToBlack/Timer.connect("timeout", quit)
 	

@@ -29,9 +29,12 @@ var timer:SceneTreeTimer
 
 
 func initialize():
+	# Find type..
 	if entity_type == entities.Spike:
+		# Constant size.y
 		size.y = 8
 	elif entity_type == entities.SchrodingerSwitch:
+		# Constant size
 		size = Vector2.ONE * 8
 		var found = false
 		for i in len(exists):
@@ -95,6 +98,7 @@ func player_entered(body):
 		body.get_parent().entity_collision(self)
 
 
+# Everything below here is for the schrodinger switch - currently unused
 func inside_window():
 	if entity_type == entities.SchrodingerSwitch:
 		if FlagManager.set_flag(flag, true):

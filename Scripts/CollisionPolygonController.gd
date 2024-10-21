@@ -4,10 +4,11 @@ class_name StaticbodyController extends RefCounted
 const CELL_SIZE = Vector2(8,8)
 const DELTA = 0.001
 
+
 # Please for the love of god rename this function later
 # This is VERY O(n^2) so. figure that out future me
 # Future me talking: I Did Not
-static func generate_static_body_polygons(tilemap:TileMap, layer:int, static_body_parent:Node = null):
+static func generate_static_body_polygons(tilemap:TileMap,layer:int,static_body_parent:Node=null):
 	# Static body will hold all the collision polygons!
 	var collision_holder
 	if static_body_parent:
@@ -89,6 +90,7 @@ static func get_points(pos):
 		Vector2((pos.x + 1) * CELL_SIZE.x, (pos.y + 1) * CELL_SIZE.y) #3
 	]
 
+
 # I makea da polygon from the places on da tile 
 # (directly following from prev function)
 static func get_tile_polygon(points):
@@ -116,11 +118,12 @@ static func clip_polygons_with_rect(polygons:Array, rect:Rect2, output_parent:No
 	var clip_polygons = []
 	clip_polygons.append_array(polygons)
 	if contained is int:
-		# Extents
+		# Cut along a line so that two polygons can be created
 		var polyline = [
 			Vector2(rect.position.x, 0),
 			Vector2(rect.position.x, 360)
 		]
+		# Delete the inside of the rect
 		clip_polygons.remove_at(contained)
 		polyline = Geometry2D.offset_polyline(polyline, DELTA)[0]
 		clip_polygons.append_array(Geometry2D.clip_polygons(polygons[contained], polyline))
@@ -128,12 +131,13 @@ static func clip_polygons_with_rect(polygons:Array, rect:Rect2, output_parent:No
 	var new_polygons = []
 	for i in clip_polygons:
 		new_polygons.append_array(Geometry2D.clip_polygons(i, rect_polygon))
-	# Poof
+	# If given a parent, add the polygons to that parent
 	if output_parent:
 		add_polygons_as_children(polygons, output_parent)
 	return new_polygons
 
 
+# Rotates a given polygon about a point
 static func rotate_polygon(polygon:PackedVector2Array, pivot:Vector2, rotation_degrees:int):
 	var out = []
 	for i in polygon:

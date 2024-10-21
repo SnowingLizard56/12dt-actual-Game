@@ -11,11 +11,12 @@ func _ready():
 	get_node("../ScreenWipe").show()
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	# Pause
 	if Input.is_action_just_pressed("Pause"):
 		pause()
 	
+	# Quit fade, load in fade
 	if !quit_fade_timer.is_stopped():
 		screen_wipe_node.modulate = screen_wipe.sample(
 				1 - (quit_fade_timer.time_left / quit_fade_timer.wait_time))
@@ -25,12 +26,16 @@ func _process(delta):
 
 
 func pause():
+	# Make music quieter. Pause the game.
 	visible = true
 	music_node.volume_db = -10
 	get_tree().paused = true
 
 
 func resume():
+	# Check for currently quitting
+	if !quit_fade_timer.is_stopped(): return
+	# Resume + reset audio.
 	visible = false
 	music_node.volume_db = 0
 	get_tree().paused = false
@@ -55,3 +60,15 @@ func _on_resume_pressed():
 func hide_wipe():
 	if quit_fade_timer.is_stopped():
 		screen_wipe_node.hide()
+
+
+func show_options():
+	# Check for currently quitting, then switch to option menu
+	if !quit_fade_timer.is_stopped(): return
+	$OptionMenu.show()
+	$MenuItems.hide()
+
+
+func _on_options_pressed():
+	# See line 56
+	show_options()
