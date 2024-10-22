@@ -5,13 +5,13 @@
 [ext_resource type="PackedScene" path="res://Graphics/Entity_Graphics/end_game_one_off.tscn" id="1_y5sxu"]
 [ext_resource type="PackedScene" path="res://Actors/Entities/EntityBase.tscn" id="3_8fmvg"]
 [ext_resource type="PackedScene" path="res://Actors/DimensionalWindow.tscn" id="4_ff4i8"]
-[ext_resource type="PackedScene" path="res://UI/MoveTheWindowTutorial.tscn" id="4_kk3ix"]
+[ext_resource type="PackedScene" uid="uid://djba8dfc6qo4" path="res://UI/MoveTheWindowTutorial.tscn" id="4_kk3ix"]
 [ext_resource type="Script" path="res://Scripts/LevelFollower.gd" id="4_wwiig"]
 [ext_resource type="TileSet" uid="uid://c0cg70lv5ie4o" path="res://Graphics/Tiles/TileSet.tres" id="5_iq517"]
 [ext_resource type="Script" path="res://UI/PauseMenu.gd" id="7_6lkul"]
 [ext_resource type="Theme" uid="uid://bo5ulq7pp4npf" path="res://Graphics/UI/MainTheme.tres" id="8_optnu"]
 [ext_resource type="Script" path="res://UI/SpeedrunTimer.gd" id="9_6xc4y"]
-[ext_resource type="AudioStream" uid="uid://dkil2te2oplha" path="res://SFX/MenuSelect.wav" id="10_3wmt5"]
+[ext_resource type="AudioStream" path="res://SFX/MenuSelect.wav" id="10_3wmt5"]
 [ext_resource type="PackedScene" uid="uid://bojkxeynvogeb" path="res://UI/OptionMenu.tscn" id="11_17wun"]
 [ext_resource type="Script" path="res://Scripts/Lore.gd" id="11_cge5f"]
 [ext_resource type="FontFile" uid="uid://cgkqud4ed1vxo" path="res://Graphics/UI/Garet-Book.ttf" id="14_yower"]
@@ -466,12 +466,12 @@ anchor_bottom = 1.0
 offset_top = 9.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "wow you did it
-the game is done now
+text = "the game is done now
 time for thankings and like. people and stuff
 Thank you Joe and Evelyn Mitchell,
 For doing the amazing art of the backgrounds, tilesets, and the character.
 Thank you Benjamin Whaley for the fantastic music for the menu and gameplay.
+Thank you Hunter Jones for making a level while I was incapacitated.
 Thank you to Braden Robins, John Hagen, Emma Pearce-Hagen, 
 and Genevieve McClean for your constant support while I developed EURYDICE.
 Thank you to Michael Xue and Fearghal Reid for reminding me that my code
