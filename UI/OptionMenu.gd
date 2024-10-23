@@ -86,7 +86,7 @@ func reset_save():
 
 
 func volume_change(type:String):
-	# type = "sfx" or "mus"
+	# Type = "sfx" or "mus"
 	# Increment / decrement
 	if Input.is_action_just_pressed("Click"):
 		if type == "sfx":

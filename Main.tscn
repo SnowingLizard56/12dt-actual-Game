@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://raujhngxvpl1" path="res://Actors/Player/player.tscn" id="1_2p50b"]
 [ext_resource type="Script" path="res://Scripts/LevelConstructor.gd" id="1_067a3"]
 [ext_resource type="PackedScene" path="res://Graphics/Entity_Graphics/end_game_one_off.tscn" id="1_y5sxu"]
-[ext_resource type="PackedScene" path="res://Actors/Entities/EntityBase.tscn" id="3_8fmvg"]
+[ext_resource type="PackedScene" uid="uid://pwis3gamyvf" path="res://Actors/Entities/EntityBase.tscn" id="3_8fmvg"]
 [ext_resource type="PackedScene" path="res://Actors/DimensionalWindow.tscn" id="4_ff4i8"]
 [ext_resource type="PackedScene" uid="uid://djba8dfc6qo4" path="res://UI/MoveTheWindowTutorial.tscn" id="4_kk3ix"]
 [ext_resource type="Script" path="res://Scripts/LevelFollower.gd" id="4_wwiig"]
@@ -11,7 +11,7 @@
 [ext_resource type="Script" path="res://UI/PauseMenu.gd" id="7_6lkul"]
 [ext_resource type="Theme" uid="uid://bo5ulq7pp4npf" path="res://Graphics/UI/MainTheme.tres" id="8_optnu"]
 [ext_resource type="Script" path="res://UI/SpeedrunTimer.gd" id="9_6xc4y"]
-[ext_resource type="AudioStream" path="res://SFX/MenuSelect.wav" id="10_3wmt5"]
+[ext_resource type="AudioStream" uid="uid://dkil2te2oplha" path="res://SFX/MenuSelect.wav" id="10_3wmt5"]
 [ext_resource type="PackedScene" uid="uid://bojkxeynvogeb" path="res://UI/OptionMenu.tscn" id="11_17wun"]
 [ext_resource type="Script" path="res://Scripts/Lore.gd" id="11_cge5f"]
 [ext_resource type="FontFile" uid="uid://cgkqud4ed1vxo" path="res://Graphics/UI/Garet-Book.ttf" id="14_yower"]
@@ -211,12 +211,12 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -132.0
+offset_left = -54.0
 offset_right = -39.0
 offset_bottom = 44.0
 grow_horizontal = 0
 theme_override_font_sizes/font_size = 34
-text = "2:52:52."
+text = "5"
 horizontal_alignment = 2
 vertical_alignment = 2
 
