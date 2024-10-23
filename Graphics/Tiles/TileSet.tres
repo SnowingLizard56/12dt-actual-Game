@@ -2,9 +2,9 @@
 
 [ext_resource type="Texture2D" uid="uid://bgq3fvwrfgyn8" path="res://Graphics/Tiles/tiles.png" id="1_mh0vk"]
 [ext_resource type="Texture2D" uid="uid://k2peorpeq0w1" path="res://Graphics/Tiles/Sprite-0002.png" id="2_q2sya"]
-[ext_resource type="Texture2D" path="res://Graphics/Tiles/Tileset Old.png" id="3_pcm0h"]
-[ext_resource type="Texture2D" path="res://Graphics/Tiles/New_Tileset.png" id="4_r8t0e"]
-[ext_resource type="Texture2D" path="res://Graphics/Tiles/Old_Tileset.png" id="5_s7has"]
+[ext_resource type="Texture2D" uid="uid://cqssfsrqvdvxe" path="res://Graphics/Tiles/Tileset Old.png" id="3_pcm0h"]
+[ext_resource type="Texture2D" uid="uid://buhhjcyt5corf" path="res://Graphics/Tiles/New_Tileset.png" id="4_r8t0e"]
+[ext_resource type="Texture2D" uid="uid://bkwtxjx4y4uoq" path="res://Graphics/Tiles/Old_Tileset.png" id="5_s7has"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_j5pw2"]
 resource_name = "Pre-Texture-Tiles"

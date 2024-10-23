@@ -185,8 +185,8 @@ button_mask = 3
 text = "Back"
 flat = true
 
-[connection signal="pressed" from="Speedrun Timer" to="." method="button_press"]
 [connection signal="pressed" from="Speedrun Timer" to="." method="timer_toggled"]
+[connection signal="pressed" from="Speedrun Timer" to="." method="button_press"]
 [connection signal="pressed" from="Jump" to="." method="button_press"]
 [connection signal="pressed" from="Jump" to="." method="change_input" binds= ["Jump"]]
 [connection signal="pressed" from="Left" to="." method="button_press"]
